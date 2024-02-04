@@ -1,0 +1,30 @@
+package zero.eight.donut.domain;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class Donation {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "donation_id")
+    private Long id;
+
+    @Column
+    private Long sum;
+
+    @Column
+    private Long count;
+
+    @Column
+    private Integer report;
+
+    @OneToOne(mappedBy = "donation")
+    private Giver giver;
+
+}

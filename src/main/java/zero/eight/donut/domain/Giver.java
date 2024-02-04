@@ -27,4 +27,7 @@ public class Giver extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "giver", fetch = FetchType.LAZY)
     private List<Gift> giftList = new ArrayList<>();
+
+    @OneToOne(fetch = FetchType.LAZY)
+    private Donation donation;
 }
