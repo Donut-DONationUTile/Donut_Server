@@ -25,9 +25,16 @@ public class Giver extends BaseTimeEntity {
     @Column(length = 50)
     private String email;
 
+    //기프티콘
     @OneToMany(mappedBy = "giver", fetch = FetchType.LAZY)
     private List<Gift> giftList = new ArrayList<>();
 
+    //기부 정보
     @OneToOne(fetch = FetchType.LAZY)
     private Donation donation;
+
+    //신고
+    @OneToMany(mappedBy = "giver", fetch = FetchType.LAZY)
+    private List<Report> reportList = new ArrayList<>();
 }
+
