@@ -46,4 +46,9 @@ public class Gift extends BaseTimeEntity {
     @JoinColumn(name = "giver_id")
     private Giver giver;
 
+    //기프티콘_기프티콘꾸러미
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "gift_id")
+    private  Gift_Giftbox gift_giftbox;
+
 }
