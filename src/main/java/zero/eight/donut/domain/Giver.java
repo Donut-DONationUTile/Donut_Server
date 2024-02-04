@@ -6,6 +6,9 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 import zero.eight.donut.common.domain.BaseTimeEntity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Builder
 @AllArgsConstructor
@@ -22,4 +25,6 @@ public class Giver extends BaseTimeEntity {
     @Column(length = 50)
     private String email;
 
+    @OneToMany(mappedBy = "giver", fetch = FetchType.LAZY)
+    private List<Gift> giftList = new ArrayList<>();
 }
