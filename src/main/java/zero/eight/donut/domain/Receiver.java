@@ -32,4 +32,8 @@ public class Receiver extends BaseTimeEntity {
     //메세지
     @OneToMany(mappedBy = "receiver", fetch = FetchType.LAZY)
     private List<Message> messagesList = new ArrayList<>();
+
+    //수혜 정보
+    @OneToMany(mappedBy = "receiver", fetch = FetchType.LAZY)
+    private  List<Benefit> benefitList = new ArrayList<>();
 }
