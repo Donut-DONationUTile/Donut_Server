@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import zero.eight.donut.domain.Giftbox;
 import zero.eight.donut.domain.Receiver;
 import zero.eight.donut.dto.receiver.response.BoxInfo;
+import zero.eight.donut.dto.receiver.response.ReceiverGetBoxResponseDto;
 import zero.eight.donut.dto.receiver.response.ReceiverHomeResponseDto;
 import zero.eight.donut.repository.GiftboxRepository;
 
@@ -42,4 +43,11 @@ public class ReceiverService {
                 .boxList(boxInfoList)
                 .build();
     }
+
+
+    @Transactional
+    public ReceiverGetBoxResponseDto receiverGetOneBox(Receiver receiver, Long boxId){
+        return ReceiverGetBoxResponseDto.builder().build();
+    }
+
 }
