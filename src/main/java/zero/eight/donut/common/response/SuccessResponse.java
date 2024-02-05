@@ -19,6 +19,6 @@ public class SuccessResponse<T> {
 
 
     public static <T> SuccessResponse<T> success(Success success, T data) {
-        return new SuccessResponse<T>(success.getHttpStatusCode(), success.getHttpStatus().is2xxSuccessful(), success.getMessage(), data);
+        return new SuccessResponse<T>(success.getHttpStatusCode(),  success.getHttpStatus().is2xxSuccessful(),success.getMessage(), data);
     }
 }

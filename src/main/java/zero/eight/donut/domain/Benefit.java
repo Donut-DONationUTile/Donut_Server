@@ -19,13 +19,16 @@ public class Benefit {
     private Integer sum;
 
     @Column
+    private Integer year;
+
+    @Column
     private Integer month;
 
     @Column
     private Boolean availability;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "receiver")
+    @JoinColumn(name = "receiver_id")
     private Receiver receiver;
 
 }
