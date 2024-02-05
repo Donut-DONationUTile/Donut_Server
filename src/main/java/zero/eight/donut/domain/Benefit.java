@@ -19,6 +19,9 @@ public class Benefit {
     private Integer sum;
 
     @Column
+    private Integer year;
+
+    @Column
     private Integer month;
 
     @Column
