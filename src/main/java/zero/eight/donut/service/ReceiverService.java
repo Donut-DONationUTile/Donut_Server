@@ -30,8 +30,14 @@ public class ReceiverService {
                         .build())
                 .collect(Collectors.toList());
 
+      /**
+       * TO DO : availability 처리하기
+       ***/
+        Boolean availability  = true;
+
+
         return ReceiverHomeResponseDto.builder()
-                .availability(true)
+                .availability(availability)
                 .amount(amount)
                 .boxList(boxInfoList)
                 .build();
