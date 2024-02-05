@@ -3,7 +3,7 @@ package zero.eight.donut.dto.giver.response;
 import lombok.Builder;
 import lombok.Getter;
 
-
+@Getter
 public class GiverHomeResponseDto {
     private Integer receivers;
     private Double donated;
