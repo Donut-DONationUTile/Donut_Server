@@ -22,6 +22,10 @@ public class Giftbox {
     @Column
     private LocalDateTime assignedAt;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "receiver_id")
+    private Receiver receiver;
+
     @OneToMany(mappedBy = "giftbox", fetch = FetchType.LAZY)
     private List<Gift_Giftbox> gift_giftboxList = new ArrayList<>();
 
