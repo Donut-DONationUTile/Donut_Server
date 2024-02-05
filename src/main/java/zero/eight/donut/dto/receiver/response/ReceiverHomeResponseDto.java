@@ -9,10 +9,10 @@ import java.util.List;
 public class ReceiverHomeResponseDto {
     private Boolean availability;
     private Long amount;
-    private List<String> boxList;
+    private List<BoxInfo> boxList;
 
     @Builder
-    public ReceiverHomeResponseDto(Boolean availability, Long amount, List<String> boxList){
+    public ReceiverHomeResponseDto(Boolean availability, Long amount, List<BoxInfo> boxList){
         this.availability = availability;
         this.amount = amount;
         this.boxList =boxList;
