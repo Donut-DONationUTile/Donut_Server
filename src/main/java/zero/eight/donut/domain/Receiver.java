@@ -3,6 +3,7 @@ package zero.eight.donut.domain;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import zero.eight.donut.common.domain.BaseTimeEntity;
 
@@ -11,6 +12,7 @@ import java.util.List;
 
 @Entity
 @Builder
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Receiver extends BaseTimeEntity {
