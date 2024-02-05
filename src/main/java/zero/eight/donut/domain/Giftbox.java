@@ -22,10 +22,21 @@ public class Giftbox {
     @Column
     private LocalDateTime assignedAt;
 
+    @Column(length = 50)
+    private String store;
+
+    @Column
+    private Integer amount;
+
+    @Column
+    private LocalDateTime dueDate;
+
+    //할당된 수혜자
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "receiver_id")
     private Receiver receiver;
 
+    //기프티콘-꾸러미
     @OneToMany(mappedBy = "giftbox", fetch = FetchType.LAZY)
     private List<Gift_Giftbox> gift_giftboxList = new ArrayList<>();
 
