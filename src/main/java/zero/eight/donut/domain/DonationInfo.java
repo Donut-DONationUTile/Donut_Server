@@ -22,6 +22,9 @@ public class DonationInfo {
     private Long count;
 
     @Column
+    private Integer year;
+
+    @Column
     private Integer month;
 
 }
