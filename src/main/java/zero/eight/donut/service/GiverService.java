@@ -3,6 +3,7 @@ package zero.eight.donut.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import zero.eight.donut.common.response.SuccessResponse;
 import zero.eight.donut.dto.giver.response.GiverHomeResponseDto;
 import zero.eight.donut.repository.DonationInfoRespository;
 import zero.eight.donut.repository.GiverRepository;
@@ -20,6 +21,7 @@ public class GiverService {
         LocalDateTime now = LocalDateTime.now();
         Integer receivers = giverRepository.countBy();
         Double donated = donationInfoRespository.findByMonthAndYear(now.getMonthValue(), now.getYear());
+
         return GiverHomeResponseDto.builder()
                 .receivers(receivers)
                 .donated(donated)

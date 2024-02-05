@@ -11,7 +11,7 @@ public enum Success {
 
 
     // 200 OK SUCCESS
-    LOGIN_SUCCESS(HttpStatus.OK, "로그인 성공입니다"),
+    HOME_GIVER_SUCCESS(HttpStatus.OK, "Get request for giver's home info completed successfully "),
 
     //201 CREATED SUCCESS
     CREATE_GIFT_SUCCESS(HttpStatus.CREATED, "기프티콘이 성공적으로 등록되었습니다."),
