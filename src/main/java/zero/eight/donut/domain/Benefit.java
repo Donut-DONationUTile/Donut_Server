@@ -28,7 +28,7 @@ public class Benefit {
     private Boolean availability;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "receiver")
+    @JoinColumn(name = "receiver_id")
     private Receiver receiver;
 
 }
