@@ -1,9 +1,11 @@
 package zero.eight.donut.dto.receiver.response;
 
 import lombok.Builder;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 
+@Getter
 public class GiftInfo {
     private Long giftId;
     private String product;
