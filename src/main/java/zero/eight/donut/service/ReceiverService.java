@@ -76,6 +76,7 @@ public class ReceiverService {
     }
     @Transactional
     public ReceiverGetGiftResponseDto receiverGetOneGift(Long giftId){
+        Gift gift = giftRepository.findById(giftId).orElseThrow(()-> new NotFoundException((Error.GIFT_NOT_FOUND_EXCEPTION)));
         return ReceiverGetGiftResponseDto.builder().build();
     }
 }
