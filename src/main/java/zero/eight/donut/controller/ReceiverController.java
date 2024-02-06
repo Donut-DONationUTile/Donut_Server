@@ -25,7 +25,7 @@ public class ReceiverController {
     }
 
     @GetMapping("/home/receiver/box/{boxId}")
-    public SuccessResponse<ReceiverGetBoxResponseDto> receiverGetOneBox(@LoginUser Receiver receiver, @PathVariable("boxId") Long boxId){
-        return SuccessResponse.success(Success.HOME_RECEIVER_BOX_SUCCESS, receiverService.receiverGetOneBox(receiver, boxId));
+    public SuccessResponse<ReceiverGetBoxResponseDto> receiverGetOneBox(@PathVariable("boxId") Long boxId){
+        return SuccessResponse.success(Success.HOME_RECEIVER_BOX_SUCCESS, receiverService.receiverGetOneBox(boxId));
     }
 }

@@ -54,11 +54,12 @@ public class ReceiverService {
 
 
     @Transactional
-    public ReceiverGetBoxResponseDto receiverGetOneBox(Receiver receiver, Long boxId){
+    public ReceiverGetBoxResponseDto receiverGetOneBox(Long boxId){
         Giftbox giftbox = giftboxRepository.findById(boxId)
                 .orElseThrow(() -> new NotFoundException(Error.GIFTBOX_NOT_FOUND_EXCEPTION));
 
         List<Gift> giftList = giftRepository.findAllByGiftboxId(boxId);
+
         List<GiftInfo> giftInfoList = giftList.stream()
                 .map(gift -> GiftInfo.builder()
                         .giftId(gift.getId())
