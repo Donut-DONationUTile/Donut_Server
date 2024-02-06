@@ -9,6 +9,7 @@ import zero.eight.donut.common.response.SuccessResponse;
 import zero.eight.donut.config.annotation.LoginUser;
 import zero.eight.donut.domain.Receiver;
 import zero.eight.donut.dto.receiver.response.ReceiverGetBoxResponseDto;
+import zero.eight.donut.dto.receiver.response.ReceiverGetGiftResponseDto;
 import zero.eight.donut.dto.receiver.response.ReceiverHomeResponseDto;
 import zero.eight.donut.exception.Success;
 import zero.eight.donut.service.ReceiverService;
@@ -27,5 +28,10 @@ public class ReceiverController {
     @GetMapping("/home/receiver/box/{boxId}")
     public SuccessResponse<ReceiverGetBoxResponseDto> receiverGetOneBox(@PathVariable("boxId") Long boxId){
         return SuccessResponse.success(Success.HOME_RECEIVER_BOX_SUCCESS, receiverService.receiverGetOneBox(boxId));
+    }
+
+    @GetMapping("/home/receiver/box/{boxId}")
+    public SuccessResponse<ReceiverGetGiftResponseDto> receiverGetOneGuft(@PathVariable("giftId") Long giftId){
+        return SuccessResponse.success(Success.HOME_RECEIVER_BOX_SUCCESS, receiverService.receiverGetOneGift(giftId));
     }
 }

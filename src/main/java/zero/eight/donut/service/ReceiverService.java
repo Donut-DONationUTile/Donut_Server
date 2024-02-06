@@ -6,10 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import zero.eight.donut.domain.Gift;
 import zero.eight.donut.domain.Giftbox;
 import zero.eight.donut.domain.Receiver;
-import zero.eight.donut.dto.receiver.response.BoxInfo;
-import zero.eight.donut.dto.receiver.response.GiftInfo;
-import zero.eight.donut.dto.receiver.response.ReceiverGetBoxResponseDto;
-import zero.eight.donut.dto.receiver.response.ReceiverHomeResponseDto;
+import zero.eight.donut.dto.receiver.response.*;
 import zero.eight.donut.exception.Error;
 import zero.eight.donut.exception.NotFoundException;
 import zero.eight.donut.repository.GiftRepository;
@@ -77,5 +74,8 @@ public class ReceiverService {
                 .giftList(giftInfoList)
                 .build();
     }
-
+    @Transactional
+    public ReceiverGetGiftResponseDto receiverGetOneGift(Long giftId){
+        return ReceiverGetGiftResponseDto.builder().build();
+    }
 }
