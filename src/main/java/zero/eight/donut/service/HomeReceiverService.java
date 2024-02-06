@@ -12,7 +12,9 @@ import zero.eight.donut.exception.NotFoundException;
 import zero.eight.donut.repository.GiftRepository;
 import zero.eight.donut.repository.GiftboxRepository;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,8 +27,8 @@ public class HomeReceiverService {
         /***
          * 활성화된 꾸러미만 조회하도록 변경
          */
-        List<Giftbox> giftboxList = giftboxRepository.findAllByReceiverId(receiver.getId());
-
+        List<Giftbox> giftboxList = giftboxRepository.findAllByReceiverId(1L);
+        Integer cu= 0;Integer gs25 =0; Integer sevenEleven = 0;
         Long amount = giftboxList.stream().mapToLong(boxInfo -> boxInfo.getAmount()).sum();
         List<BoxInfo> boxInfoList = giftboxList.stream()
                 .map(boxInfo -> BoxInfo.builder()
@@ -37,6 +39,11 @@ public class HomeReceiverService {
                         .build())
                 .collect(Collectors.toList());
 
+        Map<String, Integer> storeCountMap = new HashMap<>();
+        giftboxList.stream().forEach(box -> {
+            String store = box.getStore();
+            storeCountMap.put(store, storeCountMap.getOrDefault(store, 0) + 1);
+        });
       /**
        * TO DO : availability 처리하기
        ***/
@@ -45,6 +52,9 @@ public class HomeReceiverService {
         return ReceiverHomeResponseDto.builder()
                 .availability(availability)
                 .amount(amount)
+                .cu(storeCountMap.getOrDefault("cu", 0))
+                .gs25(storeCountMap.getOrDefault("gs25", 0))
+                .sevenEleven(storeCountMap.getOrDefault("7eleven", 0))
                 .boxList(boxInfoList)
                 .build();
     }
