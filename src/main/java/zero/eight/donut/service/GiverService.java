@@ -26,7 +26,7 @@ public class GiverService {
         return GiverHomeResponseDto.builder()
                 .receivers(receivers)
                 .donated(donated)
-                .need(receivers*50.0)
+                .need(receivers*50000.0)
                 .build();
     }
 }
