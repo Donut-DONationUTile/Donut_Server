@@ -33,9 +33,6 @@ public class Giftbox {
     @Column
     private LocalDateTime dueDate;
 
-    @Column
-    private Boolean isAvailable;
-
     //할당된 수혜자
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "receiver_id")

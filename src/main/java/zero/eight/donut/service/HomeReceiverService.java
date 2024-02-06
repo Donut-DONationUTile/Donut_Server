@@ -24,10 +24,7 @@ public class HomeReceiverService {
     private final GiftboxRepository giftboxRepository;
     @Transactional
     public ReceiverHomeResponseDto receiverHome(Receiver receiver){
-        /***
-         * 활성화된 꾸러미만 조회하도록 변경
-         */
-        List<Giftbox> giftboxList = giftboxRepository.findAllByReceiverId(1L);
+        List<Giftbox> giftboxList = giftboxRepository.findAllByReceiverId(receiver.getId());
         Integer cu= 0;Integer gs25 =0; Integer sevenEleven = 0;
         Long amount = giftboxList.stream().mapToLong(boxInfo -> boxInfo.getAmount()).sum();
         List<BoxInfo> boxInfoList = giftboxList.stream()
