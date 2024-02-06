@@ -45,4 +45,8 @@ public class Giftbox {
     @OneToMany(mappedBy = "giftbox", fetch = FetchType.LAZY)
     private List<Gift_Giftbox> gift_giftboxList = new ArrayList<>();
 
+    //기프티콘
+    @OneToMany(mappedBy = "giftbox", fetch = FetchType.LAZY)
+    private List<Gift> giftList = new ArrayList<>();
+
 }

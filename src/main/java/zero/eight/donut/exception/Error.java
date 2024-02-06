@@ -17,6 +17,8 @@ public enum Error {
 
     // 404 NOT FOUND
     USER_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다."),
+    GIFT_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "That gift does not exist"),
+    GIFTBOX_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "That giftbox does not exist"),
 
     // 405 METHOD_NOT_ALLOWED
     METHOD_NOT_ALLOWED_EXCEPTION(HttpStatus.METHOD_NOT_ALLOWED, "지원하지 않는 메소드 입니다."),
