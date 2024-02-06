@@ -30,7 +30,7 @@ public class ReceiverController {
         return SuccessResponse.success(Success.HOME_RECEIVER_BOX_SUCCESS, receiverService.receiverGetOneBox(boxId));
     }
 
-    @GetMapping("/home/receiver/box/{boxId}")
+    @GetMapping("/home/receiver/gift/{giftId}")
     public SuccessResponse<ReceiverGetGiftResponseDto> receiverGetOneGuft(@PathVariable("giftId") Long giftId){
         return SuccessResponse.success(Success.HOME_RECEIVER_BOX_SUCCESS, receiverService.receiverGetOneGift(giftId));
     }
