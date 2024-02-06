@@ -5,19 +5,19 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import zero.eight.donut.common.response.SuccessResponse;
-import zero.eight.donut.dto.giver.response.GiverHomeResponseDto;
+import zero.eight.donut.dto.home.giver.GiverHomeResponseDto;
 import zero.eight.donut.exception.Success;
-import zero.eight.donut.service.GiverService;
+import zero.eight.donut.service.HomeGiverService;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
-public class GiverController {
-    private final GiverService giverService;
+public class HomeGiverController {
+    private final HomeGiverService homeGiverService;
 
     @GetMapping("/home/giver")
     public SuccessResponse<GiverHomeResponseDto> giverHome(){
-        return SuccessResponse.success(Success.HOME_GIVER_SUCCESS, giverService.giverHome());
+        return SuccessResponse.success(Success.HOME_GIVER_SUCCESS, homeGiverService.giverHome());
     }
 
 }

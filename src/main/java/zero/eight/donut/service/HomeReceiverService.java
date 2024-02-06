@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import zero.eight.donut.domain.Gift;
 import zero.eight.donut.domain.Giftbox;
 import zero.eight.donut.domain.Receiver;
-import zero.eight.donut.dto.receiver.response.*;
+import zero.eight.donut.dto.home.receiver.*;
 import zero.eight.donut.exception.Error;
 import zero.eight.donut.exception.NotFoundException;
 import zero.eight.donut.repository.GiftRepository;
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class ReceiverService {
+public class HomeReceiverService {
     private final GiftRepository giftRepository;
     private final GiftboxRepository giftboxRepository;
     @Transactional
