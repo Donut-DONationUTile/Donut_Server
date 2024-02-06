@@ -11,11 +11,11 @@ import zero.eight.donut.service.HomeGiverService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/home/giver")
 public class HomeGiverController {
     private final HomeGiverService homeGiverService;
 
-    @GetMapping("/giver")
+    @GetMapping("")
     public SuccessResponse<GiverHomeResponseDto> giverHome(){
         return SuccessResponse.success(Success.HOME_GIVER_SUCCESS, homeGiverService.giverHome());
     }
