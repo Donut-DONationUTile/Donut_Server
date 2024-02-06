@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Getter
 public class ReceiverGetGiftResponseDto {
     private String product;
-    private Integer amount;
+    private Integer price;
     private LocalDateTime dueDate;
     private String imgUrl;
     private String store;
@@ -17,9 +17,9 @@ public class ReceiverGetGiftResponseDto {
     private Long boxId;
 
     @Builder
-    public ReceiverGetGiftResponseDto(String product, Integer amount, LocalDateTime dueDate, String imgUrl, String store, Status status, Long boxId){
+    public ReceiverGetGiftResponseDto(String product, Integer price, LocalDateTime dueDate, String imgUrl, String store, Status status, Long boxId){
         this.product = product;
-        this.amount = amount;
+        this.price = price;
         this.dueDate = dueDate;
         this.imgUrl = imgUrl;
         this.store = store;

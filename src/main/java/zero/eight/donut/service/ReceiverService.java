@@ -79,7 +79,7 @@ public class ReceiverService {
         Gift gift = giftRepository.findById(giftId).orElseThrow(()-> new NotFoundException((Error.GIFT_NOT_FOUND_EXCEPTION)));
         return ReceiverGetGiftResponseDto.builder()
                 .product(gift.getProduct())
-                .amount(gift.getPrice())
+                .price(gift.getPrice())
                 .dueDate(gift.getDueDate())
                 .imgUrl(gift.getImageUrl())
                 .store(gift.getStore())
