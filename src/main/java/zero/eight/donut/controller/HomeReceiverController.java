@@ -16,21 +16,21 @@ import zero.eight.donut.service.HomeReceiverService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/home/receiver")
 public class HomeReceiverController {
     private  final HomeReceiverService homeReceiverService;
 
-    @GetMapping("/home/receiver")
+    @GetMapping("")
     public SuccessResponse<ReceiverHomeResponseDto> receiverHome(@LoginUser Receiver receiver){
         return SuccessResponse.success(Success.HOME_RECEIVER_SUCCESS, homeReceiverService.receiverHome(receiver));
     }
 
-    @GetMapping("/home/receiver/box/{boxId}")
+    @GetMapping("/box/{boxId}")
     public SuccessResponse<ReceiverGetBoxResponseDto> receiverGetOneBox(@PathVariable("boxId") Long boxId){
         return SuccessResponse.success(Success.HOME_RECEIVER_BOX_SUCCESS, homeReceiverService.receiverGetOneBox(boxId));
     }
 
-    @GetMapping("/home/receiver/gift/{giftId}")
+    @GetMapping("/gift/{giftId}")
     public SuccessResponse<ReceiverGetGiftResponseDto> receiverGetOneGuft(@PathVariable("giftId") Long giftId){
         return SuccessResponse.success(Success.HOME_RECEIVER_GIFT_SUCCESS, homeReceiverService.receiverGetOneGift(giftId));
     }

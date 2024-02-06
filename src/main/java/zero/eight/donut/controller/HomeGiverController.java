@@ -15,7 +15,7 @@ import zero.eight.donut.service.HomeGiverService;
 public class HomeGiverController {
     private final HomeGiverService homeGiverService;
 
-    @GetMapping("/home/giver")
+    @GetMapping("/giver")
     public SuccessResponse<GiverHomeResponseDto> giverHome(){
         return SuccessResponse.success(Success.HOME_GIVER_SUCCESS, homeGiverService.giverHome());
     }
