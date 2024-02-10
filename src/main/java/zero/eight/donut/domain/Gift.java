@@ -62,4 +62,8 @@ public class Gift extends BaseTimeEntity {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "message_id")
     private Message message;
+
+    public void updateStatus(String status){
+        this.status = Status.valueOf(status);
+    }
 }
