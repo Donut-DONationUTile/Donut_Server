@@ -6,12 +6,15 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import zero.eight.donut.common.response.ApiResponse;
 import zero.eight.donut.config.jwt.JwtUtils;
 import zero.eight.donut.domain.Giver;
-import zero.eight.donut.dto.auth.LoginResponseDto;
+import zero.eight.donut.domain.Receiver;
+import zero.eight.donut.dto.auth.AuthRequestDto;
+import zero.eight.donut.dto.auth.AuthResponseDto;
 import zero.eight.donut.dto.auth.MemberDto;
 import zero.eight.donut.dto.auth.Role;
 import zero.eight.donut.exception.Error;
@@ -19,6 +22,7 @@ import zero.eight.donut.exception.InternalServerErrorException;
 import zero.eight.donut.exception.Success;
 import zero.eight.donut.exception.UnauthorizedException;
 import zero.eight.donut.repository.GiverRepository;
+import zero.eight.donut.repository.ReceiverRepository;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -38,10 +42,12 @@ public class AuthService {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     private final GiverRepository giverRepository;
+    private final ReceiverRepository receiverRepository;
+    private final PasswordEncoder bCryptPasswordEncoder;
     private final JwtUtils jwtUtils;
 
     @Transactional
-    public ApiResponse<?> googleLogin(String idToken) {
+    public ApiResponse<?> googleSignIn(String idToken) {
 
         GoogleIdToken tokenDto = verifyEmail(idToken);
 
@@ -66,8 +72,8 @@ public class AuthService {
                 },
                 // Optional 객체가 비어있는 경우 실행할 동작
                 () -> {
-                    log.info("신규 가입 유저 -> {}");
-                    googleSignin(email);
+                    log.info("신규 가입 유저");
+                    googleSignUp(email);
                 }
         );
 
@@ -75,7 +81,7 @@ public class AuthService {
         giver = giverRepository.findByEmail(email);
 
         MemberDto member = MemberDto.builder()
-                .email(giver.get().getEmail())
+                .name(giver.get().getEmail())
                 .role(Role.ROLE_GIVER)
                 .build();
 
@@ -88,17 +94,17 @@ public class AuthService {
 //        String givenName = (String) payload.get("given_name");
 
         // 사용자 이메일 & 역할로 jwt 생성
-        LoginResponseDto loginResponse = LoginResponseDto.builder()
+        AuthResponseDto loginResponse = AuthResponseDto.builder()
                 .accesstoken(jwtUtils.createAccessToken(member))
                 .refreshtoken(jwtUtils.createRefreshToken(member))
-                .name(giver.get().getName())
+                .name(member.getName())
                 .build();
 
-        return ApiResponse.success(Success.LOGIN_SUCCESS, loginResponse);
+        return ApiResponse.success(Success.SIGN_IN_SUCCESS, loginResponse);
     }
 
     @Transactional
-    private void googleSignin(String email) {
+    private void googleSignUp(String email) {
         String name = getNameFromEmail(email);
         Giver giver = Giver.builder()
                 .name(name)
@@ -174,5 +180,61 @@ public class AuthService {
         } else { // "@" 기호가 없는 경우, 이메일 형식이 아니므로 null 반환
             return null;
         }
+    }
+
+    @Transactional
+    public ApiResponse<?> createAccount(AuthRequestDto requestDto) {
+
+        // 아이디 중복 확인
+        if (isDuplicatedID(requestDto.getId())) {
+            return ApiResponse.failure(Error.DUPLICATED_ID);
+        }
+
+        // 아이디, 비밀번호로 Receiver 객체 생성
+        Receiver receiver = Receiver.builder()
+                .name(requestDto.getId())
+                .password(requestDto.getPassword())
+                .build();
+
+        // 비밀번호 암호화
+        receiver.encryptPassword(bCryptPasswordEncoder);
+
+        // Receiver 객체 저장
+        receiverRepository.save(receiver);
+
+        return ApiResponse.success(Success.SIGN_UP_SUCCESS);
+    }
+
+    public boolean isDuplicatedID(String id) {
+        return !receiverRepository.findByName(id).isEmpty();
+    }
+
+    public ApiResponse<?> receiverSignIn(AuthRequestDto requestDto) {
+
+        Optional<Receiver> receiver = receiverRepository.findByName(requestDto.getId());
+
+        // 존재하지 않는 계정일 경우 error
+        if (receiver.isEmpty()) {
+            log.info("존재하지 않는 아이디");
+            return ApiResponse.failure(Error.INVALID_ID_PASSWORD_EXCEPTION);
+        }
+
+        // 비밀번호가 일치하지 않을 경우 error
+        if (!receiver.get().verifyPassword(requestDto.getPassword(), bCryptPasswordEncoder)) {
+            return ApiResponse.failure(Error.INVALID_ID_PASSWORD_EXCEPTION);
+        }
+
+        // 사용자 아이디 & 역할로 jwt 생성
+        MemberDto member = MemberDto.builder()
+                .name(receiver.get().getName())
+                .role(Role.ROLE_RECEIVER)
+                .build();
+        AuthResponseDto loginResponse = AuthResponseDto.builder()
+                .accesstoken(jwtUtils.createAccessToken(member))
+                .refreshtoken(jwtUtils.createRefreshToken(member))
+                .name(member.getName())
+                .build();
+
+        return ApiResponse.success(Success.SIGN_IN_SUCCESS, loginResponse);
     }
 }

@@ -25,7 +25,7 @@ public class AuthUtils {
     }
 
     public Receiver getReceiver() {
-        return receiverRepository.findByEmail(getCurrentUserEmail()).get();
+        return receiverRepository.findByName(getCurrentUserEmail()).get();
     }
 
     public Authentication getAuthentication() {

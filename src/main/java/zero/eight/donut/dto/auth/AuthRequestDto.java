@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 @Builder
 @AllArgsConstructor
-public class MemberDto {
-    String name; // 기부자: 이메일, 수혜자: 아이디
-    Role role; // 멤버 역할(ROLE_GIVER/ROLE_RECEIVER)
+public class AuthRequestDto {
+    String id; // 수혜자 아이디
+    String password; // 수혜자 비밀번호
 }

@@ -22,7 +22,8 @@ public enum Success {
 
     //201 CREATED SUCCESS
     CREATE_GIFT_SUCCESS(HttpStatus.CREATED, "기프티콘이 성공적으로 등록되었습니다."),
-    LOGIN_SUCCESS(HttpStatus.CREATED, "Log in successfully"),
+    SIGN_IN_SUCCESS(HttpStatus.CREATED, "Sign in successfully"),
+    SIGN_UP_SUCCESS(HttpStatus.CREATED, "Successfully signed up"),
 
 
     ;

@@ -35,7 +35,7 @@ public class JwtUtils {
 
     public String createAccessToken(MemberDto member) {
         Claims claims = Jwts.claims();
-        claims.put("email", member.getEmail());
+        claims.put("name", member.getName());
         claims.put("role", member.getRole().getRole());
         long validTime = accessTokenTime;
         Date now = new Date();
@@ -50,7 +50,7 @@ public class JwtUtils {
 
     public String createRefreshToken(MemberDto member) {
         Claims claims = Jwts.claims();
-        claims.put("email", member.getEmail());
+        claims.put("name", member.getName());
         long validTime = refreshTokenTime;
         Date now = new Date();
         String refreshToken = Jwts.builder()
@@ -66,16 +66,16 @@ public class JwtUtils {
     }
 
     public void updateUserRefreshToken(MemberDto member, String refreshToken) {
-        stringRedisTemplate.opsForValue().set(member.getEmail(), refreshToken, refreshTokenTime, TimeUnit.MILLISECONDS);
+        stringRedisTemplate.opsForValue().set(member.getName(), refreshToken, refreshTokenTime, TimeUnit.MILLISECONDS);
     }
 
-    public String getUserRefreshToken(String email) {
-        return stringRedisTemplate.opsForValue().get(email);
+    public String getUserRefreshToken(String name) {
+        return stringRedisTemplate.opsForValue().get(name);
     }
 
-    public void deleteRefreshTokenByEmail(String email) {
-        if (getUserRefreshToken(email) != null) {
-            stringRedisTemplate.delete(email);
+    public void deleteRefreshTokenByName(String name) {
+        if (getUserRefreshToken(name) != null) {
+            stringRedisTemplate.delete(name);
         }
     }
 
@@ -108,7 +108,7 @@ public class JwtUtils {
         String role = getRoleValueFromToken(token);
 
         // UserDetails 객체를 생성하여 Authentication 반환
-        UserDetails principal = new User(getEmailFromToken(token), "", Collections.singleton(new SimpleGrantedAuthority(role)));
+        UserDetails principal = new User(getNameFromToken(token), "", Collections.singleton(new SimpleGrantedAuthority(role)));
         return new UsernamePasswordAuthenticationToken(principal, "", Collections.singleton(new SimpleGrantedAuthority(role)));
     }
 
@@ -126,8 +126,8 @@ public class JwtUtils {
         return expiration.getTime() - new Date().getTime();
     }
 
-    public String getEmailFromToken(String token) {
-        return getClaims(token).get("email").toString();
+    public String getNameFromToken(String token) {
+        return getClaims(token).get("name").toString();
     }
 
     public String getRoleValueFromToken(String token) {

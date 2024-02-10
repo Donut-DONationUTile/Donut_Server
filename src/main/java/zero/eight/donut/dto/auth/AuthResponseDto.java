@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 @Builder
 @AllArgsConstructor
-public class LoginResponseDto {
+public class AuthResponseDto {
 
     String accesstoken; // 엑세스 토큰
     String refreshtoken; // 리프레시 토큰
