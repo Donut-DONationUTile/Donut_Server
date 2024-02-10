@@ -33,17 +33,10 @@ public class Giftbox {
     @Column
     private LocalDateTime dueDate;
 
-    @Column
-    private Boolean isAvailable;
-
     //할당된 수혜자
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "receiver_id")
     private Receiver receiver;
-
-    //기프티콘-꾸러미
-    @OneToMany(mappedBy = "giftbox", fetch = FetchType.LAZY)
-    private List<Gift_Giftbox> gift_giftboxList = new ArrayList<>();
 
     //기프티콘
     @OneToMany(mappedBy = "giftbox", fetch = FetchType.LAZY)

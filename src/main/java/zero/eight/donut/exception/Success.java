@@ -9,22 +9,14 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public enum Success {
 
-    // Default
-    SUCCESS(HttpStatus.OK, "Request successfully processed"),
-
 
     // 200 OK SUCCESS
-    HOME_GIVER_SUCCESS(HttpStatus.OK, "Get request for giver's home info completed successfully "),
-    HOME_RECEIVER_SUCCESS(HttpStatus.OK, "Get request for receiver's home info completed successfully "),
-    HOME_RECEIVER_BOX_SUCCESS(HttpStatus.OK, "Get request for receiver's giftbox info completed successfully "),
-    SET_REDIS_KEY_SUCCESS(HttpStatus.OK, "Redis Key is registered successfully"),
-    GET_REDIS_KEY_SUCCESS(HttpStatus.OK, "Redis key searched successfully"),
-
+    HOME_GIVER_SUCCESS(HttpStatus.OK, "Get request for giver's home info completed successfully"),
+    HOME_RECEIVER_SUCCESS(HttpStatus.OK, "Get request for receiver's home info completed successfully"),
+    HOME_RECEIVER_BOX_SUCCESS(HttpStatus.OK, "Get request for receiver's giftbox info completed successfully"),
+    HOME_RECEIVER_GIFT_SUCCESS(HttpStatus.OK, "Get request for receiver's gift info completed successfully "),
     //201 CREATED SUCCESS
     CREATE_GIFT_SUCCESS(HttpStatus.CREATED, "기프티콘이 성공적으로 등록되었습니다."),
-    SIGN_IN_SUCCESS(HttpStatus.CREATED, "Sign in successfully"),
-    SIGN_UP_SUCCESS(HttpStatus.CREATED, "Successfully signed up"),
-
 
     ;
 
