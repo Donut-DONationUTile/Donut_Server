@@ -16,7 +16,7 @@ public enum Success {
     HOME_RECEIVER_BOX_SUCCESS(HttpStatus.OK, "Get request for receiver's giftbox info completed successfully"),
     HOME_RECEIVER_GIFT_SUCCESS(HttpStatus.OK, "Get request for receiver's gift info completed successfully "),
     //201 CREATED SUCCESS
-    CREATE_GIFT_SUCCESS(HttpStatus.CREATED, "기프티콘이 성공적으로 등록되었습니다."),
+    CREATE_REPORT_SUCCESS(HttpStatus.CREATED, "Your report is successfully registered"),
 
     ;
 
