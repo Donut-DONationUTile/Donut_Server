@@ -25,7 +25,6 @@ public class HomeReceiverService {
     @Transactional
     public ReceiverHomeResponseDto receiverHome(Receiver receiver){
         List<Giftbox> giftboxList = giftboxRepository.findAllByReceiverId(receiver.getId());
-        Integer cu= 0;Integer gs25 =0; Integer sevenEleven = 0;
         Long amount = giftboxList.stream().mapToLong(boxInfo -> boxInfo.getAmount()).sum();
         List<BoxInfo> boxInfoList = giftboxList.stream()
                 .map(boxInfo -> BoxInfo.builder()
