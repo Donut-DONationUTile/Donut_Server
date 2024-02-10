@@ -24,7 +24,7 @@ public class Giver extends BaseTimeEntity {
     @Column(length = 50)
     private String name;
 
-    @Column(length = 50)
+    @Column(length = 300)
     private String email;
 
     //기프티콘

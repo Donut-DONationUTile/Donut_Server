@@ -25,7 +25,7 @@ public class Receiver extends BaseTimeEntity {
     @Column(length = 50)
     private String name;
 
-    @Column(length = 50)
+    @Column(length = 500)
     private String password;
 
     //신고
