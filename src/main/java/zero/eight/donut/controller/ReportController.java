@@ -14,8 +14,8 @@ import zero.eight.donut.service.ReportService;
 public class ReportController {
     private final ReportService reportService;
     @PostMapping("/use")
-    public SuccessResponse<ReportResponseDto> createReport(@RequestBody ReportRequestDto requestDto ){
-        return SuccessResponse.success(Success.CREATE_REPORT_SUCCESS, reportService.createReport(requestDto));
+    public SuccessResponse<ReportResponseDto> createReport(@RequestParam(name = "giftId") Long giftId ){
+        return SuccessResponse.success(Success.CREATE_REPORT_SUCCESS, reportService.createReport(giftId));
     }
 
 }

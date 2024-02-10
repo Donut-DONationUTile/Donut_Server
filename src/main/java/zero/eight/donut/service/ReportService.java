@@ -15,8 +15,8 @@ import zero.eight.donut.repository.GiftRepository;
 public class ReportService {
     private final GiftRepository giftRepository;
     @Transactional
-    public ReportResponseDto createReport(ReportRequestDto requestDto){
-        Gift gift = giftRepository.findById(requestDto.getGiftId())
+    public ReportResponseDto createReport(Long giftId){
+        Gift gift = giftRepository.findById(giftId)
                 .orElseThrow(()-> new NotFoundException(Error.GIFT_NOT_FOUND_EXCEPTION));
 
         gift.updateStatus("USED");
