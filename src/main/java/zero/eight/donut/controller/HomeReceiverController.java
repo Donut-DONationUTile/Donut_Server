@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import zero.eight.donut.common.response.SuccessResponse;
-import zero.eight.donut.domain.Receiver;
 import zero.eight.donut.dto.home.receiver.ReceiverGetBoxResponseDto;
 import zero.eight.donut.dto.home.receiver.ReceiverGetGiftResponseDto;
 import zero.eight.donut.dto.home.receiver.ReceiverHomeResponseDto;

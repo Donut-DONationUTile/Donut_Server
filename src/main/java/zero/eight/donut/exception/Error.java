@@ -24,6 +24,7 @@ public enum Error {
     JWT_TOKEN_NOT_EXISTS(HttpStatus.UNAUTHORIZED,"JWT value does not exist in header"),
     // ROLE_NOT_ASSIGNED(HttpStatus.UNAUTHORIZED, "Role not assigned"),
     INVALID_GOOGLE_TOKEN(HttpStatus.UNAUTHORIZED, "Invalid Google Token"),
+    NOT_AUTHENTICATED_EXCEPTION(HttpStatus.UNAUTHORIZED, "User is not authenticated"),
 
     // 403 Forbidden
 
