@@ -31,6 +31,9 @@ public class Giftbox {
     private Integer amount;
 
     @Column
+    private Boolean isAvailable;
+
+    @Column
     private LocalDateTime dueDate;
 
     //할당된 수혜자
@@ -42,4 +45,8 @@ public class Giftbox {
     @OneToMany(mappedBy = "giftbox", fetch = FetchType.LAZY)
     private List<Gift> giftList = new ArrayList<>();
 
+    public void updateAmountAndIsAvailable(Integer amount, Boolean isAvailable){
+        this.amount = amount;
+        this.isAvailable =isAvailable;
+    }
 }

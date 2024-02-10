@@ -22,10 +22,10 @@ public class Receiver extends BaseTimeEntity {
     @Column(name = "receiver_id")
     private Long id;
 
-    @Column(length = 50)
+    @Column(length = 255)
     private String name;
 
-    @Column(length = 50)
+    @Column(length = 500)
     private String password;
 
     //신고

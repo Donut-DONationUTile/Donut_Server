@@ -34,7 +34,7 @@ public class Gift extends BaseTimeEntity {
     @Column
     private Integer price;
 
-    @Column(length = 100)
+    @Column(length = 500)
     private String imageUrl;
 
     @Column(length = 50)
@@ -62,4 +62,8 @@ public class Gift extends BaseTimeEntity {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "message_id")
     private Message message;
+
+    public void updateStatus(String status){
+        this.status = Status.valueOf(status);
+    }
 }
