@@ -34,7 +34,7 @@ public class Gift extends BaseTimeEntity {
     @Column
     private Integer price;
 
-    @Column(length = 100)
+    @Column(length = 500)
     private String imageUrl;
 
     @Column(length = 50)
