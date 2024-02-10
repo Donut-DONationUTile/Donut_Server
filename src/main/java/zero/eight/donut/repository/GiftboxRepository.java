@@ -9,6 +9,6 @@ import java.util.List;
 
 @Repository
 public interface GiftboxRepository extends JpaRepository<Giftbox, Long> {
-    //@Query("SELECT gb.sum FROM Giftbox gb WHERE gb.receiver = ?1 AND gb.= ?2")
+    @Query("SELECT gb FROM Giftbox gb JOIN gb.receiver r WHERE r.id = ?1 and gb.amount > 0")
     List<Giftbox> findAllByReceiverId(Long receiver_id);
 }
