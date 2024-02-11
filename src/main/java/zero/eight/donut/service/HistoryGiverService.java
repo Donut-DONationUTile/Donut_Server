@@ -15,6 +15,7 @@ import zero.eight.donut.exception.NotFoundException;
 import zero.eight.donut.exception.Success;
 import zero.eight.donut.repository.DonationRepository;
 import zero.eight.donut.repository.GiftRepository;
+import zero.eight.donut.repository.MessageRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -32,6 +33,8 @@ public class HistoryGiverService {
     private final AuthUtils authUtils;
     private final DonationRepository donationRepository;
     private final GiftRepository giftRepository;
+    private final MessageRepository messageRepository;
+
 
     @Transactional
     public ApiResponse<?> getDonationList(LocalDateTime donateDate){
@@ -85,13 +88,16 @@ public class HistoryGiverService {
         Gift gift = giftRepository.findById(giftId)
                 .orElseThrow(()->new NotFoundException(Error.GIFT_NOT_FOUND_EXCEPTION));
 
+        //name of receiver
         String receiver = Optional.ofNullable(gift.getGiftbox())
                 .map(g -> g.getReceiver().getName())
                 .orElse("not delivered");
 
-        String message = Optional.ofNullable(gift.getMessage())
-                .map(Message::getContent)
-                .orElse("haven't received yet");
+        //message
+        String message ="haven't received yet";
+        Message msg = messageRepository.findByGiftId(giftId);
+        if(msg != null)
+            message = msg.getContent();
 
         GiverDonationDetailResponseDto responseDto = GiverDonationDetailResponseDto.builder()
                 .product(gift.getProduct())
