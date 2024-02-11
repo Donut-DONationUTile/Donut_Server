@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
-public class Gift {
+public class ReceivedGift {
     private Long giftId;
     private String product;
     private Integer price;
