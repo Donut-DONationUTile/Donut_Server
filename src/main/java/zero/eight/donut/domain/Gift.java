@@ -34,7 +34,7 @@ public class Gift extends BaseTimeEntity {
     @Column
     private Integer price;
 
-    @Column(length = 100)
+    @Column(length = 500)
     private String imageUrl;
 
     @Column(length = 50)
@@ -53,11 +53,17 @@ public class Gift extends BaseTimeEntity {
     @JoinColumn(name = "giftbox_id")
     private Giftbox giftbox;
 
-    //신고 -> 단방향으로 수정
-//    @OneToOne(fetch = FetchType.LAZY)
-//    private Report report;
+    //신고
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "report_id")
+    private Report report;
 
-    //메세지 -> 단방향으로 수정
-//    @OneToOne(fetch = FetchType.LAZY)
-//    private Message message;
+    //메세지
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "message_id")
+    private Message message;
+
+    public void updateStatus(String status){
+        this.status = Status.valueOf(status);
+    }
 }

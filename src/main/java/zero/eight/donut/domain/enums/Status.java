@@ -4,9 +4,9 @@ import lombok.Getter;
 
 @Getter
 public enum Status {
-    REPORTED("reported"),
-    UNUSED("unused"),
-    USED("used");
+    REPORTED("REPORTED"),
+    UNUSED("UNUSED"),
+    USED("USED");
 
     private final String status;
 

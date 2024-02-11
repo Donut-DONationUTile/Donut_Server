@@ -23,7 +23,7 @@ public enum Success {
     GET_RANKING_BY_NUMBER_SUCCESS(HttpStatus.OK, "Successful donation number ranking inquiry"),
 
     //201 CREATED SUCCESS
-    CREATE_GIFT_SUCCESS(HttpStatus.CREATED, "기프티콘이 성공적으로 등록되었습니다."),
+    CREATE_REPORT_SUCCESS(HttpStatus.CREATED, "Your report is successfully registered"),
     SIGN_IN_SUCCESS(HttpStatus.CREATED, "Sign in successfully"),
     SIGN_UP_SUCCESS(HttpStatus.CREATED, "Successfully signed up"),
 
