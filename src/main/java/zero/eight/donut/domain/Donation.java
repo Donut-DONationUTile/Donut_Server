@@ -26,7 +26,8 @@ public class Donation {
     @Column
     private Integer report;
 
-    @OneToOne(mappedBy = "donation")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "giver_id")
     private Giver giver;
 
 }

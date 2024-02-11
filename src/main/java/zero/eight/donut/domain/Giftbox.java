@@ -31,6 +31,9 @@ public class Giftbox {
     private Integer amount;
 
     @Column
+    private Boolean availability;
+
+    @Column
     private LocalDateTime dueDate;
 
     //할당된 수혜자

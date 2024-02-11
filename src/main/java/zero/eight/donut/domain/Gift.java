@@ -54,12 +54,12 @@ public class Gift extends BaseTimeEntity {
     private Giftbox giftbox;
 
     //신고
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "gift")
     @JoinColumn(name = "report_id")
     private Report report;
 
     //메세지
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "gift")
     @JoinColumn(name = "message_id")
     private Message message;
 }

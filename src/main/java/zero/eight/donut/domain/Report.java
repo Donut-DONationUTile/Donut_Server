@@ -32,7 +32,9 @@ public class Report extends BaseTimeEntity {
     private Receiver receiver;
 
     //기프티콘
-    @OneToOne(mappedBy = "report")
+//    @OneToOne(mappedBy = "report")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "gift_id")
     private Gift gift;
 
 }
