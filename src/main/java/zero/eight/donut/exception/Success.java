@@ -23,6 +23,7 @@ public enum Success {
     GET_RANKING_BY_NUMBER_SUCCESS(HttpStatus.OK, "Successful donation number ranking inquiry"),
 
     //201 CREATED SUCCESS
+    ASSIGN_BENEFIT_SUCCESS(HttpStatus.CREATED, "Successfully assigned benefits"),
     CREATE_REPORT_SUCCESS(HttpStatus.CREATED, "Your report is successfully registered"),
     SIGN_IN_SUCCESS(HttpStatus.CREATED, "Sign in successfully"),
     SIGN_UP_SUCCESS(HttpStatus.CREATED, "Successfully signed up"),
