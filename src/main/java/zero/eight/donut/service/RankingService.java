@@ -32,10 +32,10 @@ public class RankingService {
         log.info("role -> {}", authUtils.getCurrentUserRole());
         log.info("ROLE_GIVER -> {}", Role.ROLE_GIVER);
 
-        // 기부자인지 역할 조회
-        if (!authUtils.getCurrentUserRole().equals(Role.ROLE_GIVER)) {
-            return ApiResponse.failure(Error.NOT_AUTHENTICATED_EXCEPTION);
-        }
+//        // 기부자인지 역할 조회 -> 수혜자도 랭킹 조회할 수 있어야 함
+//        if (!authUtils.getCurrentUserRole().equals(Role.ROLE_GIVER)) {
+//            return ApiResponse.failure(Error.NOT_AUTHENTICATED_EXCEPTION);
+//        }
 
         List<RankingByPriceResponseDto> rankingList = new ArrayList<>();
 
@@ -63,10 +63,10 @@ public class RankingService {
         log.info("role -> {}", authUtils.getCurrentUserRole());
         log.info("ROLE_GIVER -> {}", Role.ROLE_GIVER);
 
-        // 기부자인지 역할 조회
-        if (!authUtils.getCurrentUserRole().equals(Role.ROLE_GIVER)) {
-            return ApiResponse.failure(Error.NOT_AUTHENTICATED_EXCEPTION);
-        }
+//        // 기부자인지 역할 조회 -> 수혜자도 랭킹 조회할 수 있어야 함
+//        if (!authUtils.getCurrentUserRole().equals(Role.ROLE_GIVER)) {
+//            return ApiResponse.failure(Error.NOT_AUTHENTICATED_EXCEPTION);
+//        }
 
         List<RankingByNumberResponseDto> rankingList = new ArrayList<>();
 
