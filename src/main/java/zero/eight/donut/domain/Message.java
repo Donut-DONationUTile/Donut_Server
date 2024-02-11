@@ -3,10 +3,12 @@ package zero.eight.donut.domain;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Builder
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Message {
@@ -22,7 +24,6 @@ public class Message {
     @JoinColumn(name = "receiver_id")
     private Receiver receiver;
 
-//    @OneToOne(mappedBy = "message")
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "gift_id")
     private Gift gift;
