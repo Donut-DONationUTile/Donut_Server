@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import zero.eight.donut.common.response.ApiResponse;
 import zero.eight.donut.config.jwt.JwtUtils;
+import zero.eight.donut.domain.Benefit;
 import zero.eight.donut.domain.Giver;
 import zero.eight.donut.domain.Receiver;
 import zero.eight.donut.dto.auth.*;
@@ -18,11 +19,14 @@ import zero.eight.donut.exception.Error;
 import zero.eight.donut.exception.InternalServerErrorException;
 import zero.eight.donut.exception.Success;
 import zero.eight.donut.exception.UnauthorizedException;
+import zero.eight.donut.repository.BenefitRepository;
 import zero.eight.donut.repository.GiverRepository;
 import zero.eight.donut.repository.ReceiverRepository;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -40,6 +44,7 @@ public class AuthService {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     private final GiverRepository giverRepository;
     private final ReceiverRepository receiverRepository;
+    private final BenefitRepository benefitRepository;
     private final PasswordEncoder bCryptPasswordEncoder;
     private final JwtUtils jwtUtils;
 
@@ -198,6 +203,10 @@ public class AuthService {
         // Receiver 객체 저장
         receiverRepository.save(receiver);
 
+        // receiver로 benefit 생성
+        Benefit benefit = createBenefit(receiver);
+        log.info("benefit -> {}", benefit);
+
         return ApiResponse.success(Success.SIGN_UP_SUCCESS);
     }
 
@@ -273,5 +282,30 @@ public class AuthService {
                 .build();
 
         return ApiResponse.success(Success.SIGN_IN_SUCCESS, loginResponse);
+    }
+
+    @Transactional
+    private Benefit createBenefit(Receiver receiver) {
+
+        // 현재 시간 가져오기
+        LocalDateTime currentTime = LocalDateTime.now();
+
+        // 현재 월 가져오기
+        Month currentMonth = currentTime.getMonth();
+        int month = currentMonth.getValue();
+
+        // 현재 연도 가져오기
+        int year = currentTime.getYear();
+
+        Benefit benefit = Benefit.builder()
+                .sum(0)
+                .year(year)
+                .month(month)
+                .availability(true)
+                .receiver(receiver)
+                .build();
+
+        benefitRepository.save(benefit);
+        return benefit;
     }
 }
