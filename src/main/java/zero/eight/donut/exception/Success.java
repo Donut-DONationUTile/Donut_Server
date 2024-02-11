@@ -21,6 +21,7 @@ public enum Success {
     GET_REDIS_KEY_SUCCESS(HttpStatus.OK, "Redis key searched successfully"),
     GET_RANKING_BY_PRICE_SUCCESS(HttpStatus.OK, "Successful donation price ranking inquiry"),
     GET_RANKING_BY_NUMBER_SUCCESS(HttpStatus.OK, "Successful donation number ranking inquiry"),
+    GET_HISTORY_GIVER_DONATIONLIST_SUCCESS(HttpStatus.OK, "Success in getting donation history list"),
 
     //201 CREATED SUCCESS
     CREATE_REPORT_SUCCESS(HttpStatus.CREATED, "Your report is successfully registered"),
