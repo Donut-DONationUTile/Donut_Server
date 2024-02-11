@@ -22,7 +22,9 @@ public class Message {
     @JoinColumn(name = "receiver_id")
     private Receiver receiver;
 
-    @OneToOne(mappedBy = "message")
+//    @OneToOne(mappedBy = "message")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "gift_id")
     private Gift gift;
 
 }

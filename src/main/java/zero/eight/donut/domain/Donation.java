@@ -3,8 +3,10 @@ package zero.eight.donut.domain;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @Entity
 @Builder
 @NoArgsConstructor
@@ -24,7 +26,8 @@ public class Donation {
     @Column
     private Integer report;
 
-    @OneToOne(mappedBy = "donation")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "giver_id")
     private Giver giver;
 
 }

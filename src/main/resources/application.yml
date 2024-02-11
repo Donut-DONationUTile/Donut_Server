@@ -2,12 +2,6 @@ spring:
   profiles:
     active: local
 
-feign:
-  client:
-    config:
-      default:
-        logger-level: DEBUG
-
 logging:
   level:
     com.example: DEBUG

@@ -12,7 +12,7 @@ import zero.eight.donut.exception.Success;
 @AllArgsConstructor
 public class ApiResponse<T> {
 
-    private final int statusCode;
+    private final int code;
     private final String message;
     private final T data;
 

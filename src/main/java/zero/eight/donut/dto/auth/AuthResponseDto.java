@@ -1,12 +1,10 @@
 package zero.eight.donut.dto.auth;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @Builder
-@AllArgsConstructor
 public class AuthResponseDto {
 
     String accesstoken; // 엑세스 토큰

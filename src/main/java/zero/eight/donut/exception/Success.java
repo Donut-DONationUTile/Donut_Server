@@ -19,6 +19,8 @@ public enum Success {
     HOME_RECEIVER_GIFT_SUCCESS(HttpStatus.OK, "Get request for receiver's gift info completed successfully "),
     SET_REDIS_KEY_SUCCESS(HttpStatus.OK, "Redis Key is registered successfully"),
     GET_REDIS_KEY_SUCCESS(HttpStatus.OK, "Redis key searched successfully"),
+    GET_RANKING_BY_PRICE_SUCCESS(HttpStatus.OK, "Successful donation price ranking inquiry"),
+    GET_RANKING_BY_NUMBER_SUCCESS(HttpStatus.OK, "Successful donation number ranking inquiry"),
 
     //201 CREATED SUCCESS
     CREATE_REPORT_SUCCESS(HttpStatus.CREATED, "Your report is successfully registered"),
