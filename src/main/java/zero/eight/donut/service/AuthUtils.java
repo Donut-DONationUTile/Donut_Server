@@ -2,6 +2,7 @@ package zero.eight.donut.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -10,6 +11,8 @@ import zero.eight.donut.domain.Receiver;
 import zero.eight.donut.dto.auth.Role;
 import zero.eight.donut.repository.GiverRepository;
 import zero.eight.donut.repository.ReceiverRepository;
+
+import java.util.Collection;
 
 @RequiredArgsConstructor
 @Component
@@ -59,8 +62,13 @@ public class AuthUtils {
         if (principalObject instanceof UserDetails) {
             UserDetails userDetails = (UserDetails) principalObject;
 
-            // UserDetails 인스턴스에서 Role 획득
-            return Role.valueOf(userDetails.getAuthorities().toString());
+            // UserDetails에서 권한 목록 가져오기
+            Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
+            GrantedAuthority firstAuthority = authorities.iterator().next();
+            String authorityString = firstAuthority.getAuthority();
+
+            // UserDetails 인스턴스에서 Role String 획득
+            return Role.valueOf(authorityString);
         }
 
         return null;
