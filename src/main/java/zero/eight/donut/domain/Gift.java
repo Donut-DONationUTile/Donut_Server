@@ -27,6 +27,9 @@ public class Gift extends BaseTimeEntity {
     @Column
     private Boolean isAssigned;
 
+    @Column
+    private Boolean isMsgReceived;
+
     @Enumerated(value = EnumType.STRING)
     @Column
     private Status status;
@@ -57,7 +60,7 @@ public class Gift extends BaseTimeEntity {
 //    @OneToOne(fetch = FetchType.LAZY)
 //    private Report report;
 
-    //메세지 -> 단방향으로 수정
+//    //메세지 -> 단방향
 //    @OneToOne(fetch = FetchType.LAZY)
 //    private Message message;
 
