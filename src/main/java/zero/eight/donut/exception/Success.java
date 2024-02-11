@@ -23,6 +23,7 @@ public enum Success {
     GET_RANKING_BY_NUMBER_SUCCESS(HttpStatus.OK, "Successful donation number ranking inquiry"),
     GET_HISTORY_GIVER_DONATIONLIST_SUCCESS(HttpStatus.OK, "Success in getting donation history list"),
     GET_HISTORY_GIVER_DONATION_SUCCESS(HttpStatus.OK, " Success in getting a donation history info"),
+    GET_HISTORY_RECEIVER_BENEFIT_SUCCESS(HttpStatus.OK, " Success in getting benefit history list"),
 
     //201 CREATED SUCCESS
     CREATE_REPORT_SUCCESS(HttpStatus.CREATED, "Your report is successfully registered"),
