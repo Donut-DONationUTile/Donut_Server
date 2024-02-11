@@ -60,10 +60,9 @@ public class Gift extends BaseTimeEntity {
 //    @OneToOne(fetch = FetchType.LAZY)
 //    private Report report;
 
-    //메세지 -> 단방향
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "message_id")
-    private Message message;
+//    //메세지 -> 단방향
+//    @OneToOne(fetch = FetchType.LAZY)
+//    private Message message;
 
     public void updateStatus(String status){
         this.status = Status.valueOf(status);

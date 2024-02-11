@@ -24,9 +24,8 @@ public class Message {
     @JoinColumn(name = "receiver_id")
     private Receiver receiver;
 
-//    기프티콘 -> 단방향 수정
-//    @OneToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "gift_id")
-//    private Gift gift;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "gift_id")
+    private Gift gift;
 
 }
