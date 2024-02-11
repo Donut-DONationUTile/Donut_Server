@@ -31,10 +31,9 @@ public class Giver extends BaseTimeEntity {
     @OneToMany(mappedBy = "giver", fetch = FetchType.LAZY)
     private List<Gift> giftList = new ArrayList<>();
 
-    //기부 정보
+    //기부 정보 -> 단방향으로 수정
 //    @OneToOne(fetch = FetchType.LAZY)
-    @OneToOne(mappedBy = "giver")
-    private Donation donation;
+//    private Donation donation;
 
     //신고
     @OneToMany(mappedBy = "giver", fetch = FetchType.LAZY)
