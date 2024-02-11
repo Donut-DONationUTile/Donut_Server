@@ -6,7 +6,6 @@ import lombok.Getter;
 
 @Getter
 @Builder
-@AllArgsConstructor
 public class RankingByNumberResponseDto {
     int rank; // 등수
     String name; // 기부자 아이디
