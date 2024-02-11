@@ -14,6 +14,6 @@ public class HistoryReceiverController {
     private final HistoryReceiverService historyReceiverService;
     @GetMapping("")
     public ApiResponse<?> receivedDonation(){
-        historyReceiverService.receivedDonation();
+        return historyReceiverService.receivedDonation();
     }
 }
