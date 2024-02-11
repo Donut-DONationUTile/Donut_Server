@@ -27,6 +27,9 @@ public class Gift extends BaseTimeEntity {
     @Column
     private Boolean isAssigned;
 
+    @Column
+    private Boolean isMsgReceived;
+
     @Enumerated(value = EnumType.STRING)
     @Column
     private Status status;
