@@ -13,10 +13,7 @@ import zero.eight.donut.common.response.ApiResponse;
 import zero.eight.donut.config.jwt.JwtUtils;
 import zero.eight.donut.domain.Giver;
 import zero.eight.donut.domain.Receiver;
-import zero.eight.donut.dto.auth.AuthRequestDto;
-import zero.eight.donut.dto.auth.AuthResponseDto;
-import zero.eight.donut.dto.auth.MemberDto;
-import zero.eight.donut.dto.auth.Role;
+import zero.eight.donut.dto.auth.*;
 import zero.eight.donut.exception.Error;
 import zero.eight.donut.exception.InternalServerErrorException;
 import zero.eight.donut.exception.Success;
@@ -173,7 +170,6 @@ public class AuthService {
         // "@" 기호의 인덱스 찾기
         int atIndex = email.indexOf('@');
 
-
         if (atIndex != -1) { // "@" 기호가 존재하는 경우
             // "@" 앞부분을 substring으로 추출
             return email.substring(0, atIndex);
@@ -229,6 +225,47 @@ public class AuthService {
                 .name(receiver.get().getName())
                 .role(Role.ROLE_RECEIVER)
                 .build();
+        AuthResponseDto loginResponse = AuthResponseDto.builder()
+                .accesstoken(jwtUtils.createAccessToken(member))
+                .refreshtoken(jwtUtils.createRefreshToken(member))
+                .name(member.getName())
+                .build();
+
+        return ApiResponse.success(Success.SIGN_IN_SUCCESS, loginResponse);
+    }
+
+    @Transactional
+    public ApiResponse<?> createGiverToken(AuthTestDto authTestDto) {
+
+        String email = authTestDto.getEmail();
+
+        log.info("Input test email -> {}", email);
+
+        // 이메일로 Giver 탐색
+        Optional<Giver> giver = giverRepository.findByEmail(email);
+
+        // 신규 사용자면 회원가입(닉네임, 이메일, 생성시간, 수정시간)
+        giver.ifPresentOrElse(
+                // Optional 객체가 값이 있는 경우 실행할 동작
+                existingGiver -> {
+                    log.info("기가입유저 -> {}", existingGiver);
+                },
+                // Optional 객체가 비어있는 경우 실행할 동작
+                () -> {
+                    log.info("신규 가입 유저");
+                    googleSignUp(email);
+                }
+        );
+
+
+        giver = giverRepository.findByEmail(email);
+
+        MemberDto member = MemberDto.builder()
+                .name(giver.get().getEmail())
+                .role(Role.ROLE_GIVER)
+                .build();
+
+        // 사용자 이메일 & 역할로 jwt 생성
         AuthResponseDto loginResponse = AuthResponseDto.builder()
                 .accesstoken(jwtUtils.createAccessToken(member))
                 .refreshtoken(jwtUtils.createRefreshToken(member))
