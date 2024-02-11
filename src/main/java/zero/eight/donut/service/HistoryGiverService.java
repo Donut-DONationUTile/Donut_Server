@@ -6,9 +6,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import zero.eight.donut.common.response.ApiResponse;
 import zero.eight.donut.domain.Gift;
-import zero.eight.donut.domain.Giver;
+import zero.eight.donut.domain.Giver;import zero.eight.donut.domain.Message;
 import zero.eight.donut.dto.history.giver.Donation;
+import zero.eight.donut.dto.history.giver.GiverDonationDetailResponseDto;
 import zero.eight.donut.dto.history.giver.GiverDonationListResponseDto;
+import zero.eight.donut.exception.Error;
+import zero.eight.donut.exception.NotFoundException;
 import zero.eight.donut.exception.Success;
 import zero.eight.donut.repository.DonationRepository;
 import zero.eight.donut.repository.GiftRepository;
@@ -19,6 +22,7 @@ import java.time.Period;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -74,4 +78,33 @@ public class HistoryGiverService {
                 .build();
         return ApiResponse.success(Success.GET_HISTORY_GIVER_DONATIONLIST_SUCCESS, responseDto);
     }
+
+
+    @Transactional
+    public ApiResponse<?> getDonationDetail(Long giftId){
+        Gift gift = giftRepository.findById(giftId)
+                .orElseThrow(()->new NotFoundException(Error.GIFT_NOT_FOUND_EXCEPTION));
+
+        String receiver = Optional.ofNullable(gift.getGiftbox())
+                .map(g -> g.getReceiver().getName())
+                .orElse("not delivered");
+
+        String message = Optional.ofNullable(gift.getMessage())
+                .map(Message::getContent)
+                .orElse("haven't received yet");
+
+        GiverDonationDetailResponseDto responseDto = GiverDonationDetailResponseDto.builder()
+                .product(gift.getProduct())
+                .amount(gift.getPrice())
+                .dueDate(gift.getDueDate())
+                .store(gift.getStore())
+                .receiver(receiver)
+                .isAssigned(gift.getIsAssigned())
+                .status(gift.getStatus())
+                .message(message)
+                .build();
+
+        return ApiResponse.success(Success.GET_HISTORY_GIVER_DONATION_SUCCESS, responseDto);
+    }
+
 }

@@ -21,4 +21,9 @@ public class HistoryGiverController {
     public ApiResponse<?> getDonationList(@PathVariable("donateDate")LocalDateTime donateDate){
         return  historyGiverService.getDonationList(donateDate);
     }
+
+    @GetMapping("/info/detail/{giftId}")
+    public ApiResponse<?> getDonationDetail(@PathVariable("giftId")Long giftId){
+        return  historyGiverService.getDonationDetail(giftId);
+    }
 }
