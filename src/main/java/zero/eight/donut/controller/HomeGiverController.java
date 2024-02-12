@@ -4,9 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import zero.eight.donut.common.response.SuccessResponse;
-import zero.eight.donut.dto.home.giver.GiverHomeResponseDto;
-import zero.eight.donut.exception.Success;
+import zero.eight.donut.common.response.ApiResponse;
 import zero.eight.donut.service.HomeGiverService;
 
 @RestController
@@ -16,8 +14,8 @@ public class HomeGiverController {
     private final HomeGiverService homeGiverService;
 
     @GetMapping("")
-    public SuccessResponse<GiverHomeResponseDto> giverHome(){
-        return SuccessResponse.success(Success.HOME_GIVER_SUCCESS, homeGiverService.giverHome());
+    public ApiResponse<?> giverHome(){
+        return homeGiverService.giverHome();
     }
 
 }
