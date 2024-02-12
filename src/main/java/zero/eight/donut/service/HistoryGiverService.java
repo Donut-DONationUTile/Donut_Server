@@ -12,7 +12,6 @@ import zero.eight.donut.dto.history.giver.Donation;
 import zero.eight.donut.dto.history.giver.GiverDonationDetailResponseDto;
 import zero.eight.donut.dto.history.giver.GiverDonationListResponseDto;
 import zero.eight.donut.exception.Error;
-import zero.eight.donut.exception.NotFoundException;
 import zero.eight.donut.exception.Success;
 import zero.eight.donut.repository.DonationRepository;
 import zero.eight.donut.repository.GiftRepository;

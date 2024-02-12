@@ -14,7 +14,6 @@ import zero.eight.donut.dto.auth.Role;
 import zero.eight.donut.dto.donation.GiftValueDto;
 import zero.eight.donut.dto.donation.GiftboxRequestDto;
 import zero.eight.donut.exception.Error;
-import zero.eight.donut.exception.InternalServerErrorException;
 import zero.eight.donut.exception.Success;
 import zero.eight.donut.repository.BenefitRepository;
 import zero.eight.donut.repository.GiftRepository;
@@ -53,7 +52,8 @@ public class DonationService {
         if (benefitOptional.isEmpty()) {
             // 수혜 내역 부재 시(서버 오류)
             log.info("수혜 내역 부재(INTERNAL_SERVER_ERROR)");
-            throw new InternalServerErrorException(Error.INTERNAL_SERVER_ERROR);
+            //throw new InternalServerErrorException(Error.INTERNAL_SERVER_ERROR);
+            return ApiResponse.failure(Error.INTERNAL_SERVER_ERROR);
         }
         else if(!benefitOptional.get().getAvailability()) {
             // 가용 잔액 부족 시(잔액 부족 오류)

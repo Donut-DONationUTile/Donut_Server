@@ -8,7 +8,6 @@ import zero.eight.donut.domain.Gift;
 import zero.eight.donut.domain.Giftbox;
 import zero.eight.donut.dto.report.ReportResponseDto;
 import zero.eight.donut.exception.Error;
-import zero.eight.donut.exception.NotFoundException;
 import zero.eight.donut.exception.Success;
 import zero.eight.donut.repository.GiftRepository;
 import zero.eight.donut.repository.GiftboxRepository;

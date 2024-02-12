@@ -10,7 +10,6 @@ import zero.eight.donut.domain.Receiver;
 import zero.eight.donut.dto.auth.Role;
 import zero.eight.donut.dto.home.receiver.*;
 import zero.eight.donut.exception.Error;
-import zero.eight.donut.exception.NotFoundException;
 import zero.eight.donut.exception.Success;
 import zero.eight.donut.repository.GiftRepository;
 import zero.eight.donut.repository.GiftboxRepository;
