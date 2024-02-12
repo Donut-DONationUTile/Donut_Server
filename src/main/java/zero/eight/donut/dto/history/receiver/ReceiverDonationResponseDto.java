@@ -10,5 +10,5 @@ import java.util.List;
 public class ReceiverDonationResponseDto {
     private Integer amount;
     private Boolean availability;
-    private List<ReceivedGift> receivedGiftList;
+    private List<ReceivedGift> giftList;
 }

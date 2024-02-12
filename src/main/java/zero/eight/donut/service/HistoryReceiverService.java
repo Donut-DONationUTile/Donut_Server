@@ -61,7 +61,7 @@ public class HistoryReceiverService {
         ReceiverDonationResponseDto responseDto = ReceiverDonationResponseDto.builder()
                 .amount(maxAccount - benefit.getSum())
                 .availability(benefit.getAvailability())
-                .receivedGiftList(giftList)
+                .giftList(giftList)
                 .build();
 
         return ApiResponse.success(Success.GET_HISTORY_RECEIVER_BENEFIT_SUCCESS, responseDto);
