@@ -7,6 +7,5 @@ import java.util.Optional;
 
 public interface ReceiverRepository extends JpaRepository<Receiver, Long> {
     Integer countBy();
-
     Optional<Receiver> findByName(String name);
 }
