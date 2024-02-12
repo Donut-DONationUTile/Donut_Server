@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import zero.eight.donut.common.response.ApiResponse;
 import zero.eight.donut.config.jwt.JwtUtils;
 import zero.eight.donut.domain.Benefit;
+import zero.eight.donut.domain.Donation;
 import zero.eight.donut.domain.Giver;
 import zero.eight.donut.domain.Receiver;
 import zero.eight.donut.dto.auth.*;
@@ -20,6 +21,7 @@ import zero.eight.donut.exception.InternalServerErrorException;
 import zero.eight.donut.exception.Success;
 import zero.eight.donut.exception.UnauthorizedException;
 import zero.eight.donut.repository.BenefitRepository;
+import zero.eight.donut.repository.DonationRepository;
 import zero.eight.donut.repository.GiverRepository;
 import zero.eight.donut.repository.ReceiverRepository;
 
@@ -45,6 +47,7 @@ public class AuthService {
     private final GiverRepository giverRepository;
     private final ReceiverRepository receiverRepository;
     private final BenefitRepository benefitRepository;
+    private final DonationRepository donationRepository;
     private final PasswordEncoder bCryptPasswordEncoder;
     private final JwtUtils jwtUtils;
 
@@ -115,6 +118,9 @@ public class AuthService {
                 .build();
 
         giverRepository.save(giver);
+        
+        // 최초 가입 시 Donation 객체도 생성
+        createDonation(giver);
     }
 
     private GoogleIdToken verifyEmail(String googleToken) {
@@ -282,6 +288,20 @@ public class AuthService {
                 .build();
 
         return ApiResponse.success(Success.SIGN_IN_SUCCESS, loginResponse);
+    }
+
+    @Transactional
+    private Donation createDonation(Giver giver) {
+        Donation donation = Donation.builder()
+                .giver(giver)
+                .sum(0L)
+                .count(0L)
+                .report(0)
+                .build();
+
+        donationRepository.save(donation);
+
+        return donation;
     }
 
     @Transactional

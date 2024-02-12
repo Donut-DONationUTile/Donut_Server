@@ -8,7 +8,6 @@ import zero.eight.donut.domain.Receiver;
 
 import java.util.Optional;
 
-@Repository
 public interface BenefitRepository extends JpaRepository<Benefit, Long> {
     Optional<Benefit> findByReceiver(Receiver receiver);
 

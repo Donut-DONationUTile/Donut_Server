@@ -49,4 +49,9 @@ public class Giftbox {
         this.amount = amount;
         this.isAvailable =isAvailable;
     }
+
+    public void updateDueDateAndAmount(LocalDateTime dueDate, Integer amount) {
+        this.dueDate = dueDate;
+        this.amount = amount;
+    }
 }

@@ -67,4 +67,12 @@ public class Gift extends BaseTimeEntity {
     public void updateStatus(String status){
         this.status = Status.valueOf(status);
     }
+
+    public void setIsAssigned() {
+        this.isAssigned = true;
+    }
+
+    public void updateGiftbox(Giftbox giftbox) {
+        this.giftbox = giftbox;
+    }
 }
