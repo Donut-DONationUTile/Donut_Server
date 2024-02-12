@@ -34,6 +34,7 @@ public enum Error {
     // 404 NOT FOUND
     GIFT_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "That gift does not exist"),
     GIFTBOX_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "That giftbox does not exist"),
+    BENEFIT_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "Benefit info does not exist"),
     EMAIL_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "Email not found from OAuth2 provider"),
 
     // 405 METHOD_NOT_ALLOWED
