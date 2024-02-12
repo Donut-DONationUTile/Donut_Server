@@ -31,8 +31,8 @@ public class HistoryReceiverService {
     private final BenefitRepository benefitRepository;
 
     public ApiResponse<?> receivedDonation(){
-        //기부자 여부 조회
-        if (!authUtils.getCurrentUserRole().equals(Role.ROLE_GIVER)) {
+        //수혜자 여부 조회
+        if (!authUtils.getCurrentUserRole().equals(Role.ROLE_RECEIVER)) {
             return ApiResponse.failure(Error.NOT_AUTHENTICATED_EXCEPTION);
         }
         Receiver receiver = authUtils.getReceiver();

@@ -59,17 +59,21 @@ public class HomeReceiverService {
         ReceiverHomeResponseDto responseDto = ReceiverHomeResponseDto.builder()
                 .availability(availability)
                 .amount(amount)
-                .cu(storeCountMap.getOrDefault("cu", 0))
-                .gs25(storeCountMap.getOrDefault("gs25", 0))
-                .sevenEleven(storeCountMap.getOrDefault("7eleven", 0))
+                .cu(storeCountMap.getOrDefault("CU", 0))
+                .gs25(storeCountMap.getOrDefault("GS25", 0))
+                .sevenEleven(storeCountMap.getOrDefault("SEVENELEVEN", 0))
                 .boxList(boxInfoList)
                 .build();
-        return ApiResponse.success(Success.HOME_RECEIVER_SUCCESS);
+        return ApiResponse.success(Success.HOME_RECEIVER_SUCCESS, responseDto);
     }
 
 
     @Transactional
     public ApiResponse receiverGetOneBox(Long boxId){
+        // 수혜자 여부 검증
+        if (!authUtils.getCurrentUserRole().equals(Role.ROLE_RECEIVER)) {
+            return ApiResponse.failure(Error.NOT_AUTHENTICATED_EXCEPTION);
+        }
         //Giftbox 있는지 확인
         Optional<Giftbox> giftbox = giftboxRepository.findById(boxId);
         if(giftbox.isEmpty())
@@ -97,6 +101,10 @@ public class HomeReceiverService {
     }
     @Transactional
     public ApiResponse receiverGetOneGift(Long giftId){
+        // 수혜자 여부 검증
+        if (!authUtils.getCurrentUserRole().equals(Role.ROLE_RECEIVER)) {
+            return ApiResponse.failure(Error.NOT_AUTHENTICATED_EXCEPTION);
+        }
         //Gift 있는지 확인
         Optional<Gift> giftOptional = giftRepository.findById(giftId);
         if(giftOptional.isEmpty())
