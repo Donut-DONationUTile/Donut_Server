@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @Builder
-@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Benefit {
