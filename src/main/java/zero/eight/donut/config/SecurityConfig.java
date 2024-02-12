@@ -25,7 +25,9 @@ public class SecurityConfig {
             "/api/auth/*",
             "/api/auth/giver/login",
             "/api/auth/receiver/signin",
-            "/api/auth/receiver/login"
+            "/api/auth/receiver/login",
+            "/redisTest",
+            "/redisTest/*",
     };
 
     @Bean
