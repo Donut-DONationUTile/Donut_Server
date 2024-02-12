@@ -41,6 +41,7 @@ public class Gift extends BaseTimeEntity {
     @Column(length = 500)
     private String imageUrl;
 
+    @Enumerated(value = EnumType.STRING)
     @Column
     private Store store;
 

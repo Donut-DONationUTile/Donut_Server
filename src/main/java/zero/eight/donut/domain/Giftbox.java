@@ -25,6 +25,7 @@ public class Giftbox {
     @Column
     private LocalDateTime assignedAt;
 
+    @Enumerated(value = EnumType.STRING)
     @Column
     private Store store;
 
