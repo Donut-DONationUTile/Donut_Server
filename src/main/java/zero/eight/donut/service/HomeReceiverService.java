@@ -96,7 +96,12 @@ public class HomeReceiverService {
     }
     @Transactional
     public ApiResponse receiverGetOneGift(Long giftId){
-        Gift gift = giftRepository.findById(giftId).orElseThrow(()-> new NotFoundException((Error.GIFT_NOT_FOUND_EXCEPTION)));
+        //Gift 있는지 확인
+        Optional<Gift> giftOptional = giftRepository.findById(giftId);
+        if(giftOptional.isEmpty())
+            return ApiResponse.failure(Error.GIFT_NOT_FOUND_EXCEPTION);
+        Gift gift = giftOptional.get();
+
         ReceiverGetGiftResponseDto responseDto = ReceiverGetGiftResponseDto.builder()
                 .product(gift.getProduct())
                 .price(gift.getPrice())

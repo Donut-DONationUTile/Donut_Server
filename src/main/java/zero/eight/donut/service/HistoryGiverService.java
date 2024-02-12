@@ -89,8 +89,11 @@ public class HistoryGiverService {
 
     @Transactional
     public ApiResponse<?> getDonationDetail(Long giftId){
-        Gift gift = giftRepository.findById(giftId)
-                .orElseThrow(()->new NotFoundException(Error.GIFT_NOT_FOUND_EXCEPTION));
+        //Gift 있는지 확인
+        Optional<Gift> giftOptional = giftRepository.findById(giftId);
+        if(giftOptional.isEmpty())
+            return ApiResponse.failure(Error.GIFT_NOT_FOUND_EXCEPTION);
+        Gift gift = giftOptional.get();
 
         //name of receiver
         String receiver = Optional.ofNullable(gift.getGiftbox())
