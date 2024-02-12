@@ -1,6 +1,7 @@
 package zero.eight.donut.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import zero.eight.donut.common.response.ApiResponse;
@@ -21,6 +22,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class HomeReceiverService {
@@ -35,7 +37,7 @@ public class HomeReceiverService {
         }
         Receiver receiver = authUtils.getReceiver();
 
-        List<Giftbox> giftboxList = giftboxRepository.findAllByReceiverId(receiver.getId());
+        List<Giftbox> giftboxList = giftboxRepository.findAllByReceiverIdAndIsAvailable(receiver.getId());
         Long amount = giftboxList.stream().mapToLong(boxInfo -> boxInfo.getAmount()).sum();
         List<BoxInfo> boxInfoList = giftboxList.stream()
                 .map(boxInfo -> BoxInfo.builder()
