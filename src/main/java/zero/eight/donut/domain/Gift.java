@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import zero.eight.donut.common.domain.BaseTimeEntity;
 import zero.eight.donut.domain.enums.Status;
+import zero.eight.donut.domain.enums.Store;
 
 import java.time.LocalDateTime;
 
@@ -40,8 +41,8 @@ public class Gift extends BaseTimeEntity {
     @Column(length = 500)
     private String imageUrl;
 
-    @Column(length = 50)
-    private String store;
+    @Column
+    private Store store;
 
     @Column
     private LocalDateTime dueDate;

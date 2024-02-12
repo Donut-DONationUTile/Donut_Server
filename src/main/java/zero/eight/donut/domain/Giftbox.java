@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import zero.eight.donut.domain.enums.Store;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -24,8 +25,8 @@ public class Giftbox {
     @Column
     private LocalDateTime assignedAt;
 
-    @Column(length = 50)
-    private String store;
+    @Column
+    private Store store;
 
     @Column
     private Integer amount;

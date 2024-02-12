@@ -7,6 +7,7 @@ import zero.eight.donut.common.response.ApiResponse;
 import zero.eight.donut.domain.Gift;
 import zero.eight.donut.domain.Giftbox;
 import zero.eight.donut.domain.Receiver;
+import zero.eight.donut.domain.enums.Store;
 import zero.eight.donut.dto.auth.Role;
 import zero.eight.donut.dto.home.receiver.*;
 import zero.eight.donut.exception.Error;
@@ -47,8 +48,8 @@ public class HomeReceiverService {
 
         Map<String, Integer> storeCountMap = new HashMap<>();
         giftboxList.stream().forEach(box -> {
-            String store = box.getStore();
-            storeCountMap.put(store, storeCountMap.getOrDefault(store, 0) + 1);
+            Store store = box.getStore();
+            storeCountMap.put(store.toString(), storeCountMap.getOrDefault(store, 0) + 1);
         });
       /**
        * TO DO : availability 처리하기
