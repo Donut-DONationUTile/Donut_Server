@@ -15,6 +15,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import zero.eight.donut.dto.auth.MemberDto;
 import zero.eight.donut.exception.Error;
+import zero.eight.donut.exception.UnauthorizedException;
 
 import java.util.Collections;
 import java.util.Date;
