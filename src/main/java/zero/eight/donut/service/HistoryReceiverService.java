@@ -7,8 +7,10 @@ import zero.eight.donut.domain.Benefit;
 import zero.eight.donut.domain.Gift;
 import zero.eight.donut.domain.Giftbox;
 import zero.eight.donut.domain.Receiver;
+import zero.eight.donut.dto.auth.Role;
 import zero.eight.donut.dto.history.receiver.ReceivedGift;
 import zero.eight.donut.dto.history.receiver.ReceiverDonationResponseDto;
+import zero.eight.donut.exception.Error;
 import zero.eight.donut.exception.Success;
 import zero.eight.donut.repository.BenefitRepository;
 import zero.eight.donut.repository.GiftRepository;
@@ -29,6 +31,10 @@ public class HistoryReceiverService {
     private final BenefitRepository benefitRepository;
 
     public ApiResponse<?> receivedDonation(){
+        //기부자 여부 조회
+        if (!authUtils.getCurrentUserRole().equals(Role.ROLE_GIVER)) {
+            return ApiResponse.failure(Error.NOT_AUTHENTICATED_EXCEPTION);
+        }
         Receiver receiver = authUtils.getReceiver();
 
         //이번 달의 수혜 정보

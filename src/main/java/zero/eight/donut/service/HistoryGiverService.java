@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import zero.eight.donut.common.response.ApiResponse;
 import zero.eight.donut.domain.Gift;
 import zero.eight.donut.domain.Giver;import zero.eight.donut.domain.Message;
+import zero.eight.donut.dto.auth.Role;
 import zero.eight.donut.dto.history.giver.Donation;
 import zero.eight.donut.dto.history.giver.GiverDonationDetailResponseDto;
 import zero.eight.donut.dto.history.giver.GiverDonationListResponseDto;
@@ -38,6 +39,10 @@ public class HistoryGiverService {
 
     @Transactional
     public ApiResponse<?> getDonationList(LocalDateTime donateDate){
+        //기부자 여부 검증
+        if (!authUtils.getCurrentUserRole().equals(Role.ROLE_GIVER)) {
+            return ApiResponse.failure(Error.NOT_AUTHENTICATED_EXCEPTION);
+        }
         Giver giver = authUtils.getGiver();
 
         //기부한 기간 계산

@@ -7,6 +7,7 @@ import zero.eight.donut.common.response.ApiResponse;
 import zero.eight.donut.domain.Gift;
 import zero.eight.donut.domain.Giftbox;
 import zero.eight.donut.domain.Receiver;
+import zero.eight.donut.dto.auth.Role;
 import zero.eight.donut.dto.home.receiver.*;
 import zero.eight.donut.exception.Error;
 import zero.eight.donut.exception.NotFoundException;
@@ -22,10 +23,17 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class HomeReceiverService {
+    private final AuthUtils authUtils;
     private final GiftRepository giftRepository;
     private final GiftboxRepository giftboxRepository;
     @Transactional
-    public ApiResponse receiverHome(Receiver receiver){
+    public ApiResponse receiverHome(){
+        // 수혜자 여부 검증
+        if (!authUtils.getCurrentUserRole().equals(Role.ROLE_RECEIVER)) {
+            return ApiResponse.failure(Error.NOT_AUTHENTICATED_EXCEPTION);
+        }
+        Receiver receiver = authUtils.getReceiver();
+
         List<Giftbox> giftboxList = giftboxRepository.findAllByReceiverId(receiver.getId());
         Long amount = giftboxList.stream().mapToLong(boxInfo -> boxInfo.getAmount()).sum();
         List<BoxInfo> boxInfoList = giftboxList.stream()

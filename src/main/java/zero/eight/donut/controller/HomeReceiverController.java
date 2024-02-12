@@ -14,11 +14,10 @@ import zero.eight.donut.service.HomeReceiverService;
 @RequestMapping("/api/home/receiver")
 public class HomeReceiverController {
     private final HomeReceiverService homeReceiverService;
-    private final AuthUtils authUtils;
 
     @GetMapping("")
     public ApiResponse<?> receiverHome(){
-        return homeReceiverService.receiverHome(authUtils.getReceiver());
+        return homeReceiverService.receiverHome();
     }
 
     @GetMapping("/box/{boxId}")
