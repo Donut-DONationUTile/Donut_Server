@@ -18,6 +18,7 @@ import zero.eight.donut.repository.GiftboxRepository;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -69,8 +70,10 @@ public class HomeReceiverService {
 
     @Transactional
     public ApiResponse receiverGetOneBox(Long boxId){
-        Giftbox giftbox = giftboxRepository.findById(boxId)
-                .orElseThrow(() -> new NotFoundException(Error.GIFTBOX_NOT_FOUND_EXCEPTION));
+        //Giftbox 있는지 확인
+        Optional<Giftbox> giftbox = giftboxRepository.findById(boxId);
+        if(giftbox.isEmpty())
+            return ApiResponse.failure(Error.GIFTBOX_NOT_FOUND_EXCEPTION);
 
         List<Gift> giftList = giftRepository.findAllByGiftboxId(boxId);
 
@@ -85,9 +88,9 @@ public class HomeReceiverService {
                 .collect(Collectors.toList());
 
         ReceiverGetBoxResponseDto responseDto = ReceiverGetBoxResponseDto.builder()
-                .store(giftbox.getStore())
-                .amount(giftbox.getAmount())
-                .dueDate(giftbox.getDueDate())
+                .store(giftbox.get().getStore())
+                .amount(giftbox.get().getAmount())
+                .dueDate(giftbox.get().getDueDate())
                 .giftList(giftInfoList)
                 .build();
         return ApiResponse.success(Success.HOME_RECEIVER_BOX_SUCCESS, responseDto);
