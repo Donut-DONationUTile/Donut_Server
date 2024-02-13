@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "adroit-metric-413519",
+  "private_key_id": "3d851e43ceb4739a3e497a90111d450c4984707c",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCa4K96gA7dK4sI\niEsh2SzVbfB5nNtpqkgqDYMHV6fTVuyzGKJ2oYpku4gmDp60ADwH9Io1MabkhEG2\n3FqNEnpNXPS0qUxIns1q4xLcKS2qgBf9OhoQ8GU0n3mBwIjYOql66a1MAzxg89gQ\nqfp8fFhmDSci6j+zxL8HDrpk008lY83ddW1Ibszqc3y4n/eGUqKYdjYlinf0+n2Y\n7RuigbKWwBPbZbi9ebWGalVOrfnnldH0OlM+BlUqVWBotcqxyvutGbBuTedrnGky\nzN75tGLs06Mr6aYyVb4T2TshOCqwKIIQBvqWRrsCugSklXfM4mQV5vmFYb3DwBIg\ny1lGjEOhAgMBAAECggEAC/Nkdv5kpzpR6yGhMoZwiDOIh8nLwHaMRPpv7uQbphoh\n/5vaBW9nn2g9FDqykk8mUrLS61Hef+mYrISKVDJlz4xpsXsS0NO4JBRLg0OGK47g\nywBtvHrgRFQ96v4xUQYNx9c6MRBa21xVgsuq8Woi5BUFvRL4QWXgG6pORbNsewT+\ntZg1rUN1DJwuvbl9S1rn5y/BFBg76i2wqFkl/Mo4R08w9YYxuneQOsIryTQanI42\nNeywGxGrCPo+34h1IMA75yOXW08eCoC+cgIBbQSOWmT5/H7u6Tg0cG9uZbqECUyx\nf+m0P2ImbzuYeOdVvImvlc/3mCRpcQgIU0nyqAYTsQKBgQDUV3PPUM7AB22mpb+3\nnULpY7lYSny/E3dwoOVScTHy/BJDmxVZ6+EHTLItkNZiU4DtGYwHcL7S7+qvCJMo\nkgMKduPAlKkIUohY3kyd14S3WT/In9LoU631viK1MjurVkDZEdgaoORMzs4oAgiB\nxuBKAQGpjKtJkhwk1gtaMHQeBQKBgQC6uKIg558fkDEm0mvd3JkZ1ydDNdryaxMH\nzas68gW7+7MDmOVxKU+lp2YeW3zIsyxLJ/y1nbSLj4ze8oUcq/AAogMwC4jCD0S3\nCzoRst4MHenKx5Mm9ITEzzbpTFbfCa5qcWP4WrYejbmOwG2K3HnekxIX00BfKbgb\nfpLx4Arl7QKBgFGacjVAFtSRhkA+/piv5SEQZBBcP+imsIYmLzspqUp6OQKmPORb\n1BUcEnWUbe9HrApygO/zEkK6VPSDVRqIUobY/dnqx7MdFK0icUtPof9cWzjcww7p\n6bbBJVGBRpEoCq/hPa2uG06xQ2T4sxA8v8Fw9ZSVLNaPQiWd5Kr6aAWJAoGARTxj\nOcpJEZ4Y66lIwAqlZpSGBYD5v7v+YX1cyc2mXK8XEPVn1o8X7nflAMqxuYXenbul\nE/73TGydMqpAu4Hxy3pHrlAIlNSuiSULkjZ96YZKA5v/L4mplYS0esuIxslDOEr1\nY8jXEPtCW/F0bPIV6nckVVtK2j6Q+vjzKecGg30CgYA2igQ8E1aDz4vNGFlVH/v7\nOlUWYmfcGdlNVylDlp/2SJaImIA0LO93ouLMdzXKT30OurP/okJ7lCketfo6qQ2+\nMove8tiPdLEU0QDP4yyKonS/duLllbS3tyQhGz5dYnmLZVjLPEiS5ji9/vheF0+R\nUwiMDIHTKxeCHpLHci7Gog==\n-----END PRIVATE KEY-----\n",
+  "client_email": "springboot-storage-access@adroit-metric-413519.iam.gserviceaccount.com",
+  "client_id": "101910492749077116336",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/springboot-storage-access%40adroit-metric-413519.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
