@@ -7,11 +7,11 @@ import org.springframework.transaction.annotation.Transactional;
 import zero.eight.donut.common.response.ApiResponse;
 import zero.eight.donut.domain.Gift;
 import zero.eight.donut.domain.Giver;import zero.eight.donut.domain.Message;
+import zero.eight.donut.dto.auth.Role;
 import zero.eight.donut.dto.history.giver.Donation;
 import zero.eight.donut.dto.history.giver.GiverDonationDetailResponseDto;
 import zero.eight.donut.dto.history.giver.GiverDonationListResponseDto;
 import zero.eight.donut.exception.Error;
-import zero.eight.donut.exception.NotFoundException;
 import zero.eight.donut.exception.Success;
 import zero.eight.donut.repository.DonationRepository;
 import zero.eight.donut.repository.GiftRepository;
@@ -38,6 +38,10 @@ public class HistoryGiverService {
 
     @Transactional
     public ApiResponse<?> getDonationList(LocalDateTime donateDate){
+        //기부자 여부 검증
+        if (!authUtils.getCurrentUserRole().equals(Role.ROLE_GIVER)) {
+            return ApiResponse.failure(Error.NOT_AUTHENTICATED_EXCEPTION);
+        }
         Giver giver = authUtils.getGiver();
 
         //기부한 기간 계산
@@ -85,8 +89,11 @@ public class HistoryGiverService {
 
     @Transactional
     public ApiResponse<?> getDonationDetail(Long giftId){
-        Gift gift = giftRepository.findById(giftId)
-                .orElseThrow(()->new NotFoundException(Error.GIFT_NOT_FOUND_EXCEPTION));
+        //Gift 있는지 확인
+        Optional<Gift> giftOptional = giftRepository.findById(giftId);
+        if(giftOptional.isEmpty())
+            return ApiResponse.failure(Error.GIFT_NOT_FOUND_EXCEPTION);
+        Gift gift = giftOptional.get();
 
         //name of receiver
         String receiver = Optional.ofNullable(gift.getGiftbox())
