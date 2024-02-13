@@ -4,9 +4,9 @@ package zero.eight.donut.service;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 
-import com.google.cloud.storage.StorageOptions;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import zero.eight.donut.common.response.ApiResponse;
@@ -35,9 +35,9 @@ import java.util.stream.Collectors;
 @Service
 public class DonationService {
 
-    //@Value("${spring.cloud.gcp.storage.bucket}")
-    private String bucketName = "donut-zpe-bucket";
-    //private Storage storage;
+    @Value("${spring.cloud.gcp.storage.bucket}")
+    private String BUCKET_NAME;
+    private final Storage storage;
     private final AuthUtils authUtils;
     private final BenefitRepository benefitRepository;
     private final GiftRepository giftRepository;
@@ -120,7 +120,6 @@ public class DonationService {
         return ApiResponse.success(Success.ASSIGN_BENEFIT_SUCCESS);
     }
 
-    @Transactional
     private void setGiftbox(GiftAssignDto giftAssignDto, Giftbox giftbox) {
         log.info("꾸러미-기프티콘 할당 함수 접근");
 
@@ -188,24 +187,28 @@ public class DonationService {
         String uuid = UUID.randomUUID().toString();
         //이미지 형식 추출
         String ext = donateGiftRequestDto.getGiftImage().getContentType();
-        Storage storage = StorageOptions.getDefaultInstance().getService();
         if(storage==null)
-            log.info("fail to get storage");
-        log.info("successfully get storage" );
+            log.info("fail to get storage ->{}", storage);
 
         // Google Cloud Storage 이미지 업로드
         BlobInfo blobInfo = storage.create(
-                BlobInfo.newBuilder(bucketName, uuid)
+                BlobInfo.newBuilder(BUCKET_NAME, uuid)
                         .setContentType(ext)
                         .build(),
                 donateGiftRequestDto.getGiftImage().getInputStream()
         );
         log.info("successfully upload image to gcs");
 
-        String imgUrl = "https://storage.googleapis.com/" + bucketName + "/" + uuid;
+        String imgUrl = "https://storage.googleapis.com/" + BUCKET_NAME + "/" + uuid;
 
+        //Gift 추가
         Gift newGift = donateGiftRequestDto.toEntity(giver, defaultGiftbox, imgUrl);
         giftRepository.save(newGift);
+
+        //기부자별 정보 Donation 업데이트
+
+        //기부 통계 업데이트
+
 
         return ApiResponse.success(Success.SUCCESS);
     }
