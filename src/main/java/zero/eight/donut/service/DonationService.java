@@ -1,19 +1,22 @@
 package zero.eight.donut.service;
 
+
+import com.google.cloud.storage.BlobInfo;
+import com.google.cloud.storage.Storage;
+
+import com.google.cloud.storage.StorageOptions;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import zero.eight.donut.common.response.ApiResponse;
-import zero.eight.donut.domain.Benefit;
-import zero.eight.donut.domain.Gift;
-import zero.eight.donut.domain.Giftbox;
-import zero.eight.donut.domain.Receiver;
+import zero.eight.donut.domain.*;
 import zero.eight.donut.dto.GiftAssignDto;
 import zero.eight.donut.dto.auth.Role;
 import zero.eight.donut.dto.donation.DonateGiftRequestDto;
 import zero.eight.donut.dto.donation.GiftValueDto;
 import zero.eight.donut.dto.donation.GiftboxRequestDto;
+import zero.eight.donut.exception.ApiException;
 import zero.eight.donut.exception.Error;
 import zero.eight.donut.exception.InternalServerErrorException;
 import zero.eight.donut.exception.Success;
@@ -21,6 +24,7 @@ import zero.eight.donut.repository.BenefitRepository;
 import zero.eight.donut.repository.GiftRepository;
 import zero.eight.donut.repository.GiftboxRepository;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.*;
@@ -31,6 +35,9 @@ import java.util.stream.Collectors;
 @Service
 public class DonationService {
 
+    //@Value("${spring.cloud.gcp.storage.bucket}")
+    private String bucketName = "donut-zpe-bucket";
+    //private Storage storage;
     private final AuthUtils authUtils;
     private final BenefitRepository benefitRepository;
     private final GiftRepository giftRepository;
@@ -166,7 +173,40 @@ public class DonationService {
     }
 
     @Transactional
-    public ApiResponse<?> donateGift(DonateGiftRequestDto donateGiftRequestDto){
+    public ApiResponse<?> donateGift(DonateGiftRequestDto donateGiftRequestDto) throws IOException {
+        // 기부자 여부 검증
+        if (!authUtils.getCurrentUserRole().equals(Role.ROLE_GIVER)) {
+            return ApiResponse.failure(Error.NOT_AUTHENTICATED_EXCEPTION);
+        }
+        Giver giver = authUtils.getGiver();
+        log.info("giver name -> {}", giver.getName());
+        Giftbox defaultGiftbox = giftboxRepository.findById(0L)
+                .orElseThrow(()-> new ApiException(Error.GIFTBOX_NOT_FOUND_EXCEPTION));
+        log.info("successfully get default giftbox");
+
+        //이미지명 uuid 변환
+        String uuid = UUID.randomUUID().toString();
+        //이미지 형식 추출
+        String ext = donateGiftRequestDto.getGiftImage().getContentType();
+        Storage storage = StorageOptions.getDefaultInstance().getService();
+        if(storage==null)
+            log.info("fail to get storage");
+        log.info("successfully get storage" );
+
+        // Google Cloud Storage 이미지 업로드
+        BlobInfo blobInfo = storage.create(
+                BlobInfo.newBuilder(bucketName, uuid)
+                        .setContentType(ext)
+                        .build(),
+                donateGiftRequestDto.getGiftImage().getInputStream()
+        );
+        log.info("successfully upload image to gcs");
+
+        String imgUrl = "https://storage.googleapis.com/" + bucketName + "/" + uuid;
+
+        Gift newGift = donateGiftRequestDto.toEntity(giver, defaultGiftbox, imgUrl);
+        giftRepository.save(newGift);
+
         return ApiResponse.success(Success.SUCCESS);
     }
 }
