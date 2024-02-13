@@ -11,6 +11,7 @@ import zero.eight.donut.domain.Giftbox;
 import zero.eight.donut.domain.Receiver;
 import zero.eight.donut.dto.GiftAssignDto;
 import zero.eight.donut.dto.auth.Role;
+import zero.eight.donut.dto.donation.DonateGiftRequestDto;
 import zero.eight.donut.dto.donation.GiftValueDto;
 import zero.eight.donut.dto.donation.GiftboxRequestDto;
 import zero.eight.donut.exception.Error;
@@ -162,5 +163,10 @@ public class DonationService {
                 .build();
 
         return giftAssignDto;
+    }
+
+    @Transactional
+    public ApiResponse<?> donateGift(DonateGiftRequestDto donateGiftRequestDto){
+        return ApiResponse.success(Success.SUCCESS);
     }
 }
