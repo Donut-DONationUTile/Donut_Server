@@ -3,10 +3,12 @@ package zero.eight.donut.domain;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Builder
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class DonationInfo {
@@ -27,4 +29,8 @@ public class DonationInfo {
     @Column
     private Integer month;
 
+    public void updateSumCount(Long sum, Long count){
+        this.sum = sum;
+        this.count=count;
+    }
 }
