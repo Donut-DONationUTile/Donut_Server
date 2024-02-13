@@ -219,6 +219,6 @@ public class DonationService {
                 donationInfo.getSum()+requestDto.getPrice().longValue(),
                 donationInfo.getCount()+1L);
 
-        return ApiResponse.success(Success.SUCCESS);
+        return ApiResponse.success(Success.DONATE_GIFT_SUCCESS, Map.of("giftId", newGift.getId()));
     }
 }
