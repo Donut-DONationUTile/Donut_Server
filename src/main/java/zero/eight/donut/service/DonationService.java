@@ -121,6 +121,35 @@ public class DonationService {
         return ApiResponse.success(Success.ASSIGN_BENEFIT_SUCCESS);
     }
 
+    @Transactional
+    public ApiResponse<?> donateGift(DonateGiftRequestDto requestDto) throws IOException {
+        // 기부자 여부 검증
+        if (!authUtils.getCurrentUserRole().equals(Role.ROLE_GIVER)) {
+            return ApiResponse.failure(Error.NOT_AUTHENTICATED_EXCEPTION);
+        }
+        Giver giver = authUtils.getGiver();
+
+        //set Default Giftbox
+        Giftbox defaultGiftbox = giftboxRepository.findById(0L)
+                .orElseThrow(()-> new ApiException(Error.GIFTBOX_NOT_FOUND_EXCEPTION));
+
+        //Upload Image to Google Cloud Storage
+        String imgUrl = uploadImageToGCS(requestDto);
+
+        //CREATE Gift
+        Gift newGift = requestDto.toEntity(giver, defaultGiftbox, imgUrl);
+        giftRepository.save(newGift);
+
+        //기부자별 정보 Donation 업데이트
+        updateDonate(giver, requestDto);
+
+        //기부 통계 업데이트
+        updateDonateInfo(giver, requestDto);
+
+        return ApiResponse.success(Success.DONATE_GIFT_SUCCESS, Map.of("giftId", newGift.getId()));
+    }
+
+
     private void setGiftbox(GiftAssignDto giftAssignDto, Giftbox giftbox) {
         log.info("꾸러미-기프티콘 할당 함수 접근");
 
@@ -138,7 +167,7 @@ public class DonationService {
         // 꾸러미 사용 기간 & 남은 금액 갱신
         giftbox.updateDueDateAndAmount(giftAssignDto.getAssignedList().get(0).getDueDate(), giftAssignDto.getAssignedValue());
         log.info("꾸러미 사용 기간 & 남은 금액 갱신 완료");
-        
+
         // 꾸러미 객체 갱신
         giftboxRepository.save(giftbox);
         log.info("꾸러미 객체 갱신 완료");
@@ -172,18 +201,7 @@ public class DonationService {
         return giftAssignDto;
     }
 
-    @Transactional
-    public ApiResponse<?> donateGift(DonateGiftRequestDto requestDto) throws IOException {
-        // 기부자 여부 검증
-        if (!authUtils.getCurrentUserRole().equals(Role.ROLE_GIVER)) {
-            return ApiResponse.failure(Error.NOT_AUTHENTICATED_EXCEPTION);
-        }
-        Giver giver = authUtils.getGiver();
-        log.info("giver name -> {}", giver.getName());
-        Giftbox defaultGiftbox = giftboxRepository.findById(0L)
-                .orElseThrow(()-> new ApiException(Error.GIFTBOX_NOT_FOUND_EXCEPTION));
-        log.info("successfully get default giftbox");
-
+    private String uploadImageToGCS(DonateGiftRequestDto requestDto) throws IOException{
         //이미지명 uuid 변환
         String uuid = UUID.randomUUID().toString();
         //이미지 형식 추출
@@ -201,24 +219,21 @@ public class DonationService {
         log.info("successfully upload image to gcs");
 
         String imgUrl = "https://storage.googleapis.com/" + BUCKET_NAME + "/" + uuid;
+        return imgUrl;
+    }
 
-        //Gift 추가
-        Gift newGift = requestDto.toEntity(giver, defaultGiftbox, imgUrl);
-        giftRepository.save(newGift);
-
-        //기부자별 정보 Donation 업데이트
+    private void updateDonate(Giver giver, DonateGiftRequestDto requestDto){
         Donation donation = donationRepository.findByGiver(giver);
         donation.updateSumCount(
                 donation.getSum()+requestDto.getPrice().longValue(),
                 donation.getCount()+1L);
+    }
 
-        //기부 통계 업데이트
+    private void updateDonateInfo(Giver giver, DonateGiftRequestDto requestDto){
         LocalDate now = LocalDate.now();
         DonationInfo donationInfo = donationInfoRepository.findDonationInfoByMonthAndYear(now.getMonthValue(), now.getYear());
         donationInfo.updateSumCount(
                 donationInfo.getSum()+requestDto.getPrice().longValue(),
                 donationInfo.getCount()+1L);
-
-        return ApiResponse.success(Success.DONATE_GIFT_SUCCESS, Map.of("giftId", newGift.getId()));
     }
 }
