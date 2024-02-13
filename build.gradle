@@ -38,9 +38,12 @@ dependencies {
     // security
     implementation 'org.springframework.boot:spring-boot-starter-security'
     // google api
-    implementation 'com.google.api-client:google-api-client:2.2.0'
-    implementation 'com.google.api-client:google-api-client-jackson2:2.2.0'
-    implementation group: 'com.google.http-client', name: 'google-http-client-jackson2', version: '1.11.0-beta'
+    implementation 'com.google.api-client:google-api-client:1.31.1'
+    implementation 'com.google.api-client:google-api-client-jackson2:2.0.0'
+    implementation group: 'com.google.http-client', name: 'google-http-client-jackson2', version: '1.42.2'
+    // google cloud storage
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-gcp-starter', version: '1.2.8.RELEASE'
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-gcp-storage', version: '1.2.8.RELEASE'
     // redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     // jwt
@@ -48,9 +51,6 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
     implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
     implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
-    // google cloud storage
-    implementation group: 'org.springframework.cloud', name: 'spring-cloud-gcp-starter', version: '1.2.5.RELEASE'
-    implementation group: 'org.springframework.cloud', name: 'spring-cloud-gcp-storage', version: '1.2.5.RELEASE'
 
 }
 
