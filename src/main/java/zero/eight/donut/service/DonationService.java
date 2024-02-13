@@ -20,12 +20,11 @@ import zero.eight.donut.exception.ApiException;
 import zero.eight.donut.exception.Error;
 import zero.eight.donut.exception.InternalServerErrorException;
 import zero.eight.donut.exception.Success;
-import zero.eight.donut.repository.BenefitRepository;
-import zero.eight.donut.repository.GiftRepository;
-import zero.eight.donut.repository.GiftboxRepository;
+import zero.eight.donut.repository.*;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -42,6 +41,8 @@ public class DonationService {
     private final BenefitRepository benefitRepository;
     private final GiftRepository giftRepository;
     private final GiftboxRepository giftboxRepository;
+    private final DonationRepository donationRepository;
+    private final DonationInfoRepository donationInfoRepository;
 
     @Transactional
     public ApiResponse<?> assignGiftbox(GiftboxRequestDto giftboxRequestDto) {
@@ -172,7 +173,7 @@ public class DonationService {
     }
 
     @Transactional
-    public ApiResponse<?> donateGift(DonateGiftRequestDto donateGiftRequestDto) throws IOException {
+    public ApiResponse<?> donateGift(DonateGiftRequestDto requestDto) throws IOException {
         // 기부자 여부 검증
         if (!authUtils.getCurrentUserRole().equals(Role.ROLE_GIVER)) {
             return ApiResponse.failure(Error.NOT_AUTHENTICATED_EXCEPTION);
@@ -186,7 +187,7 @@ public class DonationService {
         //이미지명 uuid 변환
         String uuid = UUID.randomUUID().toString();
         //이미지 형식 추출
-        String ext = donateGiftRequestDto.getGiftImage().getContentType();
+        String ext = requestDto.getGiftImage().getContentType();
         if(storage==null)
             log.info("fail to get storage ->{}", storage);
 
@@ -195,20 +196,21 @@ public class DonationService {
                 BlobInfo.newBuilder(BUCKET_NAME, uuid)
                         .setContentType(ext)
                         .build(),
-                donateGiftRequestDto.getGiftImage().getInputStream()
+                requestDto.getGiftImage().getInputStream()
         );
         log.info("successfully upload image to gcs");
 
         String imgUrl = "https://storage.googleapis.com/" + BUCKET_NAME + "/" + uuid;
 
         //Gift 추가
-        Gift newGift = donateGiftRequestDto.toEntity(giver, defaultGiftbox, imgUrl);
+        Gift newGift = requestDto.toEntity(giver, defaultGiftbox, imgUrl);
         giftRepository.save(newGift);
 
         //기부자별 정보 Donation 업데이트
-
-        //기부 통계 업데이트
-
+        Donation donation = donationRepository.findByGiver(giver);
+        donation.updateSumCount(
+                donation.getSum()+requestDto.getPrice().longValue(),
+                donation.getCount()+1L);
 
         return ApiResponse.success(Success.SUCCESS);
     }

@@ -30,4 +30,8 @@ public class Donation {
     @JoinColumn(name = "giver_id")
     private Giver giver; // 기부자 고유 ID
 
+    public void updateSumCount(Long sum, Long count){
+        this.sum = sum;
+        this.count = count;
+    };
 }
