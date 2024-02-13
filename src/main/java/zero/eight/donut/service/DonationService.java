@@ -212,6 +212,13 @@ public class DonationService {
                 donation.getSum()+requestDto.getPrice().longValue(),
                 donation.getCount()+1L);
 
+        //기부 통계 업데이트
+        LocalDate now = LocalDate.now();
+        DonationInfo donationInfo = donationInfoRepository.findDonationInfoByMonthAndYear(now.getMonthValue(), now.getYear());
+        donationInfo.updateSumCount(
+                donationInfo.getSum()+requestDto.getPrice().longValue(),
+                donationInfo.getCount()+1L);
+
         return ApiResponse.success(Success.SUCCESS);
     }
 }
