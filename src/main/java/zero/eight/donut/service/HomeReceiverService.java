@@ -1,6 +1,7 @@
 package zero.eight.donut.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import zero.eight.donut.common.response.ApiResponse;
@@ -12,21 +13,25 @@ import zero.eight.donut.dto.auth.Role;
 import zero.eight.donut.dto.home.receiver.*;
 import zero.eight.donut.exception.Error;
 import zero.eight.donut.exception.Success;
+import zero.eight.donut.repository.BenefitRepository;
 import zero.eight.donut.repository.GiftRepository;
 import zero.eight.donut.repository.GiftboxRepository;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class HomeReceiverService {
     private final AuthUtils authUtils;
     private final GiftRepository giftRepository;
     private final GiftboxRepository giftboxRepository;
+    private final BenefitRepository benefitRepository;
     @Transactional
     public ApiResponse receiverHome(){
         // 수혜자 여부 검증
@@ -35,8 +40,21 @@ public class HomeReceiverService {
         }
         Receiver receiver = authUtils.getReceiver();
 
-        List<Giftbox> giftboxList = giftboxRepository.findAllByReceiverId(receiver.getId());
+
+        //사용 가능한 꾸러미만 조회
+        List<Giftbox> giftboxList = giftboxRepository.findAllByReceiverIdAndIsAvailable(receiver.getId());
+
+        //꾸러미 총액
         Long amount = giftboxList.stream().mapToLong(boxInfo -> boxInfo.getAmount()).sum();
+
+        //사용처별 꾸러미 개수 구하기
+        Map<String, Integer> storeCountMap = new HashMap<>();
+        giftboxList.stream().forEach(box -> {
+            Store store = box.getStore();
+            storeCountMap.put(store.toString(), storeCountMap.getOrDefault(store, 0) + 1);
+        });
+
+        //꾸러미 정보 가져오기
         List<BoxInfo> boxInfoList = giftboxList.stream()
                 .map(boxInfo -> BoxInfo.builder()
                         .boxId(boxInfo.getId())
@@ -46,15 +64,20 @@ public class HomeReceiverService {
                         .build())
                 .collect(Collectors.toList());
 
-        Map<String, Integer> storeCountMap = new HashMap<>();
-        giftboxList.stream().forEach(box -> {
-            Store store = box.getStore();
-            storeCountMap.put(store.toString(), storeCountMap.getOrDefault(store, 0) + 1);
-        });
-      /**
-       * TO DO : availability 처리하기
-       ***/
+
+        /***
+         * 꾸러미 신청 가능 여부
+         * 1. 현재 갖고 있는 꾸러미들의 총합이 1000원 이하일 것
+         * 2. 이번 달 수혜 금액을 넘지 않을 것
+         * 3. 기부됐지만 할당되지 않은 기프티콘들의 합이 1000원 이상일 것
+         */
         Boolean availability  = true;
+        LocalDate now = LocalDate.now();
+        if(amount > 1000
+                || !benefitRepository.findByReceiverIdAndThisMonth(receiver.getId(), now.getYear(), now.getMonthValue()).getAvailability()
+                || giftRepository.sumByNotAssigned()<1001)
+            availability = false;
+
 
         ReceiverHomeResponseDto responseDto = ReceiverHomeResponseDto.builder()
                 .availability(availability)

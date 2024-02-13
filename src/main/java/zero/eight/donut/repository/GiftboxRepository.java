@@ -9,8 +9,13 @@ import java.util.Optional;
 
 public interface GiftboxRepository extends JpaRepository<Giftbox, Long> {
     Optional <Giftbox> findById(Long boxId);
-    @Query("SELECT gb FROM Giftbox gb JOIN gb.receiver r WHERE r.id = ?1 and gb.amount > 0")
+
+    @Query("SELECT gb FROM Giftbox gb  WHERE gb.receiver.id = ?1")
     List<Giftbox> findAllByReceiverId(Long receiver_id);
+
     @Query("SELECT gb FROM Giftbox gb JOIN gb.giftList g WHERE g.id = ?1")
     Giftbox findByGiftId(Long giftId);
+
+    @Query("SELECT gb FROM Giftbox gb  WHERE gb.receiver.id = ?1 and gb.isAvailable = true")
+    List<Giftbox> findAllByReceiverIdAndIsAvailable(Long receiver_id);
 }
