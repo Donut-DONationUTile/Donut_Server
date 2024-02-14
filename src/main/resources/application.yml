@@ -2,6 +2,38 @@ spring:
   profiles:
     active: local, gcs
 
+    redis:
+      port: 6379 # 레디스 서버 포트
+      host: ${REDIS} # 레디스 서버 호스트
+
+    datasource:
+      url: ${DATASOURCE_URL}
+      username: ${DATASOURCE_USERNAME}
+      password: ${DATASOURCE_PASSWORD}
+      driver-class-name: com.mysql.cj.jdbc.Driver
+
+    jpa:
+      database-platform: org.hibernate.dialect.MySQLDialect
+      open-in-view: false # 뷰 레이어에서의 지연 로딩이 비활성화(성능 이슈 방지)
+      hibernate:
+        ddl-auto: update
+
+    logging:
+      level:
+        org:
+          hibernate:
+            type:
+              descriptor:
+                sql: info
+
+  secret:
+    key: ${SECRET_KEY}
+    issuer: committers
+    time:
+      access: 2592000000 # 30일
+      refresh: 2592000000 # 30일
+
+
 logging:
   level:
     com.example: DEBUG
