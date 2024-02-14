@@ -4,7 +4,7 @@ spring:
 
     redis:
       port: 6379 # 레디스 서버 포트
-      host: ${REDIS} # 레디스 서버 호스트
+      host: redis # 레디스 서버 호스트
 
     datasource:
       url: ${DATASOURCE_URL}
