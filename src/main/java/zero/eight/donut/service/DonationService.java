@@ -144,7 +144,7 @@ public class DonationService {
         updateDonate(giver, requestDto);
 
         //기부 통계 업데이트
-        updateDonateInfo(giver, requestDto);
+        updateDonateInfo(requestDto);
 
         return ApiResponse.success(Success.DONATE_GIFT_SUCCESS, Map.of("giftId", newGift.getId()));
     }
@@ -206,8 +206,6 @@ public class DonationService {
         String uuid = UUID.randomUUID().toString();
         //이미지 형식 추출
         String ext = requestDto.getGiftImage().getContentType();
-        if(storage==null)
-            log.info("fail to get storage ->{}", storage);
 
         // Google Cloud Storage 이미지 업로드
         BlobInfo blobInfo = storage.create(
@@ -229,7 +227,7 @@ public class DonationService {
                 donation.getCount()+1L);
     }
 
-    private void updateDonateInfo(Giver giver, DonateGiftRequestDto requestDto){
+    private void updateDonateInfo(DonateGiftRequestDto requestDto){
         LocalDate now = LocalDate.now();
         DonationInfo donationInfo = donationInfoRepository.findDonationInfoByMonthAndYear(now.getMonthValue(), now.getYear());
         donationInfo.updateSumCount(
