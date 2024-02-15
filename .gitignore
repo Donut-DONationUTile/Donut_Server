@@ -15,6 +15,7 @@ application-*
 .settings
 .springBeans
 .sts4-cache
+.DS_Store
 bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
@@ -37,3 +38,7 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### gcs access iam ###
+adroit-metric-413519-7d23d8bb1152.json
+adroit-metric-413519-d4e6d7038d34.json

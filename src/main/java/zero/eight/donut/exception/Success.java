@@ -27,6 +27,7 @@ public enum Success {
 
     //201 CREATED SUCCESS
     ASSIGN_BENEFIT_SUCCESS(HttpStatus.CREATED, "Successfully assigned benefits"),
+    DONATE_GIFT_SUCCESS(HttpStatus.CREATED, "Successfully donate gift "),
     CREATE_REPORT_SUCCESS(HttpStatus.CREATED, "Your report is successfully registered"),
     SIGN_IN_SUCCESS(HttpStatus.CREATED, "Sign in successfully"),
     SIGN_UP_SUCCESS(HttpStatus.CREATED, "Successfully signed up"),

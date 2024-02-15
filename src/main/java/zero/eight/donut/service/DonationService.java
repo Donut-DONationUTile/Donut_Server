@@ -1,26 +1,30 @@
 package zero.eight.donut.service;
 
+
+import com.google.cloud.storage.BlobInfo;
+import com.google.cloud.storage.Storage;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import zero.eight.donut.common.response.ApiResponse;
-import zero.eight.donut.domain.Benefit;
-import zero.eight.donut.domain.Gift;
-import zero.eight.donut.domain.Giftbox;
-import zero.eight.donut.domain.Receiver;
+import zero.eight.donut.domain.*;
 import zero.eight.donut.dto.GiftAssignDto;
 import zero.eight.donut.dto.auth.Role;
+import zero.eight.donut.dto.donation.DonateGiftRequestDto;
 import zero.eight.donut.dto.donation.GiftValueDto;
 import zero.eight.donut.dto.donation.GiftboxRequestDto;
+import zero.eight.donut.exception.ApiException;
 import zero.eight.donut.exception.Error;
 import zero.eight.donut.exception.InternalServerErrorException;
 import zero.eight.donut.exception.Success;
-import zero.eight.donut.repository.BenefitRepository;
-import zero.eight.donut.repository.GiftRepository;
-import zero.eight.donut.repository.GiftboxRepository;
+import zero.eight.donut.repository.*;
 
+import java.io.IOException;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -30,10 +34,15 @@ import java.util.stream.Collectors;
 @Service
 public class DonationService {
 
+    @Value("${spring.cloud.gcp.storage.bucket}")
+    private String BUCKET_NAME;
+    private final Storage storage;
     private final AuthUtils authUtils;
     private final BenefitRepository benefitRepository;
     private final GiftRepository giftRepository;
     private final GiftboxRepository giftboxRepository;
+    private final DonationRepository donationRepository;
+    private final DonationInfoRepository donationInfoRepository;
 
     @Transactional
     public ApiResponse<?> assignGiftbox(GiftboxRequestDto giftboxRequestDto) {
@@ -113,6 +122,34 @@ public class DonationService {
     }
 
     @Transactional
+    public ApiResponse<?> donateGift(DonateGiftRequestDto requestDto) throws IOException {
+        // 기부자 여부 검증
+        if (!authUtils.getCurrentUserRole().equals(Role.ROLE_GIVER)) {
+            return ApiResponse.failure(Error.NOT_AUTHENTICATED_EXCEPTION);
+        }
+        Giver giver = authUtils.getGiver();
+
+        //set Default Giftbox
+        Giftbox defaultGiftbox = giftboxRepository.findById(0L)
+                .orElseThrow(()-> new ApiException(Error.GIFTBOX_NOT_FOUND_EXCEPTION));
+
+        //Upload Image to Google Cloud Storage
+        String imgUrl = uploadImageToGCS(requestDto);
+
+        //CREATE Gift
+        Gift newGift = requestDto.toEntity(giver, defaultGiftbox, imgUrl);
+        giftRepository.save(newGift);
+
+        //기부자별 정보 Donation 업데이트
+        updateDonate(giver, requestDto);
+
+        //기부 통계 업데이트
+        updateDonateInfo(requestDto);
+
+        return ApiResponse.success(Success.DONATE_GIFT_SUCCESS, Map.of("giftId", newGift.getId()));
+    }
+
+
     private void setGiftbox(GiftAssignDto giftAssignDto, Giftbox giftbox) {
         log.info("꾸러미-기프티콘 할당 함수 접근");
 
@@ -130,7 +167,7 @@ public class DonationService {
         // 꾸러미 사용 기간 & 남은 금액 갱신
         giftbox.updateDueDateAndAmount(giftAssignDto.getAssignedList().get(0).getDueDate(), giftAssignDto.getAssignedValue());
         log.info("꾸러미 사용 기간 & 남은 금액 갱신 완료");
-        
+
         // 꾸러미 객체 갱신
         giftboxRepository.save(giftbox);
         log.info("꾸러미 객체 갱신 완료");
@@ -162,5 +199,39 @@ public class DonationService {
                 .build();
 
         return giftAssignDto;
+    }
+
+    private String uploadImageToGCS(DonateGiftRequestDto requestDto) throws IOException{
+        //이미지명 uuid 변환
+        String uuid = UUID.randomUUID().toString();
+        //이미지 형식 추출
+        String ext = requestDto.getGiftImage().getContentType();
+
+        // Google Cloud Storage 이미지 업로드
+        BlobInfo blobInfo = storage.create(
+                BlobInfo.newBuilder(BUCKET_NAME, uuid)
+                        .setContentType(ext)
+                        .build(),
+                requestDto.getGiftImage().getInputStream()
+        );
+        log.info("successfully upload image to gcs");
+
+        String imgUrl = "https://storage.googleapis.com/" + BUCKET_NAME + "/" + uuid;
+        return imgUrl;
+    }
+
+    private void updateDonate(Giver giver, DonateGiftRequestDto requestDto){
+        Donation donation = donationRepository.findByGiver(giver);
+        donation.updateSumCount(
+                donation.getSum()+requestDto.getPrice().longValue(),
+                donation.getCount()+1L);
+    }
+
+    private void updateDonateInfo(DonateGiftRequestDto requestDto){
+        LocalDate now = LocalDate.now();
+        DonationInfo donationInfo = donationInfoRepository.findDonationInfoByMonthAndYear(now.getMonthValue(), now.getYear());
+        donationInfo.updateSumCount(
+                donationInfo.getSum()+requestDto.getPrice().longValue(),
+                donationInfo.getCount()+1L);
     }
 }

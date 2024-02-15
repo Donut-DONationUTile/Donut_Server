@@ -21,6 +21,11 @@ repositories {
     mavenCentral()
 }
 
+ext {
+    set('springCloudGcpVersion', "5.0.0")
+    set('springCloudVersion', "2023.0.0")
+}
+
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -38,9 +43,11 @@ dependencies {
     // security
     implementation 'org.springframework.boot:spring-boot-starter-security'
     // google api
-    implementation 'com.google.api-client:google-api-client:2.2.0'
-    implementation 'com.google.api-client:google-api-client-jackson2:2.2.0'
-    implementation group: 'com.google.http-client', name: 'google-http-client-jackson2', version: '1.11.0-beta'
+    implementation 'com.google.api-client:google-api-client:1.31.1'
+    implementation 'com.google.api-client:google-api-client-jackson2:2.0.0'
+    implementation group: 'com.google.http-client', name: 'google-http-client-jackson2', version: '1.42.2'
+    //GCP
+    implementation 'com.google.cloud:spring-cloud-gcp-starter-storage'
     // redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     // jwt
@@ -51,6 +58,12 @@ dependencies {
 
 }
 
+dependencyManagement {
+    imports {
+        mavenBom "com.google.cloud:spring-cloud-gcp-dependencies:${springCloudGcpVersion}"
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
 tasks.named('test') {
     useJUnitPlatform()
 }
