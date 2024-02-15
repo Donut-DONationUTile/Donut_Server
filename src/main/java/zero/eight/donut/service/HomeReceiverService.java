@@ -37,18 +37,9 @@ public class HomeReceiverService {
         }
         Receiver receiver = authUtils.getReceiver();
 
-
         //사용 가능한 꾸러미만 조회
         List<Giftbox> giftboxList = Optional.ofNullable(giftboxRepository.findAllByReceiverIdAndIsAvailable(receiver.getId()))
                 .orElse(Collections.emptyList());
-
-        Long amount = 0L; int sum = 0;
-        if(!giftboxList.isEmpty()){
-            //꾸러미 총액
-            amount = giftboxList.stream().mapToLong(boxInfo -> boxInfo.getAmount()).sum();
-            //기부 됐지만 할당받지 않은 기프티콘들의 합
-            sum = giftRepository.sumByNotAssigned();
-        }
 
         //사용처별 꾸러미 개수 구하기
         Map<String, Integer> storeCountMap = new HashMap<>();
@@ -76,10 +67,10 @@ public class HomeReceiverService {
          */
         Boolean availability  = true;
         LocalDate now = LocalDate.now();
-
+        Long amount = giftboxList.stream().mapToLong(boxInfo -> boxInfo.getAmount()).sum();
         if(amount > 1000
                 || !benefitRepository.findByReceiverIdAndThisMonth(receiver.getId(), now.getYear(), now.getMonthValue()).getAvailability()
-                || sum <1001)
+                || giftRepository.sumByNotAssigned() <1001)
             availability = false;
 
 
