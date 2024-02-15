@@ -96,9 +96,10 @@ public class HistoryGiverService {
         Gift gift = giftOptional.get();
 
         //name of receiver
-        String receiver = Optional.ofNullable(gift.getGiftbox())
-                .map(g -> g.getReceiver().getName())
-                .orElse("not delivered");
+        String receiver = "not delivered";
+        if (gift.getGiftbox() != null && gift.getGiftbox().getReceiver() != null)
+            receiver = gift.getGiftbox().getReceiver().getName();
+
 
         //message
         String message ="haven't received yet";
