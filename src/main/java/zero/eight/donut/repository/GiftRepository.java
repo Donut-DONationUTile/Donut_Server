@@ -14,9 +14,9 @@ public interface GiftRepository extends JpaRepository<Gift, Long> {
     List<Gift> findAllByGiftboxId(Long giftbox_id);
     List<Gift> findAllByGiverIdAndCreatedAtBetween(Long giverId, LocalDateTime startDate, LocalDateTime endDate);
     List<Gift> findByStore(Store store);
-    @Query(value = "SELECT SUM(g.price) FROM Gift g WHERE g.is_assigned = false", nativeQuery = true)
+    @Query(value = "SELECT SUM(g.price) FROM gift g WHERE g.is_assigned = false", nativeQuery = true)
     int sumByNotAssigned();
-    @Query(value = "SELECT SUM(g.sum) FROM Gift g WHERE g.store = :storeName", nativeQuery = true)
+    @Query(value = "SELECT SUM(g.sum) FROM gift g WHERE g.store = :storeName", nativeQuery = true)
     int sumByStoreName(Store storeName);
 
 }

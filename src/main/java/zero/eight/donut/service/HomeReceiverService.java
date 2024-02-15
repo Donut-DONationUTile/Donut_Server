@@ -18,10 +18,7 @@ import zero.eight.donut.repository.GiftRepository;
 import zero.eight.donut.repository.GiftboxRepository;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -40,12 +37,9 @@ public class HomeReceiverService {
         }
         Receiver receiver = authUtils.getReceiver();
 
-
         //사용 가능한 꾸러미만 조회
-        List<Giftbox> giftboxList = giftboxRepository.findAllByReceiverIdAndIsAvailable(receiver.getId());
-
-        //꾸러미 총액
-        Long amount = giftboxList.stream().mapToLong(boxInfo -> boxInfo.getAmount()).sum();
+        List<Giftbox> giftboxList = Optional.ofNullable(giftboxRepository.findAllByReceiverIdAndIsAvailable(receiver.getId()))
+                .orElse(Collections.emptyList());
 
         //사용처별 꾸러미 개수 구하기
         Map<String, Integer> storeCountMap = new HashMap<>();
@@ -73,9 +67,10 @@ public class HomeReceiverService {
          */
         Boolean availability  = true;
         LocalDate now = LocalDate.now();
+        Long amount = giftboxList.stream().mapToLong(boxInfo -> boxInfo.getAmount()).sum();
         if(amount > 1000
                 || !benefitRepository.findByReceiverIdAndThisMonth(receiver.getId(), now.getYear(), now.getMonthValue()).getAvailability()
-                || giftRepository.sumByNotAssigned()<1001)
+                || giftRepository.sumByNotAssigned() <1001)
             availability = false;
 
 

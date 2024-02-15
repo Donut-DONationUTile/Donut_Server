@@ -31,8 +31,11 @@ public class HomeGiverService {
 
         LocalDateTime now = LocalDateTime.now();
         Integer receivers = receiverRepository.countBy();
-        Double donated = donationInfoRepository.findByMonthAndYear(now.getMonthValue(), now.getYear()).doubleValue();
-
+        Double donated = 0.0;
+        Long donationInfo = donationInfoRepository.findByMonthAndYear(now.getMonthValue(), now.getYear());
+        if (donationInfo != null) {
+            donated = donationInfo.doubleValue();
+        }
         GiverHomeResponseDto responseDto =  GiverHomeResponseDto.builder()
                 .receivers(receivers)
                 .donated(donated)
