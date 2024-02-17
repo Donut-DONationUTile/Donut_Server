@@ -15,6 +15,7 @@ public enum Error {
     // 400 BAD REQUEST
     INSUFFICIENT_BALANCE_EXCEPTION(HttpStatus.BAD_REQUEST, "Insufficient balance"),
     INSUFFICIENT_DONATION_EXCEPTION(HttpStatus.BAD_REQUEST, "Insufficient donation amount"),
+    ALREADY_USED_GIFT_EXCEPTION(HttpStatus.BAD_REQUEST, "Already used gift"),
     INVALID_JSON_INPUT_EXCEPTION(HttpStatus.BAD_REQUEST, "입력 형식이 맞지 않습니다."),
 
     // 401 UNAUTHORIZED
