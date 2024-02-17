@@ -2,6 +2,7 @@ package zero.eight.donut.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import zero.eight.donut.common.response.ApiResponse;
@@ -19,7 +20,7 @@ public class DonationController {
     private final DonationService donationService;
 
     @PostMapping("/receiver/assign")
-    public ApiResponse<?> assignGiftbox(GiftboxRequestDto giftboxRequestDto) {
+    public ApiResponse<?> assignGiftbox(@RequestBody GiftboxRequestDto giftboxRequestDto) {
         return donationService.assignGiftbox(giftboxRequestDto);
     }
 
