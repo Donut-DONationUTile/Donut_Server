@@ -1,14 +1,10 @@
 package zero.eight.donut.service;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,15 +23,12 @@ import zero.eight.donut.repository.DonationRepository;
 import zero.eight.donut.repository.GiverRepository;
 import zero.eight.donut.repository.ReceiverRepository;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.security.GeneralSecurityException;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.Month;
-import java.util.Collections;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 @Slf4j
@@ -133,11 +126,14 @@ public class AuthService {
             idToken = GoogleIdToken.parse(new JacksonFactory(), googleToken);
             log.info("token 해체 -> {}", idToken);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            log.info("token 해체 실패");
+            return null;
         }
 
+        /*
+
         try {
-            /** 테스트 **/
+            // 테스트
             String url = "https://oauth2.googleapis.com/tokeninfo?id_token=" + googleToken;
             URL obj = new URL(url);
             HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -177,16 +173,23 @@ public class AuthService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        */
         if (idToken != null) {
+
             log.info("idToken is not null");
             GoogleIdToken.Payload payload = idToken.getPayload();
 
+            if (!tokenVerifier(payload)) {
+                log.info("token 검증 결과 유효하지 않음");
+                return null;
+            }
             // Print user identifier
             String googleId = payload.getSubject();
             log.info("User ID: " + googleId);
 
             // Get profile information from payload
-            boolean emailVerified = Boolean.valueOf(payload.getEmailVerified());
+            boolean emailVerified = payload.getEmailVerified();
 
             // 불필요 정보
 //            String name = (String) payload.get("name");
@@ -201,8 +204,7 @@ public class AuthService {
             }
 
         } else {
-            log.info("Invalid Google token");
-            log.info("애초에 잘못된 토큰이 들어왔음");
+            log.info("Token is NULL");
             // exception
             throw new UnauthorizedException(Error.INVALID_GOOGLE_TOKEN_EXCEPTION);
         }
@@ -386,5 +388,49 @@ public class AuthService {
         log.info("benefit 객체 저장 완료");
         
         return benefit;
+    }
+
+    private Boolean tokenVerifier(GoogleIdToken.Payload payload) {
+
+        // ID 토큰의 iss 클레임 값이 https://accounts.google.com 또는 accounts.google.com와 같은지 확인
+        String iss = (String) payload.get("iss");
+        if (!iss.equals("https://accounts.google.com") && !iss.equals("accounts.google.com")) {
+            return false;
+        }
+
+        // ID 토큰의 aud 클레임 값이 앱의 클라이언트 ID와 같은지 확인
+        String aud = (String) payload.get("aud");
+        if (!aud.equals(CLIENT_ID)) {
+            return false;
+        }
+
+        // ID 토큰의 만료 시간 (exp 클레임)이 지나지 않았는지 확인
+        // 주어진 정수값 (UNIX 시간)
+        long exp = (long) payload.get("exp");
+
+        // UNIX 시간을 밀리초 단위로 변환하고, UTC 기준의 Instant로 변환
+        Instant instant = Instant.ofEpochSecond(exp);
+
+        // 현재 시간 (UTC 기준)
+        Instant currentInstant = Instant.now();
+
+        // 날짜 형식 지정
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+                .withZone(ZoneId.of("UTC"));
+
+        // 결과 출력
+        log.info("주어진 날짜: " + formatter.format(instant));
+        log.info("현재 날짜: " + formatter.format(currentInstant));
+
+        // 날짜 비교
+        if (instant.isAfter(currentInstant)) {
+            log.info("만료 일자가 현재와 같거나 현재보다 이후임: Expired !!!");
+            return false;
+
+        } else {
+            log.info("만료 일자가 현재보다 이전임");
+        }
+
+        return true;
     }
 }

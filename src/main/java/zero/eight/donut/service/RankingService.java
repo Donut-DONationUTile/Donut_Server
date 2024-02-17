@@ -6,6 +6,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import zero.eight.donut.common.response.ApiResponse;
+import zero.eight.donut.config.jwt.AuthUtils;
 import zero.eight.donut.domain.Donation;
 import zero.eight.donut.domain.Giver;
 import zero.eight.donut.dto.auth.Role;
