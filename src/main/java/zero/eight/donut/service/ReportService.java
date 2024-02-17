@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import zero.eight.donut.common.response.ApiResponse;
 import zero.eight.donut.domain.Gift;
 import zero.eight.donut.domain.Giftbox;
+import zero.eight.donut.domain.enums.Status;
 import zero.eight.donut.dto.report.ReportResponseDto;
 import zero.eight.donut.exception.Error;
 import zero.eight.donut.exception.Success;
@@ -30,6 +31,10 @@ public class ReportService {
         Giftbox giftbox = giftboxRepository.findByGiftId(giftId);
         if(giftbox == null)
             return ApiResponse.failure(Error.GIFTBOX_NOT_FOUND_EXCEPTION);
+
+        //이미 사용된 경우
+        if(gift.get().getStatus() == Status.USED)
+            return ApiResponse.failure(Error.ALREADY_USED_GIFT_EXCEPTION);
 
         gift.get().updateStatus("USED");
         Integer amount = giftbox.getAmount() - gift.get().getPrice();

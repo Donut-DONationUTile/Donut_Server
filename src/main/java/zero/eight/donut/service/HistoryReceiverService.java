@@ -23,7 +23,8 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class HistoryReceiverService {
-    static Integer maxAccount = 50000;
+    //월별 최대 지원금액
+    static Integer maxAccount = 100000;
 
     private final AuthUtils authUtils;
     private final GiftboxRepository giftboxRepository;
