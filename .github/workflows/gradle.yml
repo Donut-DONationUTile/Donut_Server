@@ -24,10 +24,10 @@ jobs:
     
     # 체크아웃
     - name: Checkout
-    - uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
-        token: ${{ secrets.TOKEN }}
-        submodules: true
+          token: ${{ secrets.TOKEN }}
+          submodules: true
 
     ## JDK 17
     - name: Set up JDK 17
