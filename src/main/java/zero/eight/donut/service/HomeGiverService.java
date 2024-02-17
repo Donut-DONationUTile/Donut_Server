@@ -18,6 +18,8 @@ import java.time.LocalDateTime;
 @Service
 @RequiredArgsConstructor
 public class HomeGiverService {
+    //월별 최대 지원금액
+    static Double maxAccount = 100000.0;
     private final AuthUtils authUtils;
     private final ReceiverRepository receiverRepository;
     private final DonationInfoRepository donationInfoRepository;
@@ -39,7 +41,7 @@ public class HomeGiverService {
         GiverHomeResponseDto responseDto =  GiverHomeResponseDto.builder()
                 .receivers(receivers)
                 .donated(donated)
-                .need(receivers*50000.0)
+                .need(receivers*maxAccount)
                 .build();
 
         return ApiResponse.success(Success.HOME_GIVER_SUCCESS, responseDto);
