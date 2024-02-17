@@ -191,32 +191,39 @@ public class AuthService {
 
     @Transactional
     public ApiResponse<?> createAccount(AuthRequestDto requestDto) {
+        log.info("계정 생성 함수 진입");
 
         // 아이디 중복 확인
         if (isDuplicatedID(requestDto.getId())) {
             return ApiResponse.failure(Error.DUPLICATED_ID);
         }
+        log.info("아이디 중복 확인 완료");
 
         // 아이디, 비밀번호로 Receiver 객체 생성
         Receiver receiver = Receiver.builder()
                 .name(requestDto.getId())
                 .password(requestDto.getPassword())
                 .build();
+        log.info("아이디, 비밀번호로 수혜자(Receiver) 객체 생성 완료");
 
         // 비밀번호 암호화
         receiver.encryptPassword(bCryptPasswordEncoder);
+        log.info("비밀번호 암호화 완료: encryptPassword -> {}", receiver.getPassword());
 
         // Receiver 객체 저장
         receiverRepository.save(receiver);
+        log.info("Receiver 객체 저장 완료");
 
         // receiver로 benefit 생성
         Benefit benefit = createBenefit(receiver);
         log.info("benefit -> {}", benefit);
+        log.info("receiver로 benefit 생성 완료");
 
         return ApiResponse.success(Success.SIGN_UP_SUCCESS);
     }
 
     public boolean isDuplicatedID(String id) {
+        log.info("아이디 중복 확인 함수 진입");
         return !receiverRepository.findByName(id).isEmpty();
     }
 
@@ -292,14 +299,19 @@ public class AuthService {
 
     @Transactional
     private Donation createDonation(Giver giver) {
+
+        log.info("기부자별 기부 정보 생성 함수로 진입");
+        
         Donation donation = Donation.builder()
                 .giver(giver)
                 .sum(0L)
                 .count(0L)
                 .report(0)
                 .build();
-
+        log.info("donation 객체 생성 완료");
+        
         donationRepository.save(donation);
+        log.info("donation 객체 저장 완료");
 
         return donation;
     }
@@ -307,15 +319,20 @@ public class AuthService {
     @Transactional
     private Benefit createBenefit(Receiver receiver) {
 
+        log.info("수혜자 정보 생성 함수로 진입");
+
         // 현재 시간 가져오기
         LocalDateTime currentTime = LocalDateTime.now();
+        log.info("현재 시간 가져오기 완료 -> {}", currentTime);
 
         // 현재 월 가져오기
         Month currentMonth = currentTime.getMonth();
         int month = currentMonth.getValue();
+        log.info("현재 월 가져오기 완료 -> {}", month);
 
         // 현재 연도 가져오기
         int year = currentTime.getYear();
+        log.info("현재 연도 가져오기 완료 -> {}", year);
 
         Benefit benefit = Benefit.builder()
                 .sum(0)
@@ -324,8 +341,11 @@ public class AuthService {
                 .availability(true)
                 .receiver(receiver)
                 .build();
+        log.info("benefit 객체 생성 완료");
 
         benefitRepository.save(benefit);
+        log.info("benefit 객체 저장 완료");
+        
         return benefit;
     }
 }
