@@ -8,6 +8,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import zero.eight.donut.common.response.ApiResponse;
 import zero.eight.donut.dto.auth.AuthRequestDto;
 import zero.eight.donut.dto.auth.AuthTestDto;
+import zero.eight.donut.dto.auth.GoogleLoginDto;
 import zero.eight.donut.service.AuthService;
 
 @Slf4j
@@ -19,8 +20,8 @@ public class AuthController {
 
     // 기부자 구글 로그인
     @PostMapping("/giver/signin")
-    public ApiResponse<?> googleSignIn() {
-        return authService.googleSignIn(((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest().getHeader("Authorization"));
+    public ApiResponse<?> googleSignIn(@RequestBody GoogleLoginDto googleLoginDto) {
+        return authService.googleSignIn(googleLoginDto.getIdToken());
     }
 
     @PostMapping("/giver/test")

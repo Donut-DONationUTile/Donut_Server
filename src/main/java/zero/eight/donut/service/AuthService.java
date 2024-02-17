@@ -3,9 +3,12 @@ package zero.eight.donut.service;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +20,6 @@ import zero.eight.donut.domain.Giver;
 import zero.eight.donut.domain.Receiver;
 import zero.eight.donut.dto.auth.*;
 import zero.eight.donut.exception.Error;
-import zero.eight.donut.exception.InternalServerErrorException;
 import zero.eight.donut.exception.Success;
 import zero.eight.donut.exception.UnauthorizedException;
 import zero.eight.donut.repository.BenefitRepository;
@@ -25,7 +27,11 @@ import zero.eight.donut.repository.DonationRepository;
 import zero.eight.donut.repository.GiverRepository;
 import zero.eight.donut.repository.ReceiverRepository;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -37,13 +43,8 @@ import java.util.Optional;
 @Service
 public class AuthService {
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////CLIENT ID 수정 필요////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    private static String CLIENT_ID = "";
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    @Value("${google.clientid}")
+    private static String CLIENT_ID;
     private final GiverRepository giverRepository;
     private final ReceiverRepository receiverRepository;
     private final BenefitRepository benefitRepository;
@@ -86,7 +87,7 @@ public class AuthService {
         giver = giverRepository.findByEmail(email);
 
         MemberDto member = MemberDto.builder()
-                .name(giver.get().getEmail())
+                .name(giver.get().getName())
                 .role(Role.ROLE_GIVER)
                 .build();
 
@@ -109,7 +110,7 @@ public class AuthService {
     }
 
     @Transactional
-    private void googleSignUp(String email) {
+    protected void googleSignUp(String email) {
         String name = getNameFromEmail(email);
         Giver giver = Giver.builder()
                 .name(name)
@@ -124,48 +125,86 @@ public class AuthService {
     }
 
     private GoogleIdToken verifyEmail(String googleToken) {
-
-        GoogleIdToken idToken;
         
+        log.info("구글 토큰 검증 함수 진입");
+
+        GoogleIdToken idToken = null;
+        try {
+            idToken = GoogleIdToken.parse(new JacksonFactory(), googleToken);
+            log.info("token 해체 -> {}", idToken);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        try {
+            /** 테스트 **/
+            String url = "https://oauth2.googleapis.com/tokeninfo?id_token=" + googleToken;
+            URL obj = new URL(url);
+            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+            con.setRequestMethod("GET");
+
+            int responseCode = con.getResponseCode();
+            log.info("Response Code: " + responseCode);
+
+            StringBuilder response;
+            try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
+                String inputLine;
+                response = new StringBuilder();
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+            }
+            // 응답 처리
+            log.info("Token Info: " + response.toString());
+        }
+        catch (Exception e) {
+            log.info("에러");
+        }
+
+
         GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new JacksonFactory())
                 // Specify the CLIENT_ID of the app that accesses the backend:
                 .setAudience(Collections.singletonList(CLIENT_ID))
                 // Or, if multiple clients access the backend:
                 //.setAudience(Arrays.asList(CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3))
                 .build();
+        log.info("verifier 생성 -> {}", String.valueOf(verifier));
 
         try {
             idToken = verifier.verify(googleToken);
-            if (idToken != null) {
-                GoogleIdToken.Payload payload = idToken.getPayload();
+        } catch (GeneralSecurityException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        if (idToken != null) {
+            log.info("idToken is not null");
+            GoogleIdToken.Payload payload = idToken.getPayload();
 
-                // Print user identifier
-                String googleId = payload.getSubject();
-                log.info("User ID: " + googleId);
+            // Print user identifier
+            String googleId = payload.getSubject();
+            log.info("User ID: " + googleId);
 
-                // Get profile information from payload
-                boolean emailVerified = Boolean.valueOf(payload.getEmailVerified());
+            // Get profile information from payload
+            boolean emailVerified = Boolean.valueOf(payload.getEmailVerified());
 
-                // 불필요 정보
+            // 불필요 정보
 //            String name = (String) payload.get("name");
 //            String pictureUrl = (String) payload.get("picture");
 //            String locale = (String) payload.get("locale");
 //            String familyName = (String) payload.get("family_name");
 //            String givenName = (String) payload.get("given_name");
 
-                if (!emailVerified) {
-                    return null;
-                }
-
-            } else {
-                log.info("Invalid Google token");
-                // exception
-                throw new UnauthorizedException(Error.INVALID_GOOGLE_TOKEN_EXCEPTION);
+            if (!emailVerified) {
+                log.info("email is not verified");
+                return null;
             }
-        } catch (GeneralSecurityException e) {
+
+        } else {
+            log.info("Invalid Google token");
+            log.info("애초에 잘못된 토큰이 들어왔음");
+            // exception
             throw new UnauthorizedException(Error.INVALID_GOOGLE_TOKEN_EXCEPTION);
-        } catch (IOException e) {
-            throw new InternalServerErrorException(Error.INTERNAL_SERVER_ERROR);
         }
 
         return idToken;
@@ -298,7 +337,7 @@ public class AuthService {
     }
 
     @Transactional
-    private Donation createDonation(Giver giver) {
+    protected Donation createDonation(Giver giver) {
 
         log.info("기부자별 기부 정보 생성 함수로 진입");
         
@@ -317,7 +356,7 @@ public class AuthService {
     }
 
     @Transactional
-    private Benefit createBenefit(Receiver receiver) {
+    protected Benefit createBenefit(Receiver receiver) {
 
         log.info("수혜자 정보 생성 함수로 진입");
 

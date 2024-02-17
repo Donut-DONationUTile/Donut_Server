@@ -26,9 +26,9 @@ import java.util.concurrent.TimeUnit;
 public class JwtUtils {
 
     @Value("${secret.time.access}")
-    private long accessTokenTime; // 30분;
+    private long accessTokenTime; // 30일
     @Value("${secret.time.refresh}")
-    private long refreshTokenTime; // 14일;
+    private long refreshTokenTime; // 30일
     @Value("${secret.key}")
     private String jwtSecretKey;
     private final StringRedisTemplate stringRedisTemplate;
@@ -93,6 +93,8 @@ public class JwtUtils {
             throw new UnauthorizedException(Error.INVALID_JWT_EXCEPTION);
         } catch (ExpiredJwtException e) {
             throw new UnauthorizedException(Error.JWT_EXPIRED);
+        } catch (UnauthorizedException e) {
+            return false;
         }
     }
 
