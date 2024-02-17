@@ -1,11 +1,10 @@
 package zero.eight.donut.service;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
-import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +16,6 @@ import zero.eight.donut.domain.Giver;
 import zero.eight.donut.domain.Receiver;
 import zero.eight.donut.dto.auth.*;
 import zero.eight.donut.exception.Error;
-import zero.eight.donut.exception.InternalServerErrorException;
 import zero.eight.donut.exception.Success;
 import zero.eight.donut.exception.UnauthorizedException;
 import zero.eight.donut.repository.BenefitRepository;
@@ -26,10 +24,11 @@ import zero.eight.donut.repository.GiverRepository;
 import zero.eight.donut.repository.ReceiverRepository;
 
 import java.io.IOException;
-import java.security.GeneralSecurityException;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.Month;
-import java.util.Collections;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 @Slf4j
@@ -37,13 +36,8 @@ import java.util.Optional;
 @Service
 public class AuthService {
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////CLIENT ID 수정 필요////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    private static String CLIENT_ID = "";
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    @Value("${google.clientid}")
+    private String CLIENT_ID; // @Value 어노테이션을 사용하여 값을 주입할 때, 주입 대상 필드가 static으로 선언되어 있으면 주입이 제대로 이루어지지 않을 수 있음
     private final GiverRepository giverRepository;
     private final ReceiverRepository receiverRepository;
     private final BenefitRepository benefitRepository;
@@ -86,7 +80,7 @@ public class AuthService {
         giver = giverRepository.findByEmail(email);
 
         MemberDto member = MemberDto.builder()
-                .name(giver.get().getEmail())
+                .name(giver.get().getName())
                 .role(Role.ROLE_GIVER)
                 .build();
 
@@ -109,7 +103,7 @@ public class AuthService {
     }
 
     @Transactional
-    private void googleSignUp(String email) {
+    protected void googleSignUp(String email) {
         String name = getNameFromEmail(email);
         Giver giver = Giver.builder()
                 .name(name)
@@ -124,48 +118,95 @@ public class AuthService {
     }
 
     private GoogleIdToken verifyEmail(String googleToken) {
-
-        GoogleIdToken idToken;
         
+        log.info("구글 토큰 검증 함수 진입");
+
+        GoogleIdToken idToken = null;
+        try {
+            idToken = GoogleIdToken.parse(new JacksonFactory(), googleToken);
+            log.info("token 해체 -> {}", idToken);
+        } catch (IOException e) {
+            log.info("token 해체 실패");
+            return null;
+        }
+
+        /*
+
+        try {
+            // 테스트
+            String url = "https://oauth2.googleapis.com/tokeninfo?id_token=" + googleToken;
+            URL obj = new URL(url);
+            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+            con.setRequestMethod("GET");
+
+            int responseCode = con.getResponseCode();
+            log.info("Response Code: " + responseCode);
+
+            StringBuilder response;
+            try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
+                String inputLine;
+                response = new StringBuilder();
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+            }
+            // 응답 처리
+            log.info("Token Info: " + response.toString());
+        }
+        catch (Exception e) {
+            log.info("에러");
+        }
+
+
         GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new JacksonFactory())
                 // Specify the CLIENT_ID of the app that accesses the backend:
                 .setAudience(Collections.singletonList(CLIENT_ID))
                 // Or, if multiple clients access the backend:
                 //.setAudience(Arrays.asList(CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3))
                 .build();
+        log.info("verifier 생성 -> {}", String.valueOf(verifier));
 
         try {
             idToken = verifier.verify(googleToken);
-            if (idToken != null) {
-                GoogleIdToken.Payload payload = idToken.getPayload();
+        } catch (GeneralSecurityException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
-                // Print user identifier
-                String googleId = payload.getSubject();
-                log.info("User ID: " + googleId);
+        */
+        if (idToken != null) {
 
-                // Get profile information from payload
-                boolean emailVerified = Boolean.valueOf(payload.getEmailVerified());
+            log.info("idToken is not null");
+            GoogleIdToken.Payload payload = idToken.getPayload();
 
-                // 불필요 정보
+            if (!tokenVerifier(payload)) {
+                log.info("token 검증 결과 유효하지 않음");
+                return null;
+            }
+            // Print user identifier
+            String googleId = payload.getSubject();
+            log.info("User ID: " + googleId);
+
+            // Get profile information from payload
+            boolean emailVerified = payload.getEmailVerified();
+
+            // 불필요 정보
 //            String name = (String) payload.get("name");
 //            String pictureUrl = (String) payload.get("picture");
 //            String locale = (String) payload.get("locale");
 //            String familyName = (String) payload.get("family_name");
 //            String givenName = (String) payload.get("given_name");
 
-                if (!emailVerified) {
-                    return null;
-                }
-
-            } else {
-                log.info("Invalid Google token");
-                // exception
-                throw new UnauthorizedException(Error.INVALID_GOOGLE_TOKEN_EXCEPTION);
+            if (!emailVerified) {
+                log.info("email is not verified");
+                return null;
             }
-        } catch (GeneralSecurityException e) {
+
+        } else {
+            log.info("Token is NULL");
+            // exception
             throw new UnauthorizedException(Error.INVALID_GOOGLE_TOKEN_EXCEPTION);
-        } catch (IOException e) {
-            throw new InternalServerErrorException(Error.INTERNAL_SERVER_ERROR);
         }
 
         return idToken;
@@ -191,32 +232,39 @@ public class AuthService {
 
     @Transactional
     public ApiResponse<?> createAccount(AuthRequestDto requestDto) {
+        log.info("계정 생성 함수 진입");
 
         // 아이디 중복 확인
         if (isDuplicatedID(requestDto.getId())) {
             return ApiResponse.failure(Error.DUPLICATED_ID);
         }
+        log.info("아이디 중복 확인 완료");
 
         // 아이디, 비밀번호로 Receiver 객체 생성
         Receiver receiver = Receiver.builder()
                 .name(requestDto.getId())
                 .password(requestDto.getPassword())
                 .build();
+        log.info("아이디, 비밀번호로 수혜자(Receiver) 객체 생성 완료");
 
         // 비밀번호 암호화
         receiver.encryptPassword(bCryptPasswordEncoder);
+        log.info("비밀번호 암호화 완료: encryptPassword -> {}", receiver.getPassword());
 
         // Receiver 객체 저장
         receiverRepository.save(receiver);
+        log.info("Receiver 객체 저장 완료");
 
         // receiver로 benefit 생성
         Benefit benefit = createBenefit(receiver);
         log.info("benefit -> {}", benefit);
+        log.info("receiver로 benefit 생성 완료");
 
         return ApiResponse.success(Success.SIGN_UP_SUCCESS);
     }
 
     public boolean isDuplicatedID(String id) {
+        log.info("아이디 중복 확인 함수 진입");
         return !receiverRepository.findByName(id).isEmpty();
     }
 
@@ -291,31 +339,41 @@ public class AuthService {
     }
 
     @Transactional
-    private Donation createDonation(Giver giver) {
+    protected Donation createDonation(Giver giver) {
+
+        log.info("기부자별 기부 정보 생성 함수로 진입");
+        
         Donation donation = Donation.builder()
                 .giver(giver)
                 .sum(0L)
                 .count(0L)
                 .report(0)
                 .build();
-
+        log.info("donation 객체 생성 완료");
+        
         donationRepository.save(donation);
+        log.info("donation 객체 저장 완료");
 
         return donation;
     }
 
     @Transactional
-    private Benefit createBenefit(Receiver receiver) {
+    protected Benefit createBenefit(Receiver receiver) {
+
+        log.info("수혜자 정보 생성 함수로 진입");
 
         // 현재 시간 가져오기
         LocalDateTime currentTime = LocalDateTime.now();
+        log.info("현재 시간 가져오기 완료 -> {}", currentTime);
 
         // 현재 월 가져오기
         Month currentMonth = currentTime.getMonth();
         int month = currentMonth.getValue();
+        log.info("현재 월 가져오기 완료 -> {}", month);
 
         // 현재 연도 가져오기
         int year = currentTime.getYear();
+        log.info("현재 연도 가져오기 완료 -> {}", year);
 
         Benefit benefit = Benefit.builder()
                 .sum(0)
@@ -324,8 +382,74 @@ public class AuthService {
                 .availability(true)
                 .receiver(receiver)
                 .build();
+        log.info("benefit 객체 생성 완료");
 
         benefitRepository.save(benefit);
+        log.info("benefit 객체 저장 완료");
+        
         return benefit;
+    }
+
+    private Boolean tokenVerifier(GoogleIdToken.Payload payload) {
+        
+        log.info("tokenVerifier 진입");
+
+        // ID 토큰의 iss 클레임 값이 https://accounts.google.com 또는 accounts.google.com와 같은지 확인
+        String iss = (String) payload.get("iss");
+        log.info("iss -> {}", iss);
+        
+        if (!iss.equals("https://accounts.google.com") && !iss.equals("accounts.google.com")) {
+            log.info("iss 필드 오류");
+            return false;
+        }
+        log.info("iss 필드 검증 완료: 통과");
+
+        // ID 토큰의 aud 클레임 값이 앱의 클라이언트 ID와 같은지 확인
+        String aud = (String) payload.get("aud");
+        log.info("aud -> {}", aud);
+        log.info("CLIENT_ID -> {}", CLIENT_ID);
+
+        if (!aud.equals(CLIENT_ID)) {
+            log.info("aud 필드 오류");
+            return false;
+        }
+        log.info("aud 필드 검증 완료: 통과");
+
+        // ID 토큰의 만료 시간 (exp 클레임)이 지나지 않았는지 확인
+        // 주어진 정수값 (UNIX 시간)
+        long exp = (long) payload.get("exp");
+        log.info("exp -> {}", exp);
+
+        // UNIX 시간을 밀리초 단위로 변환하고, UTC 기준의 Instant로 변환
+        Instant instant = Instant.ofEpochSecond(exp);
+
+        // 현재 시간 (UTC 기준)
+        Instant currentInstant = Instant.now();
+
+        // 날짜 형식 지정
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+                .withZone(ZoneId.of("UTC"));
+
+        // 결과 출력
+        log.info("주어진 날짜: " + formatter.format(instant));
+        log.info("현재 날짜: " + formatter.format(currentInstant));
+
+        // UTC 기준의 UNIX 시간 가져오기 (초 단위)
+        long currentUnixTime = currentInstant.getEpochSecond();
+
+        // 결과 출력
+        log.info("현재 UTC 기준의 UNIX 시간: " + currentUnixTime);
+
+        // 날짜 비교
+        if (exp < currentUnixTime) {
+            log.info("만료 일자가 현재보다 이전임: Expired !!!");
+            return false;
+
+        } else {
+            log.info("만료 일자가 현재와 같거나 현재보다 이후임");
+            log.info("exp 필드 검증 완료: 통과");
+        }
+
+        return true;
     }
 }

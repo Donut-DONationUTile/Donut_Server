@@ -4,13 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import zero.eight.donut.common.response.ApiResponse;
-import zero.eight.donut.domain.Receiver;
+import zero.eight.donut.config.jwt.AuthUtils;
 import zero.eight.donut.dto.auth.Role;
 import zero.eight.donut.dto.home.giver.GiverHomeResponseDto;
 import zero.eight.donut.exception.Error;
 import zero.eight.donut.exception.Success;
 import zero.eight.donut.repository.DonationInfoRepository;
-import zero.eight.donut.repository.GiverRepository;
 import zero.eight.donut.repository.ReceiverRepository;
 
 import java.time.LocalDateTime;

@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import zero.eight.donut.common.response.ApiResponse;
-import zero.eight.donut.service.AuthUtils;
 import zero.eight.donut.service.HomeReceiverService;
 
 @RestController
