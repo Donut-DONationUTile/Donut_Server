@@ -65,6 +65,7 @@ dependencyManagement {
     }
 }
 
+//yml submodule
 task copyYML(type: Copy){
     copy{
         from './Donut-Server-yml/src/main/resources'
