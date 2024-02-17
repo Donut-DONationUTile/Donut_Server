@@ -15,7 +15,6 @@ public enum Error {
     // 400 BAD REQUEST
     INSUFFICIENT_BALANCE_EXCEPTION(HttpStatus.BAD_REQUEST, "Insufficient balance"),
     INSUFFICIENT_DONATION_EXCEPTION(HttpStatus.BAD_REQUEST, "Insufficient donation amount"),
-    ALREADY_USED_GIFT_EXCEPTION(HttpStatus.BAD_REQUEST, "Already used gift"),
     INVALID_JSON_INPUT_EXCEPTION(HttpStatus.BAD_REQUEST, "입력 형식이 맞지 않습니다."),
 
     // 401 UNAUTHORIZED
@@ -43,7 +42,9 @@ public enum Error {
 
     // 409 CONFLICT
     DUPLICATED_ID(HttpStatus.CONFLICT, "Failed due to duplicate ID"),
+    ALREADY_USED_GIFT_EXCEPTION(HttpStatus.BAD_REQUEST, "Already used gift"),
     GIFT_EXIST_EXCEPTION(HttpStatus.CONFLICT, "이미 존재하는 기프티콘입니다."),
+
 
     // 500 INTERNAL SERVER ERROR
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error"),
