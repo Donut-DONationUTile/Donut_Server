@@ -40,5 +40,5 @@ out/
 .vscode/
 
 ### gcs access iam ###
-adroit-metric-413519-7d23d8bb1152.json
+*.json
 adroit-metric-413519-d4e6d7038d34.json
