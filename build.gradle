@@ -64,6 +64,15 @@ dependencyManagement {
         mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
     }
 }
+
+task copyYML(type: Copy){
+    copy{
+        from './Donut-Server-yml/src/main/resources'
+        include "*.yml" , "*.json"
+        into './donut/src/main/resources'
+    }
+}
+
 tasks.named('test') {
     useJUnitPlatform()
 }
