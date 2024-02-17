@@ -1,0 +1,3 @@
+[submodule "Donut-Server-yml"]
+	path = Donut-Server-yml
+	url = https://github.com/Donut-DONationUTile/Donut-Server-yml.git
