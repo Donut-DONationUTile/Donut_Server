@@ -37,7 +37,7 @@ import java.util.Optional;
 public class AuthService {
 
     @Value("${google.clientid}")
-    private static String CLIENT_ID;
+    private String CLIENT_ID; // @Value 어노테이션을 사용하여 값을 주입할 때, 주입 대상 필드가 static으로 선언되어 있으면 주입이 제대로 이루어지지 않을 수 있음
     private final GiverRepository giverRepository;
     private final ReceiverRepository receiverRepository;
     private final BenefitRepository benefitRepository;
@@ -391,22 +391,34 @@ public class AuthService {
     }
 
     private Boolean tokenVerifier(GoogleIdToken.Payload payload) {
+        
+        log.info("tokenVerifier 진입");
 
         // ID 토큰의 iss 클레임 값이 https://accounts.google.com 또는 accounts.google.com와 같은지 확인
         String iss = (String) payload.get("iss");
+        log.info("iss -> {}", iss);
+        
         if (!iss.equals("https://accounts.google.com") && !iss.equals("accounts.google.com")) {
+            log.info("iss 필드 오류");
             return false;
         }
+        log.info("iss 필드 검증 완료: 통과");
 
         // ID 토큰의 aud 클레임 값이 앱의 클라이언트 ID와 같은지 확인
         String aud = (String) payload.get("aud");
+        log.info("aud -> {}", aud);
+        log.info("CLIENT_ID -> {}", CLIENT_ID);
+
         if (!aud.equals(CLIENT_ID)) {
+            log.info("aud 필드 오류");
             return false;
         }
+        log.info("aud 필드 검증 완료: 통과");
 
         // ID 토큰의 만료 시간 (exp 클레임)이 지나지 않았는지 확인
         // 주어진 정수값 (UNIX 시간)
         long exp = (long) payload.get("exp");
+        log.info("exp -> {}", exp);
 
         // UNIX 시간을 밀리초 단위로 변환하고, UTC 기준의 Instant로 변환
         Instant instant = Instant.ofEpochSecond(exp);
@@ -422,13 +434,20 @@ public class AuthService {
         log.info("주어진 날짜: " + formatter.format(instant));
         log.info("현재 날짜: " + formatter.format(currentInstant));
 
+        // UTC 기준의 UNIX 시간 가져오기 (초 단위)
+        long currentUnixTime = currentInstant.getEpochSecond();
+
+        // 결과 출력
+        log.info("현재 UTC 기준의 UNIX 시간: " + currentUnixTime);
+
         // 날짜 비교
-        if (instant.isAfter(currentInstant)) {
-            log.info("만료 일자가 현재와 같거나 현재보다 이후임: Expired !!!");
+        if (exp < currentUnixTime) {
+            log.info("만료 일자가 현재보다 이전임: Expired !!!");
             return false;
 
         } else {
-            log.info("만료 일자가 현재보다 이전임");
+            log.info("만료 일자가 현재와 같거나 현재보다 이후임");
+            log.info("exp 필드 검증 완료: 통과");
         }
 
         return true;
