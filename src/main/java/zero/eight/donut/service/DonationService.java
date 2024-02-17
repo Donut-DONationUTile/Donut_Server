@@ -70,7 +70,7 @@ public class DonationService {
             log.info("가용 잔액 부족(INSUFFICIENT_BALANCE_EXCEPTION)");
             return ApiResponse.failure(Error.INSUFFICIENT_BALANCE_EXCEPTION);
         }
-        else if (giftRepository.sumByStoreName(giftboxRequestDto.getStore()) < giftboxRequestDto.getPrice()) {
+        else if (giftRepository.sumByStoreName(giftboxRequestDto.getStore().toString()) < giftboxRequestDto.getPrice()) {
             // 기부 금액 부족 시(기부 부족 오류)
             log.info("기부 금액 부족(INSUFFICIENT_DONATION_EXCEPTION)");
             return ApiResponse.failure(Error.INSUFFICIENT_DONATION_EXCEPTION);
@@ -78,7 +78,7 @@ public class DonationService {
         log.info("할당 금액 검증 완료");
 
         // 사용처에 따른 기프티콘 추출
-        List<Gift> giftList = giftRepository.findByStore(giftboxRequestDto.getStore());
+        List<Gift> giftList = giftRepository.findByStoreAndIsAssigned(giftboxRequestDto.getStore().toString());
         log.info("사용처에 따른 기프티콘 추출 완료: store -> {}", giftboxRequestDto.getStore());
 
         // 추출된 기프티콘 리스트에서 기프티콘, 가격, 사용 기한으로 새로운 리스트 생성
@@ -119,7 +119,7 @@ public class DonationService {
         setGiftbox(assignDto, giftbox);
         log.info("꾸러미에 기프티콘 할당 완료");
 
-        return ApiResponse.success(Success.ASSIGN_BENEFIT_SUCCESS);
+        return ApiResponse.success(Success.ASSIGN_BENEFIT_SUCCESS, Map.of("giftboxId", giftbox.getId()));
     }
 
     @Transactional
