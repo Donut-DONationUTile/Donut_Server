@@ -52,7 +52,6 @@ jobs:
        host:  ${{ secrets.VM_INSTANCE }}
        username: ${{ secrets.SSH_USERNAME }}
        key: ${{ secrets.SSH_PRIVATE_KEY }}
-       passphrase: ${{ secrets.SSH_PASSPHRASE }}
        envs: GITHUB_SHA
        script: |
          sudo docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
