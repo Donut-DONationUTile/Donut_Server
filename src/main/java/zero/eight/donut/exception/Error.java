@@ -42,7 +42,9 @@ public enum Error {
 
     // 409 CONFLICT
     DUPLICATED_ID(HttpStatus.CONFLICT, "Failed due to duplicate ID"),
+    ALREADY_USED_GIFT_EXCEPTION(HttpStatus.BAD_REQUEST, "Already used gift"),
     GIFT_EXIST_EXCEPTION(HttpStatus.CONFLICT, "이미 존재하는 기프티콘입니다."),
+
 
     // 500 INTERNAL SERVER ERROR
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error"),
