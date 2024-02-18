@@ -18,4 +18,5 @@ public class GiverDonationDetailResponseDto {
     private Boolean isAssigned;
     private Status status;
     private String message;
+    private LocalDateTime donateDate;
 }

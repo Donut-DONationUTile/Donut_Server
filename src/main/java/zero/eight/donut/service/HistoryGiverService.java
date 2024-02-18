@@ -39,11 +39,13 @@ public class HistoryGiverService {
 
     @Transactional
     public ApiResponse<?> getDonationList(LocalDateTime donateDate){
+        log.info("기부자 검증 시작");
         //기부자 여부 검증
         if (!authUtils.getCurrentUserRole().equals(Role.ROLE_GIVER)) {
             return ApiResponse.failure(Error.NOT_AUTHENTICATED_EXCEPTION);
         }
         Giver giver = authUtils.getGiver();
+        log.info("기부자 정보 확인 -> {}", giver.getName());
 
         //기부한 기간 계산
         Integer period = Period.between(giver.getCreatedAt().toLocalDate(), LocalDate.now()).getYears();
@@ -66,15 +68,14 @@ public class HistoryGiverService {
 
             //gift 개별 정보 가져오기
             donationList.add(Donation.builder()
-                    .giftId(gift.getId())
-                    .product(gift.getProduct())
-                    .price(gift.getPrice())
-                    .dueDate(gift.getDueDate())
-                    .status(gift.getStatus())
-                    .isAssigned(gift.getIsAssigned())
+                            .giftId(gift.getId())
+                            .product(gift.getProduct())
+                            .price(gift.getPrice())
+                            .dueDate(gift.getDueDate())
+                            .status(gift.getStatus())
+                            .isAssigned(gift.getIsAssigned())
                     .build());
         }
-
 
         GiverDonationListResponseDto responseDto = GiverDonationListResponseDto.builder()
                 .period(period)
@@ -117,6 +118,7 @@ public class HistoryGiverService {
                 .isAssigned(gift.getIsAssigned())
                 .status(gift.getStatus())
                 .message(message)
+                .donateDate(gift.getCreatedAt())
                 .build();
 
         return ApiResponse.success(Success.GET_HISTORY_GIVER_DONATION_SUCCESS, responseDto);
