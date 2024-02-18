@@ -6,7 +6,7 @@ import lombok.Getter;
 public enum Store {
     CU("CU"),
     GS25("GS25"),
-    SEVENELEVEN("SEVENELEVEN"),
+    SEVENELEVEN("7-ELEVEN"),
     EMART24("EMART24"),
     MINISTOP("MINISTOP");
 
