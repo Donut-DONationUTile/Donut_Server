@@ -66,12 +66,24 @@ public class HistoryGiverService {
 
             //gift 개별 정보 가져오기
             donationList.add(Donation.builder()
-                    .giftId(gift.getId())
-                    .product(gift.getProduct())
-                    .price(gift.getPrice())
-                    .dueDate(gift.getDueDate())
-                    .status(gift.getStatus())
-                    .isAssigned(gift.getIsAssigned())
+                            .giftId(gift.getId())
+                            .product(gift.getProduct())
+                            .price(gift.getPrice())
+                            .dueDate(gift.getDueDate())
+                            .status(gift.getStatus())
+                            .isAssigned(gift.getIsAssigned())
+                    .build());
+        }
+
+        //조회할 기부 목록이 없을 경우
+        if (donationList.isEmpty()) {
+            donationList.add(Donation.builder()
+                    .giftId(null)
+                    .product(null)
+                    .price(null)
+                    .dueDate(null)
+                    .status(null)
+                    .isAssigned(null)
                     .build());
         }
 
