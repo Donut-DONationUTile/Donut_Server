@@ -118,6 +118,7 @@ public class HistoryGiverService {
                 .isAssigned(gift.getIsAssigned())
                 .status(gift.getStatus())
                 .message(message)
+                .donateDate(gift.getCreatedAt())
                 .build();
 
         return ApiResponse.success(Success.GET_HISTORY_GIVER_DONATION_SUCCESS, responseDto);
