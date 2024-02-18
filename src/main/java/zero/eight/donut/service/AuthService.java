@@ -1,6 +1,8 @@
 package zero.eight.donut.service;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,11 +27,13 @@ import zero.eight.donut.repository.GiverRepository;
 import zero.eight.donut.repository.ReceiverRepository;
 
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.Optional;
 
 @Slf4j
@@ -158,7 +162,7 @@ public class AuthService {
         catch (Exception e) {
             log.info("에러");
         }
-
+        */
 
         GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new JacksonFactory())
                 // Specify the CLIENT_ID of the app that accesses the backend:
@@ -170,22 +174,21 @@ public class AuthService {
 
         try {
             idToken = verifier.verify(googleToken);
-        } catch (GeneralSecurityException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
+        } catch (GeneralSecurityException | IOException e) {
             throw new RuntimeException(e);
         }
 
-        */
+
         if (idToken != null) {
 
             log.info("idToken is not null");
             GoogleIdToken.Payload payload = idToken.getPayload();
 
-            if (!tokenVerifier(payload)) {
-                log.info("token 검증 결과 유효하지 않음");
-                return null;
-            }
+//            if (!tokenVerifier(payload)) {
+//                log.info("token 검증 결과 유효하지 않음");
+//                return null;
+//            }
+
             // Print user identifier
             String googleId = payload.getSubject();
             log.info("User ID: " + googleId);
@@ -392,6 +395,7 @@ public class AuthService {
         return benefit;
     }
 
+    // 구글 토큰 자체 검증 함수
     private Boolean tokenVerifier(GoogleIdToken.Payload payload) {
         
         log.info("tokenVerifier 진입");
