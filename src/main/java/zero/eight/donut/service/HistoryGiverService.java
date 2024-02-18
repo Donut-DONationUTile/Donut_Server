@@ -39,11 +39,13 @@ public class HistoryGiverService {
 
     @Transactional
     public ApiResponse<?> getDonationList(LocalDateTime donateDate){
+        log.info("기부자 검증 시작");
         //기부자 여부 검증
         if (!authUtils.getCurrentUserRole().equals(Role.ROLE_GIVER)) {
             return ApiResponse.failure(Error.NOT_AUTHENTICATED_EXCEPTION);
         }
         Giver giver = authUtils.getGiver();
+        log.info("기부자 정보 확인 -> {}", giver.getName());
 
         //기부한 기간 계산
         Integer period = Period.between(giver.getCreatedAt().toLocalDate(), LocalDate.now()).getYears();
