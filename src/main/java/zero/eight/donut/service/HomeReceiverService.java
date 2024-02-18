@@ -45,8 +45,8 @@ public class HomeReceiverService {
         //사용처별 꾸러미 개수 구하기
         Map<String, Integer> storeCountMap = new HashMap<>();
         giftboxList.stream().forEach(box -> {
-            Store store = box.getStore();
-            storeCountMap.put(store.toString(), storeCountMap.getOrDefault(store, 0) + 1);
+            String store = box.getStore().toString();
+            storeCountMap.put(store, storeCountMap.getOrDefault(store, 0) + 1);
         });
 
         //꾸러미 정보 가져오기
@@ -80,7 +80,7 @@ public class HomeReceiverService {
                 .amount(amount)
                 .cu(storeCountMap.getOrDefault("CU", 0))
                 .gs25(storeCountMap.getOrDefault("GS25", 0))
-                .sevenEleven(storeCountMap.getOrDefault("SEVENELEVEN", 0))
+                .sevenEleven(storeCountMap.getOrDefault("7-ELEVEN", 0))
                 .boxList(boxInfoList)
                 .build();
         return ApiResponse.success(Success.HOME_RECEIVER_SUCCESS, responseDto);
