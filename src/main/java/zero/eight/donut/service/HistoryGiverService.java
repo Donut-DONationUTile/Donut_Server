@@ -45,6 +45,7 @@ public class HistoryGiverService {
             return ApiResponse.failure(Error.NOT_AUTHENTICATED_EXCEPTION);
         }
         Giver giver = authUtils.getGiver();
+        log.info("기부자 정보 확인 -> {}", giver.getId());
         log.info("기부자 정보 확인 -> {}", giver.getName());
         log.info("giver email -> {}", giver.getEmail());
 
@@ -105,7 +106,7 @@ public class HistoryGiverService {
 
 
         //message
-        String message ="haven't received yet";
+        String message ="haven't\nreceived yet";
         Message msg = messageRepository.findByGiftId(giftId);
         if(msg != null)
             message = msg.getContent();
