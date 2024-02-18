@@ -46,6 +46,8 @@ public class HistoryGiverService {
         }
         Giver giver = authUtils.getGiver();
         log.info("기부자 정보 확인 -> {}", giver.getId());
+        log.info("기부자 정보 확인 -> {}", giver.getName());
+        log.info("giver email -> {}", giver.getEmail());
 
         //기부한 기간 계산
         Integer period = Period.between(giver.getCreatedAt().toLocalDate(), LocalDate.now()).getYears();
