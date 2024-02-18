@@ -75,19 +75,6 @@ public class HistoryGiverService {
                     .build());
         }
 
-        //조회할 기부 목록이 없을 경우
-        if (donationList.isEmpty()) {
-            donationList.add(Donation.builder()
-                    .giftId(null)
-                    .product(null)
-                    .price(null)
-                    .dueDate(null)
-                    .status(null)
-                    .isAssigned(null)
-                    .build());
-        }
-
-
         GiverDonationListResponseDto responseDto = GiverDonationListResponseDto.builder()
                 .period(period)
                 .totalAmount(totalAmount)
