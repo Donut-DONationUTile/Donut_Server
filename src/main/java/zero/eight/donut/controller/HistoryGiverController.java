@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import zero.eight.donut.common.response.ApiResponse;
+import zero.eight.donut.service.AuthService;
 import zero.eight.donut.service.HistoryGiverService;
 
 import java.time.LocalDateTime;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 @RequestMapping("/api/history/giver")
 public class HistoryGiverController {
     private final HistoryGiverService historyGiverService;
+    private final AuthService authService;
 
     @GetMapping("/info/{donateDate}")
     public ApiResponse<?> getDonationList(@PathVariable("donateDate")LocalDateTime donateDate){
@@ -25,5 +27,10 @@ public class HistoryGiverController {
     @GetMapping("/info/detail/{giftId}")
     public ApiResponse<?> getDonationDetail(@PathVariable("giftId")Long giftId){
         return  historyGiverService.getDonationDetail(giftId);
+    }
+
+    @GetMapping("/giver/get")
+    public ApiResponse<?> getGiverEntity() {
+        return authService.getGiverEntity();
     }
 }

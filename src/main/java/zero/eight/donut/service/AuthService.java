@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import zero.eight.donut.common.response.ApiResponse;
+import zero.eight.donut.config.jwt.AuthUtils;
 import zero.eight.donut.config.jwt.JwtUtils;
 import zero.eight.donut.domain.Benefit;
 import zero.eight.donut.domain.Donation;
@@ -44,6 +45,7 @@ public class AuthService {
     private final DonationRepository donationRepository;
     private final PasswordEncoder bCryptPasswordEncoder;
     private final JwtUtils jwtUtils;
+    private final AuthUtils authUtils;
 
     @Transactional
     public ApiResponse<?> googleSignIn(String idToken) {
@@ -80,7 +82,7 @@ public class AuthService {
         giver = giverRepository.findByEmail(email);
 
         MemberDto member = MemberDto.builder()
-                .name(giver.get().getName())
+                .name(giver.get().getEmail())
                 .role(Role.ROLE_GIVER)
                 .build();
 
@@ -451,5 +453,10 @@ public class AuthService {
         }
 
         return true;
+    }
+
+    // for giver token error test
+    public ApiResponse<?> getGiverEntity() {
+        return ApiResponse.success(authUtils.getGiver());
     }
 }
