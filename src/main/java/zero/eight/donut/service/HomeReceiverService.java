@@ -42,12 +42,13 @@ public class HomeReceiverService {
         List<Giftbox> giftboxList = Optional.ofNullable(giftboxRepository.findAllByReceiverIdAndIsAvailable(receiver.getId()))
                 .orElse(Collections.emptyList());
 
-        //사용처별 꾸러미 개수 구하기
-        Map<String, Integer> storeCountMap = new HashMap<>();
-        giftboxList.stream().forEach(box -> {
-            String store = box.getStore().toString();
-            storeCountMap.put(store, storeCountMap.getOrDefault(store, 0) + 1);
-        });
+        //사용처별 꾸러미 잔액
+        Optional<Integer> cuGiftBox = Optional.ofNullable(giftboxRepository.getSumByStore(Store.CU));
+        Optional<Integer> gs25GiftBox = Optional.ofNullable(giftboxRepository.getSumByStore(Store.GS25));
+        Optional<Integer> sevenelevenGiftBox = Optional.ofNullable(giftboxRepository.getSumByStore(Store.SEVENELEVEN));
+        Integer cu = cuGiftBox.orElse(0);
+        Integer gs25 = gs25GiftBox.orElse(0);
+        Integer seveneleven = sevenelevenGiftBox.orElse(0);
 
         //꾸러미 정보 가져오기
         List<BoxInfo> boxInfoList = giftboxList.stream()
@@ -78,9 +79,9 @@ public class HomeReceiverService {
         ReceiverHomeResponseDto responseDto = ReceiverHomeResponseDto.builder()
                 .availability(availability)
                 .amount(amount)
-                .cu(storeCountMap.getOrDefault("CU", 0))
-                .gs25(storeCountMap.getOrDefault("GS25", 0))
-                .sevenEleven(storeCountMap.getOrDefault("7-ELEVEN", 0))
+                .cu(cu)
+                .gs25(gs25)
+                .sevenEleven(seveneleven)
                 .boxList(boxInfoList)
                 .build();
         return ApiResponse.success(Success.HOME_RECEIVER_SUCCESS, responseDto);

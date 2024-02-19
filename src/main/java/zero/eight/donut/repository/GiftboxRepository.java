@@ -3,6 +3,7 @@ package zero.eight.donut.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import zero.eight.donut.domain.Giftbox;
+import zero.eight.donut.domain.enums.Store;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,4 +19,7 @@ public interface GiftboxRepository extends JpaRepository<Giftbox, Long> {
 
     @Query("SELECT gb FROM Giftbox gb  WHERE gb.receiver.id = ?1 and gb.isAvailable = true")
     List<Giftbox> findAllByReceiverIdAndIsAvailable(Long receiver_id);
+
+    @Query("SELECT SUM(gb.amount) FROM Giftbox gb WHERE gb.store = ?1")
+    Integer getSumByStore(Store store);
 }
