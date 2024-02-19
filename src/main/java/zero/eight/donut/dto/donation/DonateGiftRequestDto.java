@@ -20,7 +20,7 @@ public class DonateGiftRequestDto {
     private LocalDateTime dueDate;
     private Store store;
 
-    public Gift toEntity(Giver giver, Giftbox giftbox, String imageUrl){
+    public Gift toEntity(Giver giver, Giftbox giftbox, String imageUrl, String store){
         return Gift.builder()
                 .giver(giver)
                 .product(product)
@@ -29,7 +29,7 @@ public class DonateGiftRequestDto {
                 .status(Status.UNUSED)
                 .price(price)
                 .imageUrl(imageUrl)
-                .store(store)
+                .store( Store.valueOf((store)))
                 .dueDate(dueDate)
                 .giftbox(giftbox)
                 .build();

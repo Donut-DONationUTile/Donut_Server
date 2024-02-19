@@ -138,7 +138,7 @@ public class DonationService {
         String imgUrl = uploadImageToGCS(requestDto);
 
         //CREATE Gift
-        Gift newGift = requestDto.toEntity(giver, defaultGiftbox, imgUrl);
+        Gift newGift = requestDto.toEntity(giver, defaultGiftbox, imgUrl, requestDto.getStore().toString());
         giftRepository.save(newGift);
 
         //기부자별 정보 Donation 업데이트
