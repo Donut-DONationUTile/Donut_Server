@@ -20,6 +20,7 @@ public interface GiftboxRepository extends JpaRepository<Giftbox, Long> {
     @Query("SELECT gb FROM Giftbox gb  WHERE gb.receiver.id = ?1 and gb.isAvailable = true")
     List<Giftbox> findAllByReceiverIdAndIsAvailable(Long receiver_id);
 
-    @Query("SELECT SUM(gb.amount) FROM Giftbox gb WHERE gb.store = ?1")
-    Integer getSumByStore(Store store);
+    @Query("SELECT SUM(gb.amount) FROM Giftbox gb " +
+            "WHERE gb.store = ?1 AND gb.isAvailable = true AND gb.receiver.id = ?2")
+    Integer getSumByStore(Store store, Long id);
 }

@@ -37,15 +37,16 @@ public class HomeReceiverService {
             return ApiResponse.failure(Error.NOT_AUTHENTICATED_EXCEPTION);
         }
         Receiver receiver = authUtils.getReceiver();
+        Long receiver_id = receiver.getId();
 
         //사용 가능한 꾸러미만 조회
         List<Giftbox> giftboxList = Optional.ofNullable(giftboxRepository.findAllByReceiverIdAndIsAvailable(receiver.getId()))
                 .orElse(Collections.emptyList());
 
-        //사용처별 꾸러미 잔액
-        Optional<Integer> cuGiftBox = Optional.ofNullable(giftboxRepository.getSumByStore(Store.CU));
-        Optional<Integer> gs25GiftBox = Optional.ofNullable(giftboxRepository.getSumByStore(Store.GS25));
-        Optional<Integer> sevenelevenGiftBox = Optional.ofNullable(giftboxRepository.getSumByStore(Store.SEVENELEVEN));
+        //수혜자의 사용처별 꾸러미 잔액
+        Optional<Integer> cuGiftBox = Optional.ofNullable(giftboxRepository.getSumByStore(Store.CU,receiver_id));
+        Optional<Integer> gs25GiftBox = Optional.ofNullable(giftboxRepository.getSumByStore(Store.GS25,receiver_id));
+        Optional<Integer> sevenelevenGiftBox = Optional.ofNullable(giftboxRepository.getSumByStore(Store.SEVENELEVEN,receiver_id));
         Integer cu = cuGiftBox.orElse(0);
         Integer gs25 = gs25GiftBox.orElse(0);
         Integer seveneleven = sevenelevenGiftBox.orElse(0);
