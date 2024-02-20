@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import zero.eight.donut.common.response.ApiResponse;
 import zero.eight.donut.config.jwt.AuthUtils;
 import zero.eight.donut.domain.*;
-        import zero.eight.donut.dto.GiftAssignDto;
+import zero.eight.donut.dto.GiftAssignDto;
 import zero.eight.donut.dto.auth.Role;
 import zero.eight.donut.dto.donation.DonateGiftRequestDto;
 import zero.eight.donut.dto.donation.GiftValueDto;
@@ -23,12 +23,12 @@ import zero.eight.donut.exception.InternalServerErrorException;
 import zero.eight.donut.exception.Success;
 import zero.eight.donut.repository.*;
 
-        import java.io.IOException;
+import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
-        import java.util.stream.Collectors;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -138,7 +138,7 @@ public class SerialDonationService {
         String imgUrl = uploadImageToGCS(requestDto);
 
         //CREATE Gift
-        Gift newGift = requestDto.toEntity(giver, defaultGiftbox, imgUrl);
+        Gift newGift = requestDto.toEntity(giver, defaultGiftbox, imgUrl, requestDto.getStore().toString());
         giftRepository.save(newGift);
 
         //기부자별 정보 Donation 업데이트
