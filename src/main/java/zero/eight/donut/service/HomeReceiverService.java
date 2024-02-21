@@ -43,24 +43,33 @@ public class HomeReceiverService {
         List<Giftbox> giftboxList = Optional.ofNullable(giftboxRepository.findAllByReceiverIdAndIsAvailable(receiver.getId()))
                 .orElse(Collections.emptyList());
 
-        //수혜자의 사용처별 꾸러미 잔액
-        Optional<Integer> cuGiftBox = Optional.ofNullable(giftboxRepository.getSumByStore(Store.CU,receiver_id));
-        Optional<Integer> gs25GiftBox = Optional.ofNullable(giftboxRepository.getSumByStore(Store.GS25,receiver_id));
-        Optional<Integer> sevenelevenGiftBox = Optional.ofNullable(giftboxRepository.getSumByStore(Store.SEVENELEVEN,receiver_id));
-        Integer cu = cuGiftBox.orElse(0);
-        Integer gs25 = gs25GiftBox.orElse(0);
-        Integer seveneleven = sevenelevenGiftBox.orElse(0);
+        //사용처별 꾸러미 잔액
+//        Optional<Integer> cuGiftBox = Optional.ofNullable(giftboxRepository.getSumByStore(Store.CU));
+//        Optional<Integer> gs25GiftBox = Optional.ofNullable(giftboxRepository.getSumByStore(Store.GS25));
+//        Optional<Integer> sevenelevenGiftBox = Optional.ofNullable(giftboxRepository.getSumByStore(Store.SEVENELEVEN));
+//        Integer cu = cuGiftBox.orElse(0);
+//        Integer gs25 = gs25GiftBox.orElse(0);
+//        Integer seveneleven = sevenelevenGiftBox.orElse(0);
+      
+        //사용처별 꾸러미 잔액 -> 쿼리 한번만 호출하도록 변경
+        Map<Store, Integer> storeGiftBoxMap = giftboxRepository.getGiftboxSumsByStore(receiver.getId());
+        Integer cu = storeGiftBoxMap.getOrDefault(Store.CU, 0);
+        Integer gs25 = storeGiftBoxMap.getOrDefault(Store.GS25, 0);
+        Integer seveneleven = storeGiftBoxMap.getOrDefault(Store.SEVENELEVEN, 0);
+
 
         //꾸러미 정보 가져오기
-        List<BoxInfo> boxInfoList = giftboxList.stream()
-                .map(boxInfo -> BoxInfo.builder()
-                        .boxId(boxInfo.getId())
-                        .store(boxInfo.getStore())
-                        .dueDate(boxInfo.getDueDate())
-                        .amount(boxInfo.getAmount())
-                        .build())
-                .collect(Collectors.toList());
-
+        List<BoxInfo> boxInfoList = new ArrayList<>();
+        Long amount = 0L;
+        for (Giftbox boxInfo : giftboxList) {
+            boxInfoList.add(BoxInfo.builder()
+                    .boxId(boxInfo.getId())
+                    .store(boxInfo.getStore())
+                    .dueDate(boxInfo.getDueDate())
+                    .amount(boxInfo.getAmount())
+                    .build());
+            amount += boxInfo.getAmount();
+        }
 
         /***
          * 꾸러미 신청 가능 여부
@@ -70,7 +79,6 @@ public class HomeReceiverService {
          */
         Boolean availability  = true;
         LocalDate now = LocalDate.now();
-        Long amount = giftboxList.stream().mapToLong(boxInfo -> boxInfo.getAmount()).sum();
         if(amount > 1000
                 || !benefitRepository.findByReceiverIdAndThisMonth(receiver.getId(), now.getYear(), now.getMonthValue()).getAvailability()
                 || giftRepository.sumByNotAssigned() <1001)

@@ -20,7 +20,7 @@ public class DonationService {
         return donationService.assignGiftbox(giftboxRequestDto);
     }
 
-    public synchronized ApiResponse<?> donateGift(DonateGiftRequestDto requestDto) throws IOException {
+    public ApiResponse<?> donateGift(DonateGiftRequestDto requestDto) throws IOException {
         return donationService.donateGift(requestDto);
     }
 }
