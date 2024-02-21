@@ -36,4 +36,5 @@ public interface GiftboxRepository extends JpaRepository<Giftbox, Long> {
         }
         return storeGiftBoxSums;
     }
+
 }
