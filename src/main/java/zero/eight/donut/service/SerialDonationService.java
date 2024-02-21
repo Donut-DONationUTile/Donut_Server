@@ -1,14 +1,19 @@
 package zero.eight.donut.service;
 
 
-import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
+import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import zero.eight.donut.common.response.ApiResponse;
 import zero.eight.donut.config.jwt.AuthUtils;
 import zero.eight.donut.domain.*;
@@ -17,6 +22,7 @@ import zero.eight.donut.dto.auth.Role;
 import zero.eight.donut.dto.donation.DonateGiftRequestDto;
 import zero.eight.donut.dto.donation.GiftValueDto;
 import zero.eight.donut.dto.donation.GiftboxRequestDto;
+import zero.eight.donut.dto.donation.ImageResponse;
 import zero.eight.donut.exception.ApiException;
 import zero.eight.donut.exception.Error;
 import zero.eight.donut.exception.InternalServerErrorException;
@@ -134,8 +140,20 @@ public class SerialDonationService {
         Giftbox defaultGiftbox = giftboxRepository.findById(0L)
                 .orElseThrow(()-> new ApiException(Error.GIFTBOX_NOT_FOUND_EXCEPTION));
 
-        //Upload Image to Google Cloud Storage
-        String imgUrl = uploadImageToGCS(requestDto);
+        //Send Image to AI
+        WebClient webClient = WebClient.builder().baseUrl("http://127.0.0.1:8000").build();
+
+        MultipartBodyBuilder image = new MultipartBodyBuilder();
+        image.part("file", requestDto.getGiftImage().getResource());
+
+        Mono<String> imgResponse = webClient.post()
+                .uri("/api/server/enhancement")
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .body(BodyInserters.fromMultipartData(image.build()))
+                .retrieve()
+                .bodyToMono(String.class);
+        String imgUrl = imgResponse.block();
+        imgUrl = imgUrl.replace("\"", "");
 
         //CREATE Gift
         Gift newGift = requestDto.toEntity(giver, defaultGiftbox, imgUrl, requestDto.getStore().toString());
@@ -200,25 +218,6 @@ public class SerialDonationService {
                 .build();
 
         return giftAssignDto;
-    }
-
-    private String uploadImageToGCS(DonateGiftRequestDto requestDto) throws IOException{
-        //이미지명 uuid 변환
-        String uuid = UUID.randomUUID().toString();
-        //이미지 형식 추출
-        String ext = requestDto.getGiftImage().getContentType();
-
-        // Google Cloud Storage 이미지 업로드
-        BlobInfo blobInfo = storage.create(
-                BlobInfo.newBuilder(BUCKET_NAME, uuid)
-                        .setContentType(ext)
-                        .build(),
-                requestDto.getGiftImage().getInputStream()
-        );
-        log.info("successfully upload image to gcs");
-
-        String imgUrl = "https://storage.googleapis.com/" + BUCKET_NAME + "/" + uuid;
-        return imgUrl;
     }
 
     private void updateDonate(Giver giver, DonateGiftRequestDto requestDto){
