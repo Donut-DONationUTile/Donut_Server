@@ -208,6 +208,7 @@ public class SerialDonationService {
     }
 
     private void updateDonate(Giver giver, DonateGiftRequestDto requestDto){
+        log.info("Start to update Donation");
         Donation donation = donationRepository.findByGiver(giver);
         donation.updateSumCount(
                 donation.getSum()+requestDto.getPrice().longValue(),
@@ -215,6 +216,7 @@ public class SerialDonationService {
     }
 
     private void updateDonateInfo(DonateGiftRequestDto requestDto){
+        log.info("Start to update DonationInfo");
         LocalDate now = LocalDate.now();
         DonationInfo donationInfo = donationInfoRepository.findDonationInfoByMonthAndYear(now.getMonthValue(), now.getYear());
         donationInfo.updateSumCount(
@@ -233,6 +235,7 @@ public class SerialDonationService {
                 .body(BodyInserters.fromMultipartData(image.build()))
                 .retrieve()
                 .bodyToMono(String.class);
+        log.info("Sending image to AI Server");
         String imgUrl = imgResponse.block();
         return  imgUrl.replace("\"", "");
     }
