@@ -19,6 +19,7 @@ public class DonateGiftRequestDto {
     private Integer price;
     private LocalDateTime dueDate;
     private Store store;
+    private Boolean isRestored;
 
     public Gift toEntity(Giver giver, Giftbox giftbox, String imageUrl, String store){
         return Gift.builder()
