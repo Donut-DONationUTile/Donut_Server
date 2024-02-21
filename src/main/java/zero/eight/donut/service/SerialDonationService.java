@@ -224,7 +224,7 @@ public class SerialDonationService {
                 donationInfo.getCount()+1L);
     }
     private String sendImageToAI(MultipartFile giftImage){
-        WebClient webClient = WebClient.builder().baseUrl("http://127.0.0.1:8000").build();
+        WebClient webClient = WebClient.builder().baseUrl("http://34.64.144.108:8000").build();
 
         MultipartBodyBuilder image = new MultipartBodyBuilder();
         image.part("file", giftImage.getResource());
