@@ -10,9 +10,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import zero.eight.donut.common.response.ApiResponse;
 import zero.eight.donut.config.jwt.AuthUtils;
@@ -22,7 +22,6 @@ import zero.eight.donut.dto.auth.Role;
 import zero.eight.donut.dto.donation.DonateGiftRequestDto;
 import zero.eight.donut.dto.donation.GiftValueDto;
 import zero.eight.donut.dto.donation.GiftboxRequestDto;
-import zero.eight.donut.dto.donation.ImageResponse;
 import zero.eight.donut.exception.ApiException;
 import zero.eight.donut.exception.Error;
 import zero.eight.donut.exception.InternalServerErrorException;
@@ -141,22 +140,10 @@ public class SerialDonationService {
                 .orElseThrow(()-> new ApiException(Error.GIFTBOX_NOT_FOUND_EXCEPTION));
 
         //Send Image to AI
-        WebClient webClient = WebClient.builder().baseUrl("http://127.0.0.1:8000").build();
-
-        MultipartBodyBuilder image = new MultipartBodyBuilder();
-        image.part("file", requestDto.getGiftImage().getResource());
-
-        Mono<String> imgResponse = webClient.post()
-                .uri("/api/server/enhancement")
-                .contentType(MediaType.MULTIPART_FORM_DATA)
-                .body(BodyInserters.fromMultipartData(image.build()))
-                .retrieve()
-                .bodyToMono(String.class);
-        String imgUrl = imgResponse.block();
-        imgUrl = imgUrl.replace("\"", "");
+        String imageUrl = sendImageToAI(requestDto.getGiftImage());
 
         //CREATE Gift
-        Gift newGift = requestDto.toEntity(giver, defaultGiftbox, imgUrl, requestDto.getStore().toString());
+        Gift newGift = requestDto.toEntity(giver, defaultGiftbox, imageUrl, requestDto.getStore().toString());
         giftRepository.save(newGift);
 
         //기부자별 정보 Donation 업데이트
@@ -233,5 +220,20 @@ public class SerialDonationService {
         donationInfo.updateSumCount(
                 donationInfo.getSum()+requestDto.getPrice().longValue(),
                 donationInfo.getCount()+1L);
+    }
+    private String sendImageToAI(MultipartFile giftImage){
+        WebClient webClient = WebClient.builder().baseUrl("http://127.0.0.1:8000").build();
+
+        MultipartBodyBuilder image = new MultipartBodyBuilder();
+        image.part("file", giftImage.getResource());
+
+        Mono<String> imgResponse = webClient.post()
+                .uri("/api/server/enhancement")
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .body(BodyInserters.fromMultipartData(image.build()))
+                .retrieve()
+                .bodyToMono(String.class);
+        String imgUrl = imgResponse.block();
+        return  imgUrl.replace("\"", "");
     }
 }
