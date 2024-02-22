@@ -153,6 +153,13 @@ public class SerialDonationService {
         //기부 통계 업데이트
         updateDonateInfo(requestDto);
 
+        /**
+         * !!!비동기 처리!!!
+         * 1. 받은 이미지 중 복구 실행해야 하는 것들 복구
+         * (복구에 성공했다면)
+         *  -> 기존 imageUrl 객체 삭제
+         *  -> newGift의 imageUrl 수정
+        **/
         //Send Image to AI
 //        if(requestDto.getIsRestored())
 //            imageUrl = sendImageToAI(requestDto.getGiftImage());
