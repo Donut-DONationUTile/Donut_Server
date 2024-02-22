@@ -1,6 +1,7 @@
 package zero.eight.donut.service;
 
 
+import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 
 import lombok.RequiredArgsConstructor;
@@ -139,8 +140,8 @@ public class SerialDonationService {
         Giftbox defaultGiftbox = giftboxRepository.findById(0L)
                 .orElseThrow(()-> new ApiException(Error.GIFTBOX_NOT_FOUND_EXCEPTION));
 
-        //Send Image to AI
-        String imageUrl = sendImageToAI(requestDto.getGiftImage());
+        //Upload Image to Google Cloud Storage
+        String imageUrl = uploadImageToGCS(requestDto);
 
         //CREATE Gift
         Gift newGift = requestDto.toEntity(giver, defaultGiftbox, imageUrl, requestDto.getStore().toString());
@@ -151,6 +152,17 @@ public class SerialDonationService {
 
         //기부 통계 업데이트
         updateDonateInfo(requestDto);
+
+        /**
+         * !!!비동기 처리!!!
+         * 1. 받은 이미지 중 복구 실행해야 하는 것들 복구
+         * (복구에 성공했다면)
+         *  -> 기존 imageUrl 객체 삭제
+         *  -> newGift의 imageUrl 수정
+        **/
+        //Send Image to AI
+//        if(requestDto.getIsRestored())
+//            imageUrl = sendImageToAI(requestDto.getGiftImage());
 
         return ApiResponse.success(Success.DONATE_GIFT_SUCCESS, Map.of("giftId", newGift.getId()));
     }
@@ -222,6 +234,24 @@ public class SerialDonationService {
         donationInfo.updateSumCount(
                 donationInfo.getSum()+requestDto.getPrice().longValue(),
                 donationInfo.getCount()+1L);
+    }
+    private String uploadImageToGCS(DonateGiftRequestDto requestDto) throws IOException{
+        //이미지명 uuid 변환
+        String uuid = UUID.randomUUID().toString();
+        //이미지 형식 추출
+        String ext = requestDto.getGiftImage().getContentType();
+
+        // Google Cloud Storage 이미지 업로드
+        BlobInfo blobInfo = storage.create(
+                BlobInfo.newBuilder(BUCKET_NAME, uuid)
+                        .setContentType(ext)
+                        .build(),
+                requestDto.getGiftImage().getInputStream()
+        );
+        log.info("successfully upload image to gcs");
+
+        String imgUrl = "https://storage.googleapis.com/" + BUCKET_NAME + "/" + uuid;
+        return imgUrl;
     }
     private String sendImageToAI(MultipartFile giftImage){
         WebClient webClient = WebClient.builder().baseUrl("http://34.64.144.108:8000").build();
