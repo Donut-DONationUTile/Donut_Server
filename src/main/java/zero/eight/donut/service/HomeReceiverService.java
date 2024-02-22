@@ -37,6 +37,7 @@ public class HomeReceiverService {
             return ApiResponse.failure(Error.NOT_AUTHENTICATED_EXCEPTION);
         }
         Receiver receiver = authUtils.getReceiver();
+        Long receiver_id = receiver.getId();
 
         //사용 가능한 꾸러미만 조회
         List<Giftbox> giftboxList = Optional.ofNullable(giftboxRepository.findAllByReceiverIdAndIsAvailable(receiver.getId()))
@@ -49,11 +50,13 @@ public class HomeReceiverService {
 //        Integer cu = cuGiftBox.orElse(0);
 //        Integer gs25 = gs25GiftBox.orElse(0);
 //        Integer seveneleven = sevenelevenGiftBox.orElse(0);
+      
         //사용처별 꾸러미 잔액 -> 쿼리 한번만 호출하도록 변경
         Map<Store, Integer> storeGiftBoxMap = giftboxRepository.getGiftboxSumsByStore(receiver.getId());
         Integer cu = storeGiftBoxMap.getOrDefault(Store.CU, 0);
         Integer gs25 = storeGiftBoxMap.getOrDefault(Store.GS25, 0);
         Integer seveneleven = storeGiftBoxMap.getOrDefault(Store.SEVENELEVEN, 0);
+
 
         //꾸러미 정보 가져오기
         List<BoxInfo> boxInfoList = new ArrayList<>();
