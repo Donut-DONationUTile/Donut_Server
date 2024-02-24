@@ -77,4 +77,8 @@ public class Gift extends BaseTimeEntity {
     public void updateGiftbox(Giftbox giftbox) {
         this.giftbox = giftbox;
     }
+
+    public void updateImageUrl(String imageUrl){
+        this.imageUrl = imageUrl;
+    }
 }

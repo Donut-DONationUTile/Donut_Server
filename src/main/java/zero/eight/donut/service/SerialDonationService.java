@@ -162,7 +162,7 @@ public class SerialDonationService {
         **/
         //Send Image to AI
         if(requestDto.getIsRestored())
-           sendImageToAI(requestDto.getGiftImage());
+           sendImageToAI(newGift.getId(), requestDto.getGiftImage());
 
         return ApiResponse.success(Success.DONATE_GIFT_SUCCESS, Map.of("giftId", newGift.getId()));
     }
@@ -253,20 +253,27 @@ public class SerialDonationService {
         String imgUrl = "https://storage.googleapis.com/" + BUCKET_NAME + "/" + uuid;
         return imgUrl;
     }
-    private String sendImageToAI(MultipartFile giftImage){
-        WebClient webClient = WebClient.builder().baseUrl("http://34.64.144.108:8000").build();
+    private void sendImageToAI(Long giftId, MultipartFile giftImage){
+        WebClient webClient = WebClient.builder().baseUrl("http://127.0.0.1:8000").build();
+        log.info("Sending image to AI Server");
 
-        MultipartBodyBuilder image = new MultipartBodyBuilder();
-        image.part("file", giftImage.getResource());
+        MultipartBodyBuilder sandImageRequestDto = new MultipartBodyBuilder();
+        sandImageRequestDto.part("giftId", giftId);
+        sandImageRequestDto.part("image", giftImage.getResource());
 
-        Mono<String> imgResponse = webClient.post()
+        webClient.post()
                 .uri("/api/server/enhancement")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
-                .body(BodyInserters.fromMultipartData(image.build()))
+                .bodyValue(sandImageRequestDto.build())
                 .retrieve()
-                .bodyToMono(String.class);
+                .bodyToMono(String.class)
+                .flatMap(resultUrl -> {
+                    Gift updateGift = giftRepository.findById(giftId)
+                            .orElseThrow(() -> new IllegalArgumentException("There is no gift"));
+                    updateGift.updateImageUrl(resultUrl);
+                    return Mono.just(giftRepository.save(updateGift));
+                })
+                .subscribe();
         log.info("Sending image to AI Server");
-        String imgUrl = imgResponse.block();
-        return  imgUrl.replace("\"", "");
     }
 }
