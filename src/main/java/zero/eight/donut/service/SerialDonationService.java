@@ -264,7 +264,7 @@ public class SerialDonationService {
         log.info("image -> {}", giftImage.getResource());
         log.info("Start tp Sending image -> {}", LocalDateTime.now());
         webClient.post()
-                .uri("/api/server/enhancement")
+                .uri("/api/server/enhancement/optional")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .bodyValue(sandImageRequestDto.build())
                 .retrieve()
