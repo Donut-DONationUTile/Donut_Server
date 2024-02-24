@@ -155,14 +155,7 @@ public class SerialDonationService {
         //기부 통계 업데이트
         updateDonateInfo(requestDto);
 
-        /**
-         * !!!비동기 처리!!!
-         * 1. 받은 이미지 중 복구 실행해야 하는 것들 복구
-         * (복구에 성공했다면)
-         *  -> 기존 imageUrl 객체 삭제
-         *  -> newGift의 imageUrl 수정
-        **/
-        //Send Image to AI
+        //Send Image to AI & UPDATE Gift
         if(requestDto.getIsRestored())
            sendImageToAI(newGift.getId(), requestDto.getGiftImage());
 
@@ -255,6 +248,7 @@ public class SerialDonationService {
         String imgUrl = "https://storage.googleapis.com/" + BUCKET_NAME + "/" + uuid;
         return imgUrl;
     }
+
     private void sendImageToAI(Long giftId, MultipartFile giftImage){
         WebClient webClient = WebClient.builder().baseUrl("http://127.0.0.1:8000").build();
         MultipartBodyBuilder sandImageRequestDto = new MultipartBodyBuilder();
@@ -276,10 +270,12 @@ public class SerialDonationService {
                                 .orElseThrow(() -> new IllegalArgumentException("There is no gift"));
                         updateGift.updateImageUrl(SendImageResponseDto.getResultUrl());
                         log.info("Update Gift image -> {}", LocalDateTime.now());
+                        return Mono.just(SendImageResponseDto.getGiftId());
                     }
-                    else
+                    else{
                         log.info("Fail to Update Gift image -> {}", LocalDateTime.now());
-                    return Mono.just(SendImageResponseDto.getGiftId());
+                        return Mono.just(0);
+                    }
                 })
                 .subscribe();
     }
