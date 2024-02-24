@@ -259,7 +259,9 @@ public class SerialDonationService {
         WebClient webClient = WebClient.builder().baseUrl("http://127.0.0.1:8000").build();
         MultipartBodyBuilder sandImageRequestDto = new MultipartBodyBuilder();
         sandImageRequestDto.part("giftId", giftId);
+        log.info("giftId -> {}", giftId);
         sandImageRequestDto.part("image", giftImage.getResource());
+        log.info("image -> {}", giftImage.getResource());
         log.info("Start tp Sending image -> {}", LocalDateTime.now());
         webClient.post()
                 .uri("/api/server/enhancement")
