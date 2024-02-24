@@ -23,6 +23,7 @@ import zero.eight.donut.dto.auth.Role;
 import zero.eight.donut.dto.donation.DonateGiftRequestDto;
 import zero.eight.donut.dto.donation.GiftValueDto;
 import zero.eight.donut.dto.donation.GiftboxRequestDto;
+import zero.eight.donut.dto.donation.SendImageResponseDto;
 import zero.eight.donut.exception.ApiException;
 import zero.eight.donut.exception.Error;
 import zero.eight.donut.exception.InternalServerErrorException;
@@ -32,6 +33,7 @@ import zero.eight.donut.repository.*;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -255,25 +257,28 @@ public class SerialDonationService {
     }
     private void sendImageToAI(Long giftId, MultipartFile giftImage){
         WebClient webClient = WebClient.builder().baseUrl("http://127.0.0.1:8000").build();
-        log.info("Sending image to AI Server");
-
         MultipartBodyBuilder sandImageRequestDto = new MultipartBodyBuilder();
         sandImageRequestDto.part("giftId", giftId);
         sandImageRequestDto.part("image", giftImage.getResource());
-
+        log.info("Start tp Sending image -> {}", LocalDateTime.now());
         webClient.post()
                 .uri("/api/server/enhancement")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .bodyValue(sandImageRequestDto.build())
                 .retrieve()
-                .bodyToMono(String.class)
-                .flatMap(resultUrl -> {
-                    Gift updateGift = giftRepository.findById(giftId)
-                            .orElseThrow(() -> new IllegalArgumentException("There is no gift"));
-                    updateGift.updateImageUrl(resultUrl);
-                    return Mono.just(giftRepository.save(updateGift));
+                .bodyToMono(SendImageResponseDto.class)
+                .flatMap(SendImageResponseDto -> {
+                    log.info("Get result image -> {}", LocalDateTime.now());
+                    if(giftId == SendImageResponseDto.getGiftId()){
+                        Gift updateGift = giftRepository.findById(giftId)
+                                .orElseThrow(() -> new IllegalArgumentException("There is no gift"));
+                        updateGift.updateImageUrl(SendImageResponseDto.getResultUrl());
+                        log.info("Update Gift image -> {}", LocalDateTime.now());
+                    }
+                    else
+                        log.info("Fail to Update Gift image -> {}", LocalDateTime.now());
+                    return Mono.just(SendImageResponseDto.getGiftId());
                 })
                 .subscribe();
-        log.info("Sending image to AI Server");
     }
 }
