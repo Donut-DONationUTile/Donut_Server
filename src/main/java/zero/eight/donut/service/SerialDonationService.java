@@ -161,8 +161,8 @@ public class SerialDonationService {
          *  -> newGift의 imageUrl 수정
         **/
         //Send Image to AI
-//        if(requestDto.getIsRestored())
-//            imageUrl = sendImageToAI(requestDto.getGiftImage());
+        if(requestDto.getIsRestored())
+           sendImageToAI(requestDto.getGiftImage());
 
         return ApiResponse.success(Success.DONATE_GIFT_SUCCESS, Map.of("giftId", newGift.getId()));
     }
