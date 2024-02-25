@@ -23,6 +23,7 @@ import zero.eight.donut.dto.auth.Role;
 import zero.eight.donut.dto.donation.DonateGiftRequestDto;
 import zero.eight.donut.dto.donation.GiftValueDto;
 import zero.eight.donut.dto.donation.GiftboxRequestDto;
+import zero.eight.donut.dto.donation.SendImageResponseDto;
 import zero.eight.donut.exception.ApiException;
 import zero.eight.donut.exception.Error;
 import zero.eight.donut.exception.InternalServerErrorException;
@@ -32,6 +33,7 @@ import zero.eight.donut.repository.*;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -153,16 +155,9 @@ public class SerialDonationService {
         //기부 통계 업데이트
         updateDonateInfo(requestDto);
 
-        /**
-         * !!!비동기 처리!!!
-         * 1. 받은 이미지 중 복구 실행해야 하는 것들 복구
-         * (복구에 성공했다면)
-         *  -> 기존 imageUrl 객체 삭제
-         *  -> newGift의 imageUrl 수정
-        **/
-        //Send Image to AI
-//        if(requestDto.getIsRestored())
-//            imageUrl = sendImageToAI(requestDto.getGiftImage());
+        //Send Image to AI & UPDATE Gift
+        if(requestDto.getIsRestored())
+           sendImageToAI(newGift.getId(), requestDto.getGiftImage());
 
         return ApiResponse.success(Success.DONATE_GIFT_SUCCESS, Map.of("giftId", newGift.getId()));
     }
@@ -253,20 +248,35 @@ public class SerialDonationService {
         String imgUrl = "https://storage.googleapis.com/" + BUCKET_NAME + "/" + uuid;
         return imgUrl;
     }
-    private String sendImageToAI(MultipartFile giftImage){
-        WebClient webClient = WebClient.builder().baseUrl("http://34.64.144.108:8000").build();
 
-        MultipartBodyBuilder image = new MultipartBodyBuilder();
-        image.part("file", giftImage.getResource());
-
-        Mono<String> imgResponse = webClient.post()
-                .uri("/api/server/enhancement")
+    private void sendImageToAI(Long giftId, MultipartFile giftImage){
+        WebClient webClient = WebClient.builder().baseUrl("http://127.0.0.1:8000").build();
+        MultipartBodyBuilder sandImageRequestDto = new MultipartBodyBuilder();
+        sandImageRequestDto.part("giftId", giftId);
+        log.info("giftId -> {}", giftId);
+        sandImageRequestDto.part("image", giftImage.getResource());
+        log.info("image -> {}", giftImage.getResource());
+        log.info("Start tp Sending image -> {}", LocalDateTime.now());
+        webClient.post()
+                .uri("/api/server/enhancement/optional")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
-                .body(BodyInserters.fromMultipartData(image.build()))
+                .bodyValue(sandImageRequestDto.build())
                 .retrieve()
-                .bodyToMono(String.class);
-        log.info("Sending image to AI Server");
-        String imgUrl = imgResponse.block();
-        return  imgUrl.replace("\"", "");
+                .bodyToMono(SendImageResponseDto.class)
+                .flatMap(SendImageResponseDto -> {
+                    log.info("Get result image -> {}", LocalDateTime.now());
+                    if(giftId == SendImageResponseDto.getGiftId()){
+                        Gift updateGift = giftRepository.findById(giftId)
+                                .orElseThrow(() -> new IllegalArgumentException("There is no gift"));
+                        updateGift.updateImageUrl(SendImageResponseDto.getResultUrl());
+                        log.info("Update Gift image -> {}", LocalDateTime.now());
+                        return Mono.just(SendImageResponseDto.getGiftId());
+                    }
+                    else{
+                        log.info("Fail to Update Gift image -> {}", LocalDateTime.now());
+                        return Mono.just(0);
+                    }
+                })
+                .subscribe();
     }
 }
