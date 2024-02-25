@@ -250,7 +250,7 @@ public class SerialDonationService {
     }
 
     private void sendImageToAI(Long giftId, MultipartFile giftImage){
-        WebClient webClient = WebClient.builder().baseUrl("http://127.0.0.1:8000").build();
+        WebClient webClient = WebClient.builder().baseUrl("http://34.64.144.108:8000").build();
         MultipartBodyBuilder sandImageRequestDto = new MultipartBodyBuilder();
         sandImageRequestDto.part("giftId", giftId);
         log.info("giftId -> {}", giftId);
