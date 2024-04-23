@@ -48,9 +48,9 @@ jobs:
     - name: Docker build
       run: |
         docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
-        docker build -t donut .
-        docker tag donut kang1221/donut:${GITHUB_SHA::7}
-        docker push kang1221/donut:${GITHUB_SHA::7}	
+        docker build -t ${{ secrets.DOCKERHUB_REPOSITORY }} .
+        docker tag ${{ secrets.DOCKERHUB_REPOSITORY }} ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPOSITORY }}:${GITHUB_SHA::7}
+        docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPOSITORY }}:${GITHUB_SHA::7}	
 
 
     # Deploy
