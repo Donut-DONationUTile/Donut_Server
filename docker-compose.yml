@@ -9,7 +9,7 @@ services:
   donut:
     image: donut
     build:
-      context: .
+      context: src/main/java
       dockerfile: ./Dockerfile
     ports:
       - 8080:8080
