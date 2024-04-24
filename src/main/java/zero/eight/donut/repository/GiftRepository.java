@@ -19,4 +19,8 @@ public interface GiftRepository extends JpaRepository<Gift, Long> {
     int sumByNotAssigned();
     @Query(value = "SELECT SUM(g.price) FROM gift g WHERE g.store = :storeName", nativeQuery = true)
     int sumByStoreName(String storeName);
+
+    @Query(value = "SELECT * FROM gift g WHERE g.status = :status AND g.is_assigned = false" +
+            "AND g.due_date BETWEEN :startDate AND :endDate", nativeQuery = true)
+    List<Gift> findAllByImminentAndNotAssignedAndStatus(LocalDateTime startDate, LocalDateTime endDate, String status);
 }
