@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum Status {
-    SELFUSED("SELFUSED"),
+    SELF_USED("SELF_USED"),
     STORED("STORED"),
     REPORTED("REPORTED"),
     UNUSED("UNUSED"),
