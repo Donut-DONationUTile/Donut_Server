@@ -22,5 +22,5 @@ public interface GiftRepository extends JpaRepository<Gift, Long> {
 
     @Query(value = "SELECT * FROM gift g WHERE g.status = :status AND g.is_assigned = false" +
             "AND g.due_date BETWEEN :startDate AND :endDate", nativeQuery = true)
-    List<Gift> findAllByImminentAndNotAssignedAndStatus(LocalDateTime startDate, LocalDateTime endDate, String status);
+    List<Gift> findAllByNotAssignedAndStatusAndDueDateBetween(String status,LocalDateTime startDate, LocalDateTime endDate);
 }
