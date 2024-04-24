@@ -2,10 +2,13 @@ package zero.eight.donut.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import zero.eight.donut.common.response.ApiResponse;
 import zero.eight.donut.domain.Gift;
+import zero.eight.donut.domain.enums.Status;
 import zero.eight.donut.dto.donation.DonateGiftRequestDto;
 import zero.eight.donut.dto.donation.GiftboxRequestDto;
 import zero.eight.donut.repository.GiftRepository;
@@ -22,11 +25,15 @@ public class DonationService {
     private final SerialDonationService donationService;
     private  final GiftRepository giftRepository;
 
+    @Async
+    @Transactional
     @Scheduled(cron = "0 0 0 * * *")
     public void autoDonate(){
-        LocalDateTime endDate = LocalDateTime.now();
-        LocalDateTime startDate = endDate;
-        List<Gift> giftList = giftRepository.findAllByImminentAndNotAssignedAndStatus(startDate, endDate, "UNUSED");
+        List<Gift> giftList = giftRepository.findAllByNotAssignedAndStatusAndDueDateBetween( "STORED", LocalDateTime.now(), LocalDateTime.now().minusDays(30));
+        for (Gift gift : giftList) {
+            gift.updateStatus("UNUSED");
+            giftRepository.save(gift);
+        }
     }
 
     public synchronized ApiResponse<?> assignGiftbox(GiftboxRequestDto giftboxRequestDto) {
