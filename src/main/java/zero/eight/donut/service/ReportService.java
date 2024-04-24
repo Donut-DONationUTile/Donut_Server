@@ -21,7 +21,7 @@ public class ReportService {
     private final GiftRepository giftRepository;
     private final GiftboxRepository giftboxRepository;
     @Transactional
-    public ApiResponse<?> createReport(Long giftId){
+    public ApiResponse<?> createUsed(Long giftId){
         //Gift 있는지 확인
         Optional<Gift> gift = giftRepository.findById(giftId);
         if(gift.isEmpty())
@@ -47,4 +47,5 @@ public class ReportService {
                 .build();
         return ApiResponse.success(Success.CREATE_REPORT_SUCCESS, responseDto);
     }
+
 }

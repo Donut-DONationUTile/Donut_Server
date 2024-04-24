@@ -11,8 +11,8 @@ import zero.eight.donut.service.ReportService;
 public class ReportController {
     private final ReportService reportService;
     @PostMapping("/use")
-    public ApiResponse<?> createReport(@RequestParam(name = "giftId") Long giftId ){
-        return reportService.createReport(giftId);
+    public ApiResponse<?> createUsed(@RequestParam(name = "giftId") Long giftId ){
+        return reportService.createUsed(giftId);
     }
 
 }
