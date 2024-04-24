@@ -4,10 +4,10 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-public class ReportResponseDto {
+public class UsedResponseDto {
     private Boolean isLast;
     @Builder
-    public ReportResponseDto(Boolean isLast){
+    public UsedResponseDto(Boolean isLast){
         this.isLast=isLast;
     }
 }

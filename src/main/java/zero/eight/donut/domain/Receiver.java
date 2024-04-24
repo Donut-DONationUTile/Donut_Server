@@ -5,12 +5,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import zero.eight.donut.common.domain.BaseTimeEntity;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Entity
 @Builder
 @Getter
@@ -50,6 +52,8 @@ public class Receiver extends BaseTimeEntity {
      * @return 변경된 유저 Entity
      */
     public Receiver encryptPassword(PasswordEncoder encoder) {
+        log.info("비밀번호 암호화 함수 진입");
+
         this.password = encoder.encode(this.password);
         return this;
     }

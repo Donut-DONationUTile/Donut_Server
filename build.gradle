@@ -55,6 +55,8 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
     implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
     implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+    //WebClient
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-webflux'
 
 }
 
@@ -64,6 +66,16 @@ dependencyManagement {
         mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
     }
 }
+
+//yml submodule
+task copyYML(type: Copy){
+    copy{
+        from './Donut-Server-yml'
+        include "*.yml" , "*.json"
+        into './src/main/resources'
+    }
+}
+
 tasks.named('test') {
     useJUnitPlatform()
 }

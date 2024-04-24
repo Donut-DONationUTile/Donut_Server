@@ -3,6 +3,7 @@ package zero.eight.donut.config.jwt;
 import io.jsonwebtoken.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,14 +22,15 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @RequiredArgsConstructor
 @Component
 public class JwtUtils {
 
     @Value("${secret.time.access}")
-    private long accessTokenTime; // 30분;
+    private long accessTokenTime; // 30일
     @Value("${secret.time.refresh}")
-    private long refreshTokenTime; // 14일;
+    private long refreshTokenTime; // 30일
     @Value("${secret.key}")
     private String jwtSecretKey;
     private final StringRedisTemplate stringRedisTemplate;
@@ -88,11 +90,15 @@ public class JwtUtils {
         }
         try {
             Claims claims = Jwts.parser().setSigningKey(jwtSecretKey).parseClaimsJws(token).getBody();
+            log.info("token \"role\" : " + claims.get("role"));
+            log.info("token \"name\" : " + claims.get("name"));
             return true;
         } catch (MalformedJwtException e) {
             throw new UnauthorizedException(Error.INVALID_JWT_EXCEPTION);
         } catch (ExpiredJwtException e) {
             throw new UnauthorizedException(Error.JWT_EXPIRED);
+        } catch (UnauthorizedException e) {
+            return false;
         }
     }
 

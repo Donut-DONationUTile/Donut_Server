@@ -2,9 +2,13 @@ package zero.eight.donut.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import zero.eight.donut.domain.Giftbox;
+import zero.eight.donut.domain.enums.Store;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface GiftboxRepository extends JpaRepository<Giftbox, Long> {
@@ -18,4 +22,19 @@ public interface GiftboxRepository extends JpaRepository<Giftbox, Long> {
 
     @Query("SELECT gb FROM Giftbox gb  WHERE gb.receiver.id = ?1 and gb.isAvailable = true")
     List<Giftbox> findAllByReceiverIdAndIsAvailable(Long receiver_id);
+
+//    @Query("SELECT SUM(gb.amount) FROM Giftbox gb WHERE gb.store = ?1")
+//    Integer getSumByStore(Store store);
+
+    @Query("SELECT gb.store, SUM(gb.amount) FROM Giftbox gb WHERE gb.receiver.id = ?1 GROUP BY gb.store ")
+    List<Object[]> findGiftboxSumsByStore(@Param("receiverId") Long receiverId);
+    default Map<Store, Integer> getGiftboxSumsByStore(Long receiverId) {
+        List<Object[]> results = findGiftboxSumsByStore(receiverId);
+        Map<Store, Integer> storeGiftBoxSums = new HashMap<>();
+        for (Object[] result : results) {
+            storeGiftBoxSums.put((Store) result[0], ((Long) result[1]).intValue());
+        }
+        return storeGiftBoxSums;
+    }
+
 }

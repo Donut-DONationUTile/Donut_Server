@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import zero.eight.donut.common.response.ApiResponse;
+import zero.eight.donut.config.jwt.AuthUtils;
 import zero.eight.donut.domain.Gift;
 import zero.eight.donut.domain.Giftbox;
 import zero.eight.donut.domain.Receiver;
@@ -36,28 +37,39 @@ public class HomeReceiverService {
             return ApiResponse.failure(Error.NOT_AUTHENTICATED_EXCEPTION);
         }
         Receiver receiver = authUtils.getReceiver();
+        Long receiver_id = receiver.getId();
 
         //사용 가능한 꾸러미만 조회
         List<Giftbox> giftboxList = Optional.ofNullable(giftboxRepository.findAllByReceiverIdAndIsAvailable(receiver.getId()))
                 .orElse(Collections.emptyList());
 
-        //사용처별 꾸러미 개수 구하기
-        Map<String, Integer> storeCountMap = new HashMap<>();
-        giftboxList.stream().forEach(box -> {
-            Store store = box.getStore();
-            storeCountMap.put(store.toString(), storeCountMap.getOrDefault(store, 0) + 1);
-        });
+        //사용처별 꾸러미 잔액
+//        Optional<Integer> cuGiftBox = Optional.ofNullable(giftboxRepository.getSumByStore(Store.CU));
+//        Optional<Integer> gs25GiftBox = Optional.ofNullable(giftboxRepository.getSumByStore(Store.GS25));
+//        Optional<Integer> sevenelevenGiftBox = Optional.ofNullable(giftboxRepository.getSumByStore(Store.SEVENELEVEN));
+//        Integer cu = cuGiftBox.orElse(0);
+//        Integer gs25 = gs25GiftBox.orElse(0);
+//        Integer seveneleven = sevenelevenGiftBox.orElse(0);
+      
+        //사용처별 꾸러미 잔액 -> 쿼리 한번만 호출하도록 변경
+        Map<Store, Integer> storeGiftBoxMap = giftboxRepository.getGiftboxSumsByStore(receiver.getId());
+        Integer cu = storeGiftBoxMap.getOrDefault(Store.CU, 0);
+        Integer gs25 = storeGiftBoxMap.getOrDefault(Store.GS25, 0);
+        Integer seveneleven = storeGiftBoxMap.getOrDefault(Store.SEVENELEVEN, 0);
+
 
         //꾸러미 정보 가져오기
-        List<BoxInfo> boxInfoList = giftboxList.stream()
-                .map(boxInfo -> BoxInfo.builder()
-                        .boxId(boxInfo.getId())
-                        .store(boxInfo.getStore())
-                        .dueDate(boxInfo.getDueDate())
-                        .amount(boxInfo.getAmount())
-                        .build())
-                .collect(Collectors.toList());
-
+        List<BoxInfo> boxInfoList = new ArrayList<>();
+        Long amount = 0L;
+        for (Giftbox boxInfo : giftboxList) {
+            boxInfoList.add(BoxInfo.builder()
+                    .boxId(boxInfo.getId())
+                    .store(boxInfo.getStore())
+                    .dueDate(boxInfo.getDueDate())
+                    .amount(boxInfo.getAmount())
+                    .build());
+            amount += boxInfo.getAmount();
+        }
 
         /***
          * 꾸러미 신청 가능 여부
@@ -67,7 +79,6 @@ public class HomeReceiverService {
          */
         Boolean availability  = true;
         LocalDate now = LocalDate.now();
-        Long amount = giftboxList.stream().mapToLong(boxInfo -> boxInfo.getAmount()).sum();
         if(amount > 1000
                 || !benefitRepository.findByReceiverIdAndThisMonth(receiver.getId(), now.getYear(), now.getMonthValue()).getAvailability()
                 || giftRepository.sumByNotAssigned() <1001)
@@ -77,9 +88,9 @@ public class HomeReceiverService {
         ReceiverHomeResponseDto responseDto = ReceiverHomeResponseDto.builder()
                 .availability(availability)
                 .amount(amount)
-                .cu(storeCountMap.getOrDefault("CU", 0))
-                .gs25(storeCountMap.getOrDefault("GS25", 0))
-                .sevenEleven(storeCountMap.getOrDefault("SEVENELEVEN", 0))
+                .cu(cu)
+                .gs25(gs25)
+                .sevenEleven(seveneleven)
                 .boxList(boxInfoList)
                 .build();
         return ApiResponse.success(Success.HOME_RECEIVER_SUCCESS, responseDto);

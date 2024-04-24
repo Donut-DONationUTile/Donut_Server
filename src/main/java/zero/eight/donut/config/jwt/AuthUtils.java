@@ -1,6 +1,7 @@
-package zero.eight.donut.service;
+package zero.eight.donut.config.jwt;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,6 +15,7 @@ import zero.eight.donut.repository.ReceiverRepository;
 
 import java.util.Collection;
 
+@Slf4j
 @RequiredArgsConstructor
 @Component
 public class AuthUtils {
@@ -24,6 +26,8 @@ public class AuthUtils {
     private final ReceiverRepository receiverRepository;
 
     public Giver getGiver() {
+        log.info("사용자 이메일 -> {}", getCurrentUserEmail());
+        log.info("사용자 -> {}", giverRepository.findByEmail(getCurrentUserEmail()));
         return giverRepository.findByEmail(getCurrentUserEmail()).get();
     }
 

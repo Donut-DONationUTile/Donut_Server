@@ -1,5 +1,6 @@
 package zero.eight.donut.domain;
 
+import lombok.Getter;
 import zero.eight.donut.common.domain.BaseTimeEntity;
 
 import jakarta.persistence.*;
@@ -7,12 +8,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
-
 
 @Entity
 @Builder
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Report extends BaseTimeEntity {
@@ -32,7 +31,6 @@ public class Report extends BaseTimeEntity {
     private Receiver receiver;
 
     //기프티콘
-//    @OneToOne(mappedBy = "report")
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "gift_id")
     private Gift gift;

@@ -20,43 +20,43 @@ public class Gift extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "gift_id")
-    private Long id;
+    private Long id; // 기프티콘 고유 ID
 
     @Column(length = 100)
-    private String product;
+    private String product; // 상품명
 
     @Column
-    private Boolean isAssigned;
+    private Boolean isAssigned; // 할당여부
 
     @Column
-    private Boolean isMsgReceived;
+    private Boolean isMsgReceived; // 신규 메세지 등록 여부
 
     @Enumerated(value = EnumType.STRING)
     @Column
-    private Status status;
+    private Status status; // 상태(used/unused/reported/stored/selfUsed)
 
     @Column
-    private Integer price;
+    private Integer price; // 가격
 
     @Column(length = 500)
-    private String imageUrl;
+    private String imageUrl; // 이미지 URL
 
     @Enumerated(value = EnumType.STRING)
     @Column
-    private Store store;
+    private Store store; // 사용처
 
     @Column
-    private LocalDateTime dueDate;
+    private LocalDateTime dueDate; // 사용 기한
 
     //기부자
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "giver_id")
-    private Giver giver;
+    private Giver giver; // 기부자 고유 ID
 
     //기프티콘꾸러미
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "giftbox_id")
-    private Giftbox giftbox;
+    private Giftbox giftbox; // 꾸러미 고유 ID
 
     //신고 -> 단방향으로 수정
 //    @OneToOne(fetch = FetchType.LAZY)
@@ -76,5 +76,9 @@ public class Gift extends BaseTimeEntity {
 
     public void updateGiftbox(Giftbox giftbox) {
         this.giftbox = giftbox;
+    }
+
+    public void updateImageUrl(String imageUrl){
+        this.imageUrl = imageUrl;
     }
 }
