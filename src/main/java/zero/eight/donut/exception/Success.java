@@ -13,6 +13,7 @@ public enum Success {
     SUCCESS(HttpStatus.OK, "Request successfully processed"),
 
     // 200 OK SUCCESS
+    GET_WALLET_SUCCESS(HttpStatus.OK, "Success in getting wallet info"),
     HOME_GIVER_SUCCESS(HttpStatus.OK, "Get request for giver's home info completed successfully"),
     HOME_RECEIVER_SUCCESS(HttpStatus.OK, "Get request for receiver's home info completed successfully"),
     HOME_RECEIVER_BOX_SUCCESS(HttpStatus.OK, "Get request for receiver's giftbox info completed successfully"),
@@ -27,7 +28,7 @@ public enum Success {
 
     //201 CREATED SUCCESS
     ASSIGN_BENEFIT_SUCCESS(HttpStatus.CREATED, "Successfully assigned benefits"),
-    DONATE_GIFT_SUCCESS(HttpStatus.CREATED, "Successfully donate gift "),
+    DONATE_GIFT_SUCCESS(HttpStatus.CREATED, "Successfully donate gift"),
     CREATE_REPORT_SUCCESS(HttpStatus.CREATED, "Your report is successfully registered"),
     SIGN_IN_SUCCESS(HttpStatus.CREATED, "Sign in successfully"),
     SIGN_UP_SUCCESS(HttpStatus.CREATED, "Successfully signed up"),

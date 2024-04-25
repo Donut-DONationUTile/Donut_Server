@@ -42,6 +42,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests((auth) -> {
                     auth
                             .requestMatchers(permitList).permitAll()
+                            ////////////////////////////////////////
+                            /* 역할 검증이 필요한 uri 추가하기 .permit */
+                            ////////////////////////////////////////
                             .anyRequest().authenticated();
                 })
                 // jwtFilter를 UsernamePasswordAuthenticationFilter 앞에 추가

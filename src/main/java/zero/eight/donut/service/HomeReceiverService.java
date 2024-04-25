@@ -130,17 +130,23 @@ public class HomeReceiverService {
     }
     @Transactional
     public ApiResponse receiverGetOneGift(Long giftId){
-        // 수혜자 여부 검증
-        if (!authUtils.getCurrentUserRole().equals(Role.ROLE_RECEIVER)) {
-            return ApiResponse.failure(Error.NOT_AUTHENTICATED_EXCEPTION);
-        }
+
+        // Security Config로 책임 전가
+//        // 수혜자 여부 검증
+//        if (!authUtils.getCurrentUserRole().equals(Role.ROLE_RECEIVER)) {
+//            return ApiResponse.failure(Error.NOT_AUTHENTICATED_EXCEPTION);
+//        }
+
         //Gift 있는지 확인
         Optional<Gift> giftOptional = giftRepository.findById(giftId);
         if(giftOptional.isEmpty())
             return ApiResponse.failure(Error.GIFT_NOT_FOUND_EXCEPTION);
+
         Gift gift = giftOptional.get();
 
-        ReceiverGetGiftResponseDto responseDto = ReceiverGetGiftResponseDto.builder()
+        // 재사용을 위해 함수로 변경
+        /*
+        GetGiftResponseDto responseDto = GetGiftResponseDto.builder()
                 .product(gift.getProduct())
                 .price(gift.getPrice())
                 .dueDate(gift.getDueDate())
@@ -149,6 +155,21 @@ public class HomeReceiverService {
                 .status(gift.getStatus())
                 .boxId(gift.getGiftbox().getId())
                 .build();
-        return ApiResponse.success(Success.HOME_RECEIVER_GIFT_SUCCESS, responseDto);
+         */
+
+        return ApiResponse.success(Success.HOME_RECEIVER_GIFT_SUCCESS, getGiftInfo(giftId, gift));
+    }
+
+    public GetGiftResponseDto getGiftInfo(Long giftId, Gift gift){
+
+        return GetGiftResponseDto.builder()
+                .product(gift.getProduct())
+                .price(gift.getPrice())
+                .dueDate(gift.getDueDate())
+                .imgUrl(gift.getImageUrl())
+                .store(gift.getStore())
+                .status(gift.getStatus())
+                .boxId(gift.getGiftbox().getId())
+                .build();
     }
 }
