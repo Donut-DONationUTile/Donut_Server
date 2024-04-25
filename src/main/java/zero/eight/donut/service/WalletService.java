@@ -3,23 +3,23 @@ package zero.eight.donut.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import zero.eight.donut.common.response.ApiResponse;
 import zero.eight.donut.config.jwt.AuthUtils;
 import zero.eight.donut.domain.Gift;
 import zero.eight.donut.domain.Giver;
 import zero.eight.donut.domain.enums.Store;
+import zero.eight.donut.dto.auth.Role;
 import zero.eight.donut.dto.wallet.WalletGiftInfoDto;
 import zero.eight.donut.dto.wallet.WalletResponseDto;
+import zero.eight.donut.exception.Error;
 import zero.eight.donut.exception.Success;
 import zero.eight.donut.repository.GiftRepository;
 import zero.eight.donut.repository.ReceiverRepository;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -29,7 +29,9 @@ public class WalletService {
     private final AuthUtils authUtils;
     private final ReceiverRepository receiverRepository;
     private final GiftRepository giftRepository;
+    private final HomeReceiverService homeReceiverService;
 
+    @Transactional
     // 월렛 화면 조회
     public ApiResponse<?> walletMain() {
         // 변수 선언
@@ -105,5 +107,24 @@ public class WalletService {
         // Gift 객체 리스트를 사용처(store) 필드의 값마다 그룹화하여 각 그룹의 개수를 계산하여 Map으로 반환
         return giftList.stream()
                 .collect(Collectors.groupingBy(Gift::getStore, Collectors.counting()));
+    }
+
+    @Transactional
+    public ApiResponse<?> walletDetail(Long giftId) {
+
+        // Security Config로 책임 전가
+//        // 기부자 여부 검증
+//        if (!authUtils.getCurrentUserRole().equals(Role.ROLE_GIVER)) {
+//            return ApiResponse.failure(Error.NOT_AUTHENTICATED_EXCEPTION);
+//        }
+
+        //Gift 있는지 확인
+        Optional<Gift> giftOptional = giftRepository.findById(giftId);
+        if(giftOptional.isEmpty())
+            return ApiResponse.failure(Error.GIFT_NOT_FOUND_EXCEPTION);
+
+        Gift gift = giftOptional.get();
+
+        return ApiResponse.success(Success.HOME_RECEIVER_GIFT_SUCCESS, homeReceiverService.getGiftInfo(giftId, gift));
     }
 }

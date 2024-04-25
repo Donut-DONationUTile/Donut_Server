@@ -8,7 +8,7 @@ import zero.eight.donut.domain.enums.Store;
 import java.time.LocalDateTime;
 
 @Getter
-public class ReceiverGetGiftResponseDto {
+public class GetGiftResponseDto {
     private String product;
     private Integer price;
     private LocalDateTime dueDate;
@@ -18,7 +18,7 @@ public class ReceiverGetGiftResponseDto {
     private Long boxId;
 
     @Builder
-    public ReceiverGetGiftResponseDto(String product, Integer price, LocalDateTime dueDate, String imgUrl, Store store, Status status, Long boxId){
+    public GetGiftResponseDto(String product, Integer price, LocalDateTime dueDate, String imgUrl, Store store, Status status, Long boxId){
         this.product = product;
         this.price = price;
         this.dueDate = dueDate;
