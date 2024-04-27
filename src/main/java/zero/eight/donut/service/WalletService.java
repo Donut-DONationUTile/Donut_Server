@@ -1,34 +1,50 @@
 package zero.eight.donut.service;
 
+import com.google.cloud.storage.BlobInfo;
+import com.google.cloud.storage.Storage;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cglib.core.Local;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import zero.eight.donut.common.response.ApiResponse;
 import zero.eight.donut.config.jwt.AuthUtils;
 import zero.eight.donut.domain.Gift;
+import zero.eight.donut.domain.Giftbox;
 import zero.eight.donut.domain.Giver;
 import zero.eight.donut.domain.enums.Store;
 import zero.eight.donut.dto.auth.Role;
-import zero.eight.donut.dto.wallet.WalletGiftInfoDto;
+import zero.eight.donut.dto.donation.DonateGiftRequestDto;
+import zero.eight.donut.dto.wallet.WalletGiftInfoResponseDto;
 import zero.eight.donut.dto.wallet.WalletResponseDto;
+import zero.eight.donut.dto.wallet.WalletUploadRequestDto;
+import zero.eight.donut.exception.ApiException;
 import zero.eight.donut.exception.Error;
 import zero.eight.donut.exception.Success;
 import zero.eight.donut.repository.GiftRepository;
+import zero.eight.donut.repository.GiftboxRepository;
 import zero.eight.donut.repository.ReceiverRepository;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class WalletService {
 
+    // gcp 변수
+    @Value("${spring.cloud.gcp.storage.bucket}")
+    private String BUCKET_NAME;
+    private final Storage storage;
+
     private final AuthUtils authUtils;
     private final ReceiverRepository receiverRepository;
     private final GiftRepository giftRepository;
+    private final GiftboxRepository giftboxRepository;
     private final HomeReceiverService homeReceiverService;
 
     @Transactional
@@ -42,8 +58,8 @@ public class WalletService {
         int cu = 0; // 보유 기프티콘 개수(CU)
         int gs25 = 0; // 보유 기프티콘 개수(GS25)
         int seveneleven = 0; // 보유 기프티콘 개수(7eleven)
-        List<WalletGiftInfoDto> impendingList = new ArrayList<>(); // 임박 기프티콘 리스트
-        List<WalletGiftInfoDto> giftList = new ArrayList<>(); // 일반 기프티콘 리스트
+        List<WalletGiftInfoResponseDto> impendingList = new ArrayList<>(); // 임박 기프티콘 리스트
+        List<WalletGiftInfoResponseDto> giftList = new ArrayList<>(); // 일반 기프티콘 리스트
         
         // 월렛 기프티콘 리스트 조회
         List<Gift> targetList = giftRepository.findAllByGiverAndStatusAndDueDateAfterOrToday(giver.getId(), now);
@@ -62,7 +78,7 @@ public class WalletService {
                 if (g.getDueDate().isBefore(LocalDateTime.now().plusDays(30))) { // 유효 기간 30일 이내
                     // 임박 리스트에 할당
                     impendingList.add(
-                            WalletGiftInfoDto.builder()
+                            WalletGiftInfoResponseDto.builder()
                                     .giftId(g.getId())
                                     .days(Math.toIntExact(Duration.between(now, g.getDueDate()).toDaysPart()))
                                     .store(g.getStore().getStore())
@@ -75,7 +91,7 @@ public class WalletService {
                 else { // 유효 기간 30일 이후
                     // 일반 리스트에 할당
                     giftList.add(
-                            WalletGiftInfoDto.builder()
+                            WalletGiftInfoResponseDto.builder()
                                     .giftId(g.getId())
                                     .days(Math.toIntExact(Duration.between(now, g.getDueDate()).toDaysPart()))
                                     .store(g.getStore().getStore())
@@ -126,5 +142,45 @@ public class WalletService {
         Gift gift = giftOptional.get();
 
         return ApiResponse.success(Success.HOME_RECEIVER_GIFT_SUCCESS, homeReceiverService.getGiftInfo(giftId, gift));
+    }
+
+    public ApiResponse<?> walletUpload(WalletUploadRequestDto requestDto) throws IOException {
+        // 기부자 여부 검증
+        if (!authUtils.getCurrentUserRole().equals(Role.ROLE_GIVER)) {
+            return ApiResponse.failure(Error.NOT_AUTHENTICATED_EXCEPTION);
+        }
+        Giver giver = authUtils.getGiver();
+
+        // set Default Giftbox
+        Giftbox defaultGiftbox = giftboxRepository.findById(0L)
+                .orElseThrow(()-> new ApiException(Error.GIFTBOX_NOT_FOUND_EXCEPTION));
+
+        // Upload Image to Google Cloud Storage
+        String imageUrl = uploadImageToGCS(requestDto);
+
+        //CREATE Gift
+        Gift newGift = requestDto.toEntity(giver, defaultGiftbox, imageUrl, requestDto.getStore().toString());
+        giftRepository.save(newGift);
+
+        return ApiResponse.success(Success.UPLOAD_GIFT_SUCCESS);
+    }
+
+    private String uploadImageToGCS(WalletUploadRequestDto requestDto) throws IOException {
+        //이미지명 uuid 변환
+        String uuid = UUID.randomUUID().toString();
+        //이미지 형식 추출
+        String ext = requestDto.getGiftImage().getContentType();
+
+        // Google Cloud Storage 이미지 업로드
+        BlobInfo blobInfo = storage.create(
+                BlobInfo.newBuilder(BUCKET_NAME, uuid)
+                        .setContentType(ext)
+                        .build(),
+                requestDto.getGiftImage().getInputStream()
+        );
+        log.info("successfully upload image to gcs");
+
+        String imgUrl = "https://storage.googleapis.com/" + BUCKET_NAME + "/" + uuid;
+        return imgUrl;
     }
 }

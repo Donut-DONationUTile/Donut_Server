@@ -1,12 +1,13 @@
 package zero.eight.donut.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import zero.eight.donut.common.response.ApiResponse;
+import zero.eight.donut.dto.wallet.WalletUploadRequestDto;
 import zero.eight.donut.service.WalletService;
+
+import java.io.IOException;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/wallet")
@@ -23,5 +24,10 @@ public class WalletController {
     @GetMapping("/{giftId}")
     public ApiResponse<?> walletDetail(@PathVariable Long giftId) {
         return walletService.walletDetail(giftId);
+    }
+
+    @PostMapping("/upload")
+    public ApiResponse<?> walletUpload(@RequestBody WalletUploadRequestDto requestDto) throws IOException {
+        return walletService.walletUpload(requestDto);
     }
 }
