@@ -1,10 +1,7 @@
 package zero.eight.donut.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import zero.eight.donut.common.response.ApiResponse;
 import zero.eight.donut.dto.donation.DonateGiftRequestDto;
 import zero.eight.donut.dto.donation.GiftboxRequestDto;
@@ -27,5 +24,10 @@ public class DonationController {
     @PostMapping("/giver/donate")
     public ApiResponse<?> donateGift(DonateGiftRequestDto donateGiftRequestDto) throws IOException {
         return donationService.donateGift(donateGiftRequestDto);
+    }
+
+    @PatchMapping("/wallet/{giftId}")
+    public ApiResponse<?> walletDonation(@PathVariable Long giftId) {
+        return donationService.walletDonation(giftId);
     }
 }

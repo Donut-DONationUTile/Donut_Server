@@ -279,4 +279,38 @@ public class SerialDonationService {
                 })
                 .subscribe();
     }
+
+    @Transactional
+    public ApiResponse<?> donateWalletGift(Long giftId) {
+        // 기프티콘 찾기
+        Gift gift = giftRepository.findById(giftId).orElse(null);
+        if (gift == null) {
+            return ApiResponse.failure(Error.GIFT_NOT_FOUND_EXCEPTION);
+        }
+
+        // 기프티콘 소유자 == 사용자 확인
+        Giver giver = authUtils.getGiver();
+        if (!gift.getGiver().equals(giver)) {
+            return ApiResponse.failure(Error.NOT_AUTHENTICATED_EXCEPTION);
+        }
+
+        // 기프티콘 status 변경하기(-> UNUSED)
+        gift.updateStatus("UNUSED");
+        giftRepository.save(gift);
+
+        //기부자별 정보 Donation 업데이트
+        Donation donation = donationRepository.findByGiver(giver);
+        donation.updateSumCount(
+                donation.getSum() + gift.getPrice().longValue(),
+                donation.getCount()+1L);
+
+        //기부 통계 업데이트
+        LocalDate now = LocalDate.now();
+        DonationInfo donationInfo = donationInfoRepository.findDonationInfoByMonthAndYear(now.getMonthValue(), now.getYear());
+        donationInfo.updateSumCount(
+                donationInfo.getSum() + gift.getPrice().longValue(),
+                donationInfo.getCount()+1L);
+
+        return ApiResponse.success(Success.DONATE_GIFT_SUCCESS);
+    }
 }
