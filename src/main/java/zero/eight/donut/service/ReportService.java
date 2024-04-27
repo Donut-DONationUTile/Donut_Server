@@ -91,4 +91,18 @@ public class ReportService {
                 .build();
         return ApiResponse.success(Success.CREATE_REPORT_SUCCESS, responseDto);
     }
+
+    @Transactional
+    public ApiResponse<?> patchUnused(Long giftId) {
+        //Gift 있는지 확인
+        Optional<Gift> giftOptional = giftRepository.findById(giftId);
+        if(giftOptional.isEmpty())
+            return ApiResponse.failure(Error.GIFT_NOT_FOUND_EXCEPTION);
+
+        Gift gift = giftOptional.get();
+
+        gift.updateStatus("STORED");
+
+        return ApiResponse.success(Success.PATCH_STATUS_SUCCESS);
+    }
 }
