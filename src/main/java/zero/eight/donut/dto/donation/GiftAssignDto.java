@@ -1,4 +1,4 @@
-package zero.eight.donut.dto;
+package zero.eight.donut.dto.donation;
 
 import lombok.Builder;
 import lombok.Getter;
