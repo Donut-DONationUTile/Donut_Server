@@ -49,24 +49,7 @@ public class DonationService {
         return donationService.donateGift(requestDto);
     }
 
-    @Transactional
     public ApiResponse<?> walletDonation(Long giftId) {
-        // 기프티콘 찾기
-        Gift gift = giftRepository.findById(giftId).orElse(null);
-        if (gift == null) {
-            return ApiResponse.failure(Error.GIFT_NOT_FOUND_EXCEPTION);
-        }
-
-        // 기프티콘 소유자 == 사용자 확인
-        Giver giver = authUtils.getGiver();
-        if (!gift.getGiver().equals(giver)) {
-            return ApiResponse.failure(Error.NOT_AUTHENTICATED_EXCEPTION);
-        }
-
-        // 기프티콘 status 변경하기(-> UNUSED)
-        gift.updateStatus("UNUSED");
-        giftRepository.save(gift);
-
-        return ApiResponse.success(Success.DONATE_GIFT_SUCCESS);
+        return donationService.donateWalletGift(giftId);
     }
 }
