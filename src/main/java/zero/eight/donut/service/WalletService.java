@@ -46,8 +46,6 @@ public class WalletService {
     private final GiftRepository giftRepository;
     private final GiftboxRepository giftboxRepository;
 
-    @Transactional
-    // 월렛 화면 조회
     public ApiResponse<?> walletMain() {
         // 변수 선언
         LocalDateTime now = LocalDateTime.now(); // 조회 시각
@@ -156,6 +154,7 @@ public class WalletService {
         return ApiResponse.success(Success.HOME_RECEIVER_GIFT_SUCCESS, responseDto);
     }
 
+    @Transactional
     public ApiResponse<?> walletUpload(WalletUploadRequestDto requestDto) throws IOException {
         // 기부자 여부 검증
         if (!authUtils.getCurrentUserRole().equals(Role.ROLE_GIVER)) {
