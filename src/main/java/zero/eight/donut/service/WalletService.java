@@ -152,7 +152,6 @@ public class WalletService {
 
         // 조회 시 일단 사용처리
         gift.updateStatus("SELF_USED");
-        giftRepository.save(gift);
 
         return ApiResponse.success(Success.HOME_RECEIVER_GIFT_SUCCESS, responseDto);
     }
