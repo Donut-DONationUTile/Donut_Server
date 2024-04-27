@@ -17,4 +17,9 @@ public class MypageController {
     public ApiResponse<?> giverInfo() {
         return mypageService.getGiverMypage();
     }
+
+    @GetMapping("/receiver")
+    public ApiResponse<?> receiverInfo() {
+        return mypageService.getReceiverMypage();
+    }
 }
