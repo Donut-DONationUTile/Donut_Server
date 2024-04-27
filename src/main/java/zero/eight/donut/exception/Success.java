@@ -27,6 +27,7 @@ public enum Success {
     GET_HISTORY_RECEIVER_BENEFIT_SUCCESS(HttpStatus.OK, " Success in getting benefit history list"),
 
     //201 CREATED SUCCESS
+    SEND_MESSAGE_SUCCESS(HttpStatus.CREATED, "Send a message successfully"),
     UPLOAD_GIFT_SUCCESS(HttpStatus.CREATED, "Successfully upload gifticon"),
     ASSIGN_BENEFIT_SUCCESS(HttpStatus.CREATED, "Successfully assigned benefits"),
     DONATE_GIFT_SUCCESS(HttpStatus.CREATED, "Successfully donate gift"),
