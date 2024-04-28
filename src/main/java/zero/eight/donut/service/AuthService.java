@@ -273,6 +273,7 @@ public class AuthService {
         return !receiverRepository.findByName(id).isEmpty();
     }
 
+    @Transactional
     public ApiResponse<?> receiverSignIn(AuthRequestDto requestDto) {
 
         Optional<Receiver> receiver = receiverRepository.findByName(requestDto.getId());
