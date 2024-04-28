@@ -13,6 +13,8 @@ public enum Success {
     SUCCESS(HttpStatus.OK, "Request successfully processed"),
 
     // 200 OK SUCCESS
+    MYPAGE_RECEIVER_SUCCESS(HttpStatus.OK, "Get request for receiver's info completed successfully"),
+    MYPAGE_GIVER_SUCCESS(HttpStatus.OK, "Get request for giver's info completed successfully"),
     GET_WALLET_SUCCESS(HttpStatus.OK, "Success in getting wallet info"),
     HOME_GIVER_SUCCESS(HttpStatus.OK, "Get request for giver's home info completed successfully"),
     HOME_RECEIVER_SUCCESS(HttpStatus.OK, "Get request for receiver's home info completed successfully"),
