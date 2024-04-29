@@ -18,6 +18,7 @@ public enum Error {
     INVALID_JSON_INPUT_EXCEPTION(HttpStatus.BAD_REQUEST, "입력 형식이 맞지 않습니다."),
 
     // 401 UNAUTHORIZED
+    USERNAME_NOT_FOUND_EXCEPTION(HttpStatus.BAD_REQUEST, "Username not found"),
     INVALID_ID_PASSWORD_EXCEPTION(HttpStatus.UNAUTHORIZED, "ID/password error"),
     INVALID_GOOGLE_TOKEN_EXCEPTION(HttpStatus.UNAUTHORIZED, "Invalid Google Token"),
     INVALID_JWT_EXCEPTION(HttpStatus.UNAUTHORIZED, "Invalid JWT"),
