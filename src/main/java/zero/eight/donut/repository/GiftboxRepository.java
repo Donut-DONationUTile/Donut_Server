@@ -3,6 +3,7 @@ package zero.eight.donut.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import zero.eight.donut.domain.Gift;
 import zero.eight.donut.domain.Giftbox;
 import zero.eight.donut.domain.enums.Store;
 
@@ -36,5 +37,4 @@ public interface GiftboxRepository extends JpaRepository<Giftbox, Long> {
         }
         return storeGiftBoxSums;
     }
-
 }

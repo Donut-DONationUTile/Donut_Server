@@ -90,4 +90,8 @@ public class Gift extends BaseTimeEntity {
     public void updateImageUrl(String imageUrl){
         this.imageUrl = imageUrl;
     }
+
+    public void updateIsMsgReceived() {
+        this.isMsgReceived = true;
+    }
 }
