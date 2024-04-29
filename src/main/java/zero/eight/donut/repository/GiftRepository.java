@@ -21,7 +21,7 @@ public interface GiftRepository extends JpaRepository<Gift, Long> {
     @Query(value = "SELECT SUM(g.price) FROM gift g WHERE g.store = :storeName", nativeQuery = true)
     int sumByStoreName(String storeName);
 
-    @Query(value = "SELECT * FROM gift g WHERE g.status = :status AND g.is_assigned = false" +
+    @Query(value = "SELECT * FROM gift g WHERE g.status = :status AND g.is_assigned = false AND g.auto_donation = true" +
             "AND g.due_date BETWEEN :startDate AND :endDate", nativeQuery = true)
     List<Gift> findAllByNotAssignedAndStatusAndDueDateBetween(String status,LocalDateTime startDate, LocalDateTime endDate);
 
