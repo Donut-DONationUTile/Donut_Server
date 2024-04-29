@@ -14,7 +14,7 @@ import zero.eight.donut.domain.Giftbox;
 import zero.eight.donut.domain.Giver;
 import zero.eight.donut.domain.enums.Store;
 import zero.eight.donut.dto.auth.Role;
-import zero.eight.donut.dto.donation.DonateGiftRequestDto;
+import zero.eight.donut.dto.home.receiver.GetGiftResponseDto;
 import zero.eight.donut.dto.wallet.WalletGiftInfoResponseDto;
 import zero.eight.donut.dto.wallet.WalletResponseDto;
 import zero.eight.donut.dto.wallet.WalletUploadRequestDto;
@@ -45,10 +45,7 @@ public class WalletService {
     private final ReceiverRepository receiverRepository;
     private final GiftRepository giftRepository;
     private final GiftboxRepository giftboxRepository;
-    private final HomeReceiverService homeReceiverService;
 
-    @Transactional
-    // 월렛 화면 조회
     public ApiResponse<?> walletMain() {
         // 변수 선언
         LocalDateTime now = LocalDateTime.now(); // 조회 시각
@@ -141,9 +138,23 @@ public class WalletService {
 
         Gift gift = giftOptional.get();
 
-        return ApiResponse.success(Success.HOME_RECEIVER_GIFT_SUCCESS, homeReceiverService.getGiftInfo(giftId, gift));
+        GetGiftResponseDto responseDto = GetGiftResponseDto.builder()
+                .product(gift.getProduct())
+                .price(gift.getPrice())
+                .dueDate(gift.getDueDate())
+                .imgUrl(gift.getImageUrl())
+                .store(gift.getStore())
+                .status(gift.getStatus())
+                .boxId(gift.getGiftbox().getId())
+                .build();
+
+        // 조회 시 일단 사용처리
+        gift.updateStatus("SELF_USED");
+
+        return ApiResponse.success(Success.HOME_RECEIVER_GIFT_SUCCESS, responseDto);
     }
 
+    @Transactional
     public ApiResponse<?> walletUpload(WalletUploadRequestDto requestDto) throws IOException {
         // 기부자 여부 검증
         if (!authUtils.getCurrentUserRole().equals(Role.ROLE_GIVER)) {

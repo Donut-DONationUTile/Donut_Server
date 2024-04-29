@@ -28,4 +28,8 @@ public class Message {
     @JoinColumn(name = "gift_id")
     private Gift gift;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "giver_id")
+    private Giver giver;
+
 }
