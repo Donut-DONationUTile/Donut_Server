@@ -12,6 +12,7 @@ import zero.eight.donut.dto.auth.Role;
 import zero.eight.donut.dto.fcm.FcmMemberDto;
 import zero.eight.donut.dto.fcm.FcmTokenRequestDto;
 import zero.eight.donut.exception.Error;
+import zero.eight.donut.exception.Success;
 import zero.eight.donut.repository.FcmTokenRepository;
 import zero.eight.donut.repository.GiverRepository;
 import zero.eight.donut.repository.ReceiverRepository;
@@ -38,6 +39,8 @@ public class FcmService {
                                 .memberId(member.getId())
                                 .build())
                 );
+
+        return ApiResponse.success(Success.CREATE_FCM_TOKEN_SUCCESS);
     }
 
     private FcmMemberDto getMemberDto() throws Exception {
