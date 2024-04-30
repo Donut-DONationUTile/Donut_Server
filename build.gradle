@@ -57,6 +57,8 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
     //WebClient
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-webflux'
+    // firebase
+    implementation group: 'com.google.firebase', name: 'firebase-admin', version: '8.1.0'
 
 }
 

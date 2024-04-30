@@ -13,11 +13,15 @@ public enum Error {
     ERROR(HttpStatus.BAD_REQUEST, "Request processing failed"),
 
     // 400 BAD REQUEST
+    CONVERT_JSON_EXCEPTION(HttpStatus.BAD_REQUEST, "Failed to convert json object to JSON"),
+    FIREBASE_CONNECT_EXCEPTION(HttpStatus.BAD_REQUEST, "Firebase connect failed"),
+    GOOGLE_REQUEST_TOKEN_EXCEPTION(HttpStatus.BAD_REQUEST, "google oauth error"),
     INSUFFICIENT_BALANCE_EXCEPTION(HttpStatus.BAD_REQUEST, "Insufficient balance"),
     INSUFFICIENT_DONATION_EXCEPTION(HttpStatus.BAD_REQUEST, "Insufficient donation amount"),
     INVALID_JSON_INPUT_EXCEPTION(HttpStatus.BAD_REQUEST, "입력 형식이 맞지 않습니다."),
 
     // 401 UNAUTHORIZED
+    USERNAME_NOT_FOUND_EXCEPTION(HttpStatus.BAD_REQUEST, "Username not found"),
     INVALID_ID_PASSWORD_EXCEPTION(HttpStatus.UNAUTHORIZED, "ID/password error"),
     INVALID_GOOGLE_TOKEN_EXCEPTION(HttpStatus.UNAUTHORIZED, "Invalid Google Token"),
     INVALID_JWT_EXCEPTION(HttpStatus.UNAUTHORIZED, "Invalid JWT"),
@@ -32,6 +36,7 @@ public enum Error {
 
 
     // 404 NOT FOUND
+    FCM_TOKEN_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "FCM_token not found"),
     GIFT_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "That gift does not exist"),
     GIFTBOX_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "That giftbox does not exist"),
     BENEFIT_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "Benefit info does not exist"),

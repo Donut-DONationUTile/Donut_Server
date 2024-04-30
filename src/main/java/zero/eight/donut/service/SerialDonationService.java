@@ -78,7 +78,7 @@ public class SerialDonationService {
             log.info("가용 잔액 부족(INSUFFICIENT_BALANCE_EXCEPTION)");
             return ApiResponse.failure(Error.INSUFFICIENT_BALANCE_EXCEPTION);
         }
-        else if (giftRepository.sumByStoreName(giftboxRequestDto.getStore().toString()) < giftboxRequestDto.getPrice()) {
+        else if (giftRepository.sumAvailableGiftsByStoreName(giftboxRequestDto.getStore().toString()) < giftboxRequestDto.getPrice()) {
             // 기부 금액 부족 시(기부 부족 오류)
             log.info("기부 금액 부족(INSUFFICIENT_DONATION_EXCEPTION)");
             return ApiResponse.failure(Error.INSUFFICIENT_DONATION_EXCEPTION);
@@ -86,7 +86,7 @@ public class SerialDonationService {
         log.info("할당 금액 검증 완료");
 
         // 사용처에 따른 기프티콘 추출
-        List<Gift> giftList = giftRepository.findByStoreAndIsAssigned(giftboxRequestDto.getStore().toString());
+        List<Gift> giftList = giftRepository.findByStoreAndIsAssignedAndUnused(giftboxRequestDto.getStore().toString());
         log.info("사용처에 따른 기프티콘 추출 완료: store -> {}", giftboxRequestDto.getStore());
 
         // 추출된 기프티콘 리스트에서 기프티콘, 가격, 사용 기한으로 새로운 리스트 생성
@@ -107,13 +107,19 @@ public class SerialDonationService {
         log.info("꾸러미 구성 완료");
         log.info("구성된 꾸러미 가격 -> {}", assignDto.getAssignedValue());
 
+        // 구성된 꾸러미가 수혜 요청 금액 미만이면 할당 불가
+        if (assignDto.getAssignedValue() < giftboxRequestDto.getPrice()) {
+            log.info("구성된 꾸러미가 수혜 요청 금액 미만(INSUFFICIENT_BALANCE_EXCEPTION)");
+            return ApiResponse.failure(Error.INSUFFICIENT_BALANCE_EXCEPTION);
+        }
+
         // 구성된 꾸러미가 할당 가능한 금액인지 검증
         // 이번 달의 남은 수혜 가능 금액 계산
         Integer possibleAmount = montlyLimit - benefitOptional.get().getSum();
 
-        // 수혜 금액을 조금이라도 초과하면 할당 불가
+        // 구성된 꾸러미를 포함한 총 수혜 금액이 이달의 수혜 가능 금액을 조금이라도 초과하면 할당 불가
         if (assignDto.getAssignedValue() > possibleAmount) {
-            log.info("구성된 꾸러미가 수혜 금액 초과(INSUFFICIENT_BALANCE_EXCEPTION)");
+            log.info("구성된 꾸러미가 수혜 가능 금액 초과(INSUFFICIENT_BALANCE_EXCEPTION)");
             return ApiResponse.failure(Error.INSUFFICIENT_BALANCE_EXCEPTION);
         }
         log.info("구성된 꾸러미 가격 검증 완료");
