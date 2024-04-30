@@ -1,5 +1,6 @@
 package zero.eight.donut.service;
 
+import com.google.firebase.messaging.FirebaseMessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -45,10 +46,11 @@ public class FcmService {
     @Async
     @Transactional
     @Scheduled(cron = "0 0 0 * * *")
-    public void imminentWallet(){
+    public void imminentWallet() throws FirebaseMessagingException {
         List<Gift> giftList = giftRepository.findAllByNotAssignedAndStatusAndDueDateBetween( "STORED", LocalDateTime.now(), LocalDateTime.now().minusDays(37));
         for (Gift gift : giftList) {
             // 기프티콘의 giverId로 FCM 메세지 전송
+            fcmUtils.sendMessage(gift.getGiver().getId(), "wallet: D-37", "Your item" + gift.getProduct() + "is expiring soon!");
         }
     }
 }
