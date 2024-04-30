@@ -1,3 +1,3 @@
 spring:
   profiles:
-    active: prod, db, gcs
+    active: prod, db, gcs, fcm
