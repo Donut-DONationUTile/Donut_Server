@@ -33,5 +33,8 @@ public class Benefit {
     @JoinColumn(name = "receiver_id")
     private Receiver receiver;
 
+    public void updateSum(Integer sum) {
+        this.sum = sum;
+    }
 }
 
