@@ -27,8 +27,7 @@ public class FcmUtils {
     private final GiverRepository giverRepository;
     private final ReceiverRepository receiverRepository;
     private final FcmTokenRepository fcmTokenRepository;
-
-    private FirebaseMessaging firebaseMessaging;
+    private final FirebaseMessaging firebaseMessaging;
 
 
 

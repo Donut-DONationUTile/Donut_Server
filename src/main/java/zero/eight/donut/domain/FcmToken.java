@@ -24,6 +24,13 @@ public class FcmToken {
     @Column(nullable = false)
     private Role role;
 
+    @Builder  // 롬복의 @Builder 애너테이션 적용
+    public FcmToken(String token, Long memberId, Role role) {
+        this.token = token;
+        this.memberId = memberId;
+        this.role = role;
+    }
+
     public void updateToken(String token, Role role) {
         this.token = token;
         this.role = role;
