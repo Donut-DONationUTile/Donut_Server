@@ -130,6 +130,9 @@ public class SerialDonationService {
         setGiftbox(assignDto, giftbox);
         log.info("꾸러미에 기프티콘 할당 완료");
 
+        // 수혜 내역 업데이트
+        benefitOptional.get().updateSum(assignDto.getAssignedValue());
+
         return ApiResponse.success(Success.ASSIGN_BENEFIT_SUCCESS, Map.of("giftboxId", giftbox.getId()));
     }
 
