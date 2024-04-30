@@ -108,7 +108,7 @@ public class SerialDonationService {
 
         // 구성된 꾸러미가 할당 가능한 금액인지 검증
         // 수혜 금액을 조금이라도 초과하면 할당 불가
-        if (assignDto.getAssignedValue() > benefitOptional.get().getSum()) {
+        if (assignDto.getAssignedValue()+1000 > benefitOptional.get().getSum()) {
             log.info("구성된 꾸러미가 수혜 금액 초과(INSUFFICIENT_BALANCE_EXCEPTION)");
             return ApiResponse.failure(Error.INSUFFICIENT_BALANCE_EXCEPTION);
         }
