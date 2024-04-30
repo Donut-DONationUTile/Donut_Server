@@ -26,7 +26,7 @@ public class WalletController {
     }
 
     @PostMapping
-    public ApiResponse<?> walletUpload(@RequestBody WalletUploadRequestDto requestDto) throws IOException {
+    public ApiResponse<?> walletUpload(WalletUploadRequestDto requestDto) throws IOException {
         return walletService.walletUpload(requestDto);
     }
 }
