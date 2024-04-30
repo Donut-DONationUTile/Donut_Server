@@ -107,16 +107,19 @@ public class SerialDonationService {
         log.info("꾸러미 구성 완료");
         log.info("구성된 꾸러미 가격 -> {}", assignDto.getAssignedValue());
 
-        // todo: 꾸러미 가격이 요청 가격보다 작은 경우 실패
-        //if (assignDto.getAssignedList().size() == 0 || assignDto.getAssignedValue() < giftboxRequestDto.getPrice())
+        // 구성된 꾸러미가 수혜 요청 금액 미만이면 할당 불가
+        if (assignDto.getAssignedValue() < giftboxRequestDto.getPrice()) {
+            log.info("구성된 꾸러미가 수혜 요청 금액 미만(INSUFFICIENT_BALANCE_EXCEPTION)");
+            return ApiResponse.failure(Error.INSUFFICIENT_BALANCE_EXCEPTION);
+        }
 
         // 구성된 꾸러미가 할당 가능한 금액인지 검증
         // 이번 달의 남은 수혜 가능 금액 계산
         Integer possibleAmount = montlyLimit - benefitOptional.get().getSum();
 
-        // 수혜 금액을 조금이라도 초과하면 할당 불가
+        // 구성된 꾸러미를 포함한 총 수혜 금액이 이달의 수혜 가능 금액을 조금이라도 초과하면 할당 불가
         if (assignDto.getAssignedValue() > possibleAmount) {
-            log.info("구성된 꾸러미가 수혜 금액 초과(INSUFFICIENT_BALANCE_EXCEPTION)");
+            log.info("구성된 꾸러미가 수혜 가능 금액 초과(INSUFFICIENT_BALANCE_EXCEPTION)");
             return ApiResponse.failure(Error.INSUFFICIENT_BALANCE_EXCEPTION);
         }
         log.info("구성된 꾸러미 가격 검증 완료");
