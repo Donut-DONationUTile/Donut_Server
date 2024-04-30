@@ -1,9 +1,3 @@
-FirebaseConfig.*
-FcmUtils.*
-FirebaseConfig.*
-FcmController.*
-FcmService.*
-
 HELP.md
 .gradle
 build/
