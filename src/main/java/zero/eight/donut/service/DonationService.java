@@ -1,5 +1,6 @@
 package zero.eight.donut.service;
 
+import com.google.firebase.messaging.FirebaseMessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -34,7 +35,7 @@ public class DonationService {
     @Async
     @Transactional
     @Scheduled(cron = "0 0 0 * * *")
-    public void autoDonate(){
+    public void autoDonate() throws FirebaseMessagingException {
         List<Gift> giftList = giftRepository.findAllByNotAssignedAndStatusAndDueDateBetween( "STORED", LocalDateTime.now(), LocalDateTime.now().minusDays(30));
         for (Gift gift : giftList) {
             gift.updateStatus("UNUSED");
