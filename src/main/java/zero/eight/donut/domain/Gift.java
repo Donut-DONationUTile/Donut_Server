@@ -63,7 +63,7 @@ public class Gift extends BaseTimeEntity {
     @JoinColumn(name = "giftbox_id")
     private Giftbox giftbox; // 꾸러미 고유 ID
 
-    @Column(name = "auto_danation")
+    @Column(name = "auto_donation")
     @ColumnDefault("false")
     private Boolean autoDonation; // 자동 기부 허용
 
