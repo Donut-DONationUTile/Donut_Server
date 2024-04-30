@@ -12,12 +12,12 @@ import java.io.FileInputStream;
 
 @Configuration
 public class FirebaseConfig {
-
+    String filepath = System.getenv("FIREBASE_CONFIG_FILE");
     @PostConstruct
     public void init() {
         try {
             FileInputStream serviceAccount =
-                    new FileInputStream("src/main/resources/serviceAccountKey.json");
+                    new FileInputStream(filepath != null ? filepath : "src/main/resources/serviceAccountKey.json");
             FirebaseOptions options = new FirebaseOptions.Builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
                     .build();
@@ -32,7 +32,7 @@ public class FirebaseConfig {
     public FirebaseMessaging firebaseMessaging() {
         try {
             FileInputStream serviceAccount =
-                    new FileInputStream("src/main/resources/serviceAccountKey.json");
+                    new FileInputStream(filepath != null ? filepath : "src/main/resources/serviceAccountKey.json");
 
             FirebaseOptions options = new FirebaseOptions.Builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))

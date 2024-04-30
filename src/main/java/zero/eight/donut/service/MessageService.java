@@ -10,6 +10,7 @@ import zero.eight.donut.domain.Message;
 import zero.eight.donut.domain.Receiver;
 import zero.eight.donut.dto.SendMessageRequestDto;
 import zero.eight.donut.exception.Success;
+import zero.eight.donut.repository.GiftRepository;
 import zero.eight.donut.repository.GiftboxRepository;
 import zero.eight.donut.repository.MessageRepository;
 
@@ -19,13 +20,16 @@ import java.util.List;
 public class MessageService {
 
     private final GiftboxRepository giftboxRepository;
+
     private final AuthUtils authUtils;
     private final MessageRepository messageRepository;
+    private final GiftRepository giftRepository;
 
-    public MessageService(GiftboxRepository giftboxRepository, AuthUtils authUtils, MessageRepository messageRepository) {
+    public MessageService(GiftboxRepository giftboxRepository, AuthUtils authUtils, MessageRepository messageRepository, GiftRepository giftRepository) {
         this.giftboxRepository = giftboxRepository;
         this.authUtils = authUtils;
         this.messageRepository = messageRepository;
+        this.giftRepository= giftRepository;
     }
 
     @Transactional
@@ -34,22 +38,31 @@ public class MessageService {
         Receiver receiver = authUtils.getReceiver();
 
         // 꾸러미 ID로 꾸러미에 속한 기프티콘 리스트 찾기
-        Giftbox box = giftboxRepository.findById(requestDto.getBoxId()).orElseThrow();
-        List<Gift> giftList = box.getGiftList();
+//        Giftbox box = giftboxRepository.findById(requestDto.getBoxId()).orElseThrow();
+//        List<Gift> giftList = box.get기ftList();
 
         // 기프티콘마다 신규 메세지 등록 여부(idMsgReceived)를 true로 변경하기
         // 메세지 객체 생성 및 저장하기(기프티콘 고유 ID, 기부자 고유 ID, 수혜자 고유 ID, requestDto.content)
-        for (Gift g : giftList) {
-            g.updateIsMsgReceived();
-            Message message = Message.builder()
+//        for (Gift g : giftList) {
+//            g.updateIsMsgReceived();
+//            Message message = Message.builder()
+//                    .content(requestDto.getContent())
+//                    .receiver(receiver)
+//                    .gift(g)
+//                    .giver(g.getGiver())
+//                    .build();
+//            messageRepository.save(message);
+//        }
+        //기프티콘 찾
+        Gift gift = giftRepository.findById(requestDto.getGiftId()).orElseThrow();
+        gift.updateIsMsgReceived();
+        Message message = Message.builder()
                     .content(requestDto.getContent())
                     .receiver(receiver)
-                    .gift(g)
-                    .giver(g.getGiver())
+                    .gift(gift)
+                    .giver(gift.getGiver())
                     .build();
             messageRepository.save(message);
-        }
-
         /////////////////////////////////////
         /////////////////////////////////////
         /////////////////////////////////////
