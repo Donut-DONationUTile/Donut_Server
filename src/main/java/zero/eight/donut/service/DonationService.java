@@ -8,15 +8,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import zero.eight.donut.common.response.ApiResponse;
-import zero.eight.donut.config.firebase.FcmUtils;
-import zero.eight.donut.config.jwt.AuthUtils;
 import zero.eight.donut.domain.Gift;
-import zero.eight.donut.domain.Giver;
-import zero.eight.donut.domain.enums.Status;
 import zero.eight.donut.dto.donation.DonateGiftRequestDto;
 import zero.eight.donut.dto.donation.GiftboxRequestDto;
-import zero.eight.donut.exception.Error;
-import zero.eight.donut.exception.Success;
 import zero.eight.donut.repository.GiftRepository;
 
 import java.io.IOException;
@@ -28,7 +22,6 @@ import java.util.List;
 @Service
 public class DonationService {
 
-    private final FcmUtils fcmUtils;
     private final SerialDonationService donationService;
     private  final GiftRepository giftRepository;
 
@@ -40,7 +33,6 @@ public class DonationService {
         for (Gift gift : giftList) {
             gift.updateStatus("UNUSED");
             giftRepository.save(gift);
-            fcmUtils.sendMessage(gift.getGiver().getId(), "wallet: D-30", "Your item" + gift.getProduct() + "is donated now!");
         }
     }
 
