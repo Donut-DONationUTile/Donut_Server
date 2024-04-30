@@ -101,8 +101,12 @@ public class HistoryGiverService {
 
         //name of receiver
         String receiver = "not delivered";
-        if (gift.getGiftbox() != null && gift.getGiftbox().getReceiver() != null)
+        LocalDateTime receivedDate = null;
+        if (gift.getGiftbox() != null && gift.getGiftbox().getReceiver() != null) {
             receiver = gift.getGiftbox().getReceiver().getName();
+            receivedDate = gift.getGiftbox().getAssignedAt();
+        }
+
 
 
         //message
@@ -116,11 +120,13 @@ public class HistoryGiverService {
                 .amount(gift.getPrice())
                 .dueDate(gift.getDueDate())
                 .store(gift.getStore())
+                .giver(gift.getGiver().getName())
                 .receiver(receiver)
                 .isAssigned(gift.getIsAssigned())
                 .status(gift.getStatus())
                 .message(message)
-                .donateDate(gift.getCreatedAt())
+                .donateDate(gift.getUpdatedAt())
+                .receivedDate(receivedDate)
                 .build();
 
         return ApiResponse.success(Success.GET_HISTORY_GIVER_DONATION_SUCCESS, responseDto);
