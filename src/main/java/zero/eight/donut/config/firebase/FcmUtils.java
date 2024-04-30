@@ -59,8 +59,9 @@ public class FcmUtils {
     public String sendMessage(Long memberId, String title, String body) throws FirebaseMessagingException {
         // 알림 수신자의 FCM 토큰 조회
         String fcmToken = getFcmToken(memberId);
-
+        // FCM 메세지 생성
         Message message = makeMessage(fcmToken, title, body);
+        // FCM 발신
         return firebaseMessaging.send(message);
     }
 
