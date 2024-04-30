@@ -8,6 +8,6 @@ import zero.eight.donut.domain.Message;
 public interface MessageRepository extends JpaRepository<Message,Long> {
     Message findByGiftId(Long giftId);
 
-    @Query(value = "SELECT COUNT(m) FROM message m WHERE m.giver_id = :giverId", nativeQuery = true)
+    @Query(value = "SELECT COUNT(*) FROM message m WHERE m.giver_id = :giverId", nativeQuery = true)
     int countByGiverId(@Param("giverId") Long giverId);
 }
