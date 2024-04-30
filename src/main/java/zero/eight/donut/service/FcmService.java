@@ -1,35 +1,33 @@
 package zero.eight.donut.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import zero.eight.donut.common.response.ApiResponse;
-import zero.eight.donut.config.jwt.AuthUtils;
+import zero.eight.donut.config.firebase.FcmUtils;
 import zero.eight.donut.domain.FcmToken;
-import zero.eight.donut.domain.Giver;
-import zero.eight.donut.domain.Receiver;
-import zero.eight.donut.dto.auth.Role;
+import zero.eight.donut.domain.Gift;
 import zero.eight.donut.dto.fcm.FcmMemberDto;
 import zero.eight.donut.dto.fcm.FcmTokenRequestDto;
-import zero.eight.donut.exception.Error;
 import zero.eight.donut.exception.Success;
 import zero.eight.donut.repository.FcmTokenRepository;
-import zero.eight.donut.repository.GiverRepository;
-import zero.eight.donut.repository.ReceiverRepository;
+import zero.eight.donut.repository.GiftRepository;
 
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
 public class FcmService {
-    private final AuthUtils authUtils;
-    private final GiverRepository giverRepository;
-    private final ReceiverRepository receiverRepository;
+    private final FcmUtils fcmUtils;
     private final FcmTokenRepository fcmTokenRepository;
+    private final GiftRepository giftRepository;
 
     public ApiResponse<?> registerFcmToken(FcmTokenRequestDto requestDto) throws Exception {
         final String token = requestDto.getToken();
-        FcmMemberDto member = getMemberDto();
+        FcmMemberDto member = fcmUtils.getMemberDto();
 
         fcmTokenRepository.findByMemberId(member.getId())
                 .ifPresentOrElse(
@@ -42,27 +40,15 @@ public class FcmService {
 
         return ApiResponse.success(Success.CREATE_FCM_TOKEN_SUCCESS);
     }
-
-    private FcmMemberDto getMemberDto() throws Exception {
-        if (authUtils.getCurrentUserRole().equals(Role.ROLE_GIVER)) {
-            Giver giver = giverRepository.findByEmail(authUtils.getCurrentUserEmail()).orElseThrow(
-                    () -> new Exception(Error.USERNAME_NOT_FOUND_EXCEPTION.getMessage())
-            );
-            return FcmMemberDto.builder()
-                    .id(giver.getId())
-                    .role(Role.ROLE_GIVER)
-                    .build();
-        }
-        else {
-            Optional<Receiver> optionalReceiver = receiverRepository.findByName(authUtils.getCurrentUserEmail());
-            if (optionalReceiver.isEmpty()) {
-                throw new Exception(Error.USERNAME_NOT_FOUND_EXCEPTION.getMessage());
-            }
-
-            return FcmMemberDto.builder()
-                    .id(optionalReceiver.get().getId())
-                    .role(Role.ROLE_RECEIVER)
-                    .build();
+    
+    // 사용 기한 D-37 push 알림
+    @Async
+    @Transactional
+    @Scheduled(cron = "0 0 0 * * *")
+    public void imminentWallet(){
+        List<Gift> giftList = giftRepository.findAllByNotAssignedAndStatusAndDueDateBetween( "STORED", LocalDateTime.now(), LocalDateTime.now().minusDays(37));
+        for (Gift gift : giftList) {
+            // 기프티콘의 giverId로 FCM 메세지 전송
         }
     }
 }

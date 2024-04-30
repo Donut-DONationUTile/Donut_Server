@@ -3,10 +3,11 @@ package zero.eight.donut.domain;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import zero.eight.donut.dto.auth.Role;
 
 @Getter
-@Builder
+@NoArgsConstructor
 @Entity
 public class FcmToken {
 
