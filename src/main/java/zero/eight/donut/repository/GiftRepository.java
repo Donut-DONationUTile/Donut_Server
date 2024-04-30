@@ -17,8 +17,8 @@ public interface GiftRepository extends JpaRepository<Gift, Long> {
     List<Gift> findByStoreAndIsAssignedAndUnused(String storeName);
     @Query(value = "SELECT SUM(g.price) FROM gift g WHERE g.is_assigned = false", nativeQuery = true)
     int sumByNotAssigned();
-    @Query(value = "SELECT SUM(g.price) FROM gift g WHERE g.store = :storeName", nativeQuery = true)
-    int sumByStoreName(String storeName);
+    @Query(value = "SELECT SUM(g.price) FROM gift g WHERE g.store = :storeName AND g.is_assigned = false AND g.status = 'UNUSED'", nativeQuery = true)
+    int sumAvailableGiftsByStoreName(String storeName);
 
     @Query(value = "SELECT * FROM gift g WHERE g.status = :status AND g.is_assigned = false AND g.auto_donation = true" +
             "AND g.due_date BETWEEN :startDate AND :endDate", nativeQuery = true)

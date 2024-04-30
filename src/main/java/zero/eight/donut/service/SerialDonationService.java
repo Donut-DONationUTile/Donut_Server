@@ -78,7 +78,7 @@ public class SerialDonationService {
             log.info("가용 잔액 부족(INSUFFICIENT_BALANCE_EXCEPTION)");
             return ApiResponse.failure(Error.INSUFFICIENT_BALANCE_EXCEPTION);
         }
-        else if (giftRepository.sumByStoreName(giftboxRequestDto.getStore().toString()) < giftboxRequestDto.getPrice()) {
+        else if (giftRepository.sumAvailableGiftsByStoreName(giftboxRequestDto.getStore().toString()) < giftboxRequestDto.getPrice()) {
             // 기부 금액 부족 시(기부 부족 오류)
             log.info("기부 금액 부족(INSUFFICIENT_DONATION_EXCEPTION)");
             return ApiResponse.failure(Error.INSUFFICIENT_DONATION_EXCEPTION);
@@ -108,6 +108,7 @@ public class SerialDonationService {
         log.info("구성된 꾸러미 가격 -> {}", assignDto.getAssignedValue());
 
         // todo: 꾸러미 가격이 요청 가격보다 작은 경우 실패
+        //if (assignDto.getAssignedList().size() == 0 || assignDto.getAssignedValue() < giftboxRequestDto.getPrice())
 
         // 구성된 꾸러미가 할당 가능한 금액인지 검증
         // 이번 달의 남은 수혜 가능 금액 계산
