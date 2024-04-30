@@ -38,5 +38,9 @@ public class Giver extends BaseTimeEntity {
     //신고
     @OneToMany(mappedBy = "giver", fetch = FetchType.LAZY)
     private List<Report> reportList = new ArrayList<>();
+
+    //메세지
+    @OneToMany(mappedBy = "giver", fetch = FetchType.LAZY)
+    private List<Message> messagesList = new ArrayList<>();
 }
 

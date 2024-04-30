@@ -12,13 +12,12 @@ import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import zero.eight.donut.common.response.ApiResponse;
 import zero.eight.donut.config.jwt.AuthUtils;
 import zero.eight.donut.domain.*;
-import zero.eight.donut.dto.GiftAssignDto;
+import zero.eight.donut.dto.donation.GiftAssignDto;
 import zero.eight.donut.dto.auth.Role;
 import zero.eight.donut.dto.donation.DonateGiftRequestDto;
 import zero.eight.donut.dto.donation.GiftValueDto;
@@ -45,6 +44,7 @@ public class SerialDonationService {
 
     @Value("${spring.cloud.gcp.storage.bucket}")
     private String BUCKET_NAME;
+    private final Integer montlyLimit = 50000;
     private final Storage storage;
     private final AuthUtils authUtils;
     private final BenefitRepository benefitRepository;
@@ -108,8 +108,11 @@ public class SerialDonationService {
         log.info("구성된 꾸러미 가격 -> {}", assignDto.getAssignedValue());
 
         // 구성된 꾸러미가 할당 가능한 금액인지 검증
+        // 이번 달의 남은 수혜 가능 금액 계산
+        Integer possibleAmount = montlyLimit - benefitOptional.get().getSum();
+
         // 수혜 금액을 조금이라도 초과하면 할당 불가
-        if (assignDto.getAssignedValue() > benefitOptional.get().getSum()) {
+        if (assignDto.getAssignedValue() > possibleAmount) {
             log.info("구성된 꾸러미가 수혜 금액 초과(INSUFFICIENT_BALANCE_EXCEPTION)");
             return ApiResponse.failure(Error.INSUFFICIENT_BALANCE_EXCEPTION);
         }
@@ -126,6 +129,9 @@ public class SerialDonationService {
         // 꾸러미에 기프티콘 할당
         setGiftbox(assignDto, giftbox);
         log.info("꾸러미에 기프티콘 할당 완료");
+
+        // 수혜 내역 업데이트
+        benefitOptional.get().updateSum(assignDto.getAssignedValue());
 
         return ApiResponse.success(Success.ASSIGN_BENEFIT_SUCCESS, Map.of("giftboxId", giftbox.getId()));
     }

@@ -26,6 +26,7 @@ public class ReportService {
     private final ReportRepository reportRepository;
     private final GiftRepository giftRepository;
     private final GiftboxRepository giftboxRepository;
+
     @Transactional
     public ApiResponse<?> createUsed(Long giftId){
         //Gift 있는지 확인
