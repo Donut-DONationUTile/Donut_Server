@@ -64,9 +64,9 @@ public class WalletService {
         if (targetList != null || !targetList.isEmpty()) { // 보유 기프티콘이 있음
             // 사용처별 기프티콘 개수 계산
             Map<Store, Long> giftCountMap = countGiftsByStore(targetList);
-            cu = Math.toIntExact(giftCountMap.get(Store.CU));
-            gs25 = Math.toIntExact(giftCountMap.get(Store.GS25));
-            seveneleven = Math.toIntExact(giftCountMap.get(Store.SEVENELEVEN));
+            cu = Math.toIntExact(giftCountMap.getOrDefault(Store.CU, 0L));
+            gs25 = Math.toIntExact(giftCountMap.getOrDefault(Store.GS25, 0L));
+            seveneleven = Math.toIntExact(giftCountMap.getOrDefault(Store.SEVENELEVEN, 0L));
             
             for (Gift g : targetList) {
                 // 기프티콘 총액 계산
