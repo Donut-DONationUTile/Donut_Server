@@ -15,8 +15,10 @@ public class GiverDonationDetailResponseDto {
     private LocalDateTime dueDate;
     private Store store;
     private String receiver;
+    private String giver;
     private Boolean isAssigned;
     private Status status;
     private String message;
     private LocalDateTime donateDate;
+    private LocalDateTime receivedDate;
 }
