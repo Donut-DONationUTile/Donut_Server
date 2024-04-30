@@ -44,6 +44,7 @@ public class SerialDonationService {
 
     @Value("${spring.cloud.gcp.storage.bucket}")
     private String BUCKET_NAME;
+    private final Integer montlyLimit = 50000;
     private final Storage storage;
     private final AuthUtils authUtils;
     private final BenefitRepository benefitRepository;
@@ -107,8 +108,11 @@ public class SerialDonationService {
         log.info("구성된 꾸러미 가격 -> {}", assignDto.getAssignedValue());
 
         // 구성된 꾸러미가 할당 가능한 금액인지 검증
+        // 이번 달의 남은 수혜 가능 금액 계산
+        Integer possibleAmount = montlyLimit - benefitOptional.get().getSum();
+
         // 수혜 금액을 조금이라도 초과하면 할당 불가
-        if (assignDto.getAssignedValue() > benefitOptional.get().getSum()) {
+        if (assignDto.getAssignedValue() > possibleAmount) {
             log.info("구성된 꾸러미가 수혜 금액 초과(INSUFFICIENT_BALANCE_EXCEPTION)");
             return ApiResponse.failure(Error.INSUFFICIENT_BALANCE_EXCEPTION);
         }
