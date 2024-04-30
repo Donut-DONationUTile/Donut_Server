@@ -8,15 +8,22 @@ import zero.eight.donut.service.ReportService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/report")
+@RequestMapping("/api/report")
 public class ReportController {
     private final ReportService reportService;
+
     @PostMapping("/use")
     public ApiResponse<?> createUsed(@RequestParam(name = "giftId") Long giftId ){
         return reportService.createUsed(giftId);
     }
+
     @PostMapping("/cheat")
     public ApiResponse<?> createReport(@RequestBody ReportedRequestDto requestDto){
         return reportService.createReport(requestDto);
+    }
+
+    @PatchMapping("/{giftId}")
+    public ApiResponse<?> reportUnused(@PathVariable(name = "giftId") Long giftId){
+        return reportService.patchUnused(giftId);
     }
 }
