@@ -6,6 +6,7 @@ import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import zero.eight.donut.config.jwt.AuthUtils;
 import zero.eight.donut.domain.FcmToken;
 import zero.eight.donut.domain.Giver;
@@ -21,6 +22,7 @@ import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
+@Component
 public class FcmUtils {
 
     private final AuthUtils authUtils;
