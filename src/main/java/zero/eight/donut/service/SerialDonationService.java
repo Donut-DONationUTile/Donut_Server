@@ -86,7 +86,7 @@ public class SerialDonationService {
         log.info("할당 금액 검증 완료");
 
         // 사용처에 따른 기프티콘 추출
-        List<Gift> giftList = giftRepository.findByStoreAndIsAssigned(giftboxRequestDto.getStore().toString());
+        List<Gift> giftList = giftRepository.findByStoreAndIsAssignedAndUnused(giftboxRequestDto.getStore().toString());
         log.info("사용처에 따른 기프티콘 추출 완료: store -> {}", giftboxRequestDto.getStore());
 
         // 추출된 기프티콘 리스트에서 기프티콘, 가격, 사용 기한으로 새로운 리스트 생성
@@ -106,6 +106,8 @@ public class SerialDonationService {
         GiftAssignDto assignDto = findClosestValue(giftValueDtoList, giftboxRequestDto.getPrice());
         log.info("꾸러미 구성 완료");
         log.info("구성된 꾸러미 가격 -> {}", assignDto.getAssignedValue());
+
+        // todo: 꾸러미 가격이 요청 가격보다 작은 경우 실패
 
         // 구성된 꾸러미가 할당 가능한 금액인지 검증
         // 이번 달의 남은 수혜 가능 금액 계산
