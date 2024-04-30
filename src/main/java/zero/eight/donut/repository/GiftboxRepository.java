@@ -3,10 +3,10 @@ package zero.eight.donut.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import zero.eight.donut.domain.Gift;
 import zero.eight.donut.domain.Giftbox;
 import zero.eight.donut.domain.enums.Store;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +23,9 @@ public interface GiftboxRepository extends JpaRepository<Giftbox, Long> {
 
     @Query("SELECT gb FROM Giftbox gb  WHERE gb.receiver.id = ?1 and gb.isAvailable = true")
     List<Giftbox> findAllByReceiverIdAndIsAvailable(Long receiver_id);
+
+    @Query(value = "SELECT * FROM Giftbox gb WHERE gb.isAvailable = true AND gb.dueDate = :endDate", nativeQuery = true)
+    List<Giftbox> findAllByIsAvailableAndDueDate(@Param("endDate") LocalDateTime endDate);
 
 //    @Query("SELECT SUM(gb.amount) FROM Giftbox gb WHERE gb.store = ?1")
 //    Integer getSumByStore(Store store);
