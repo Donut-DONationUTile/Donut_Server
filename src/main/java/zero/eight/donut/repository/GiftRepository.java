@@ -27,10 +27,7 @@ public interface GiftRepository extends JpaRepository<Gift, Long> {
     @Query(value = "SELECT * FROM gift g WHERE g.status = 'STORED' AND g.is_assigned = false AND g.auto_donation = true AND g.due_date = :endDate", nativeQuery = true)
     List<Gift> findAllByNotAssignedAndStoredAndAutoDonation(@Param("endDate") LocalDateTime endDate);
 
-    @Query(value = "SELECT * FROM gift g WHERE g.status = 'UNUSED' AND g.is_assigned = true AND g.due_date = :endDate", nativeQuery = true)
-    List<Gift> findAllByAssignedAndUnused(@Param("endDate") LocalDateTime endDate);
-
-    @Query(value = "SELECT * FROM gift g WHERE g.auto_donation = true AND g.status = 'STORED' AND g.giver_id = :giverId AND g.due_date >= :today", nativeQuery = true)
+    @Query(value = "SELECT * FROM gift g WHERE g.status = 'STORED' AND g.giver_id = :giverId AND g.due_date >= :today", nativeQuery = true)
     List<Gift> findAllByGiverAndStatusAndDueDateAfterOrToday(@Param("giverId") Long giverId, @Param("today") LocalDateTime today);
 
     @Query(value = "SELECT COUNT(*) FROM gift g WHERE g.giver_id = :giverId AND g.is_assigned = false", nativeQuery = true)

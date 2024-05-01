@@ -1,8 +1,12 @@
 package zero.eight.donut.service;
 
+import com.google.firebase.messaging.FirebaseMessagingException;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import zero.eight.donut.common.response.ApiResponse;
+import zero.eight.donut.config.firebase.FcmUtils;
 import zero.eight.donut.config.jwt.AuthUtils;
 import zero.eight.donut.domain.Gift;
 import zero.eight.donut.domain.Giftbox;
@@ -14,26 +18,27 @@ import zero.eight.donut.repository.GiftRepository;
 import zero.eight.donut.repository.GiftboxRepository;
 import zero.eight.donut.repository.MessageRepository;
 
-import java.util.List;
-
+@Getter
+@RequiredArgsConstructor
 @Service
 public class MessageService {
 
     private final GiftboxRepository giftboxRepository;
 
     private final AuthUtils authUtils;
+    private final FcmUtils fcmUtils;
     private final MessageRepository messageRepository;
     private final GiftRepository giftRepository;
 
-    public MessageService(GiftboxRepository giftboxRepository, AuthUtils authUtils, MessageRepository messageRepository, GiftRepository giftRepository) {
-        this.giftboxRepository = giftboxRepository;
-        this.authUtils = authUtils;
-        this.messageRepository = messageRepository;
-        this.giftRepository= giftRepository;
-    }
+//    public MessageService(GiftboxRepository giftboxRepository, AuthUtils authUtils, MessageRepository messageRepository, GiftRepository giftRepository) {
+//        this.giftboxRepository = giftboxRepository;
+//        this.authUtils = authUtils;
+//        this.messageRepository = messageRepository;
+//        this.giftRepository= giftRepository;
+//    }
 
     @Transactional
-    public ApiResponse<?> sendMessage(SendMessageRequestDto requestDto) {
+    public ApiResponse<?> sendMessage(SendMessageRequestDto requestDto) throws FirebaseMessagingException {
         // 수혜자
         Receiver receiver = authUtils.getReceiver();
 
@@ -63,14 +68,9 @@ public class MessageService {
                     .giver(gift.getGiver())
                     .build();
             messageRepository.save(message);
-        /////////////////////////////////////
-        /////////////////////////////////////
-        /////////////////////////////////////
-        // 기부자에게 알림 보내기
-        /////////////////////////////////////
-        /////////////////////////////////////
-        /////////////////////////////////////
 
+        // 기부자에게 알림 보내기
+        fcmUtils.sendMessage(gift.getGiver().getId(), "message", "You've got a message!");
 
         // 반환하기
         return ApiResponse.success(Success.SEND_MESSAGE_SUCCESS);
