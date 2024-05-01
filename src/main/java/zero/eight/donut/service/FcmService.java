@@ -20,6 +20,7 @@ import zero.eight.donut.repository.GiftRepository;
 import zero.eight.donut.repository.GiftboxRepository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -50,12 +51,17 @@ public class FcmService {
     @Async
     @Transactional
     @Scheduled(cron = "0 0 0 * * *")
-    public void imminentWallet() throws FirebaseMessagingException {
+    public List<String> imminentWallet() throws FirebaseMessagingException {
         List<Gift> giftList = giftRepository.findAllByNotAssignedAndStoredAndAutoDonation(LocalDateTime.now().plusDays(37));
+        List<String> fcmList = new ArrayList<>();
+
         for (Gift gift : giftList) {
             // 기프티콘의 giverId로 FCM 전송
             fcmUtils.sendMessage(gift.getGiver().getId(), "wallet: D-37", "Your item" + gift.getProduct() + "is expiring soon! It will be automatically donated.");
+            fcmList.add("fcmReceiver: " + gift.getGiver().getName() + "(ROLE_GIVER), fcm title: wallet: D-37, fcm body: Your item" + gift.getProduct() + "is expiring soon! It will be automatically donated.");
         }
+
+        return fcmList;
     }
 
     // 사용 기한 D-7 push 알림 (수혜자)
