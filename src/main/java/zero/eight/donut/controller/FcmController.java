@@ -27,4 +27,9 @@ public class FcmController {
     public ApiResponse<?> test37() throws FirebaseMessagingException {
         return ApiResponse.success(Success.FCM_TEST_SUCCESS, fcmService.imminentWallet());
     }
+
+    @PostMapping("/test/7")
+    public ApiResponse<?> test7() throws FirebaseMessagingException {
+        return ApiResponse.success(Success.FCM_TEST_SUCCESS, fcmService.immminentGift());
+    }
 }

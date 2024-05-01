@@ -68,15 +68,20 @@ public class FcmService {
     @Async
     @Transactional
     @Scheduled(cron = "0 0 0 * * *")
-    public void immminentGift() throws FirebaseMessagingException {
+    public List<String> immminentGift() throws FirebaseMessagingException {
         // 7일 뒤 만료되는 꾸러미 찾기
         List<Giftbox> giftboxList = giftboxRepository.findAllByIsAvailableAndDueDate(LocalDateTime.now().plusDays(7));
+        List<String> fcmList = new ArrayList<>();
+
         for (Giftbox giftbox : giftboxList) {
             // 수혜자 찾기
             Receiver receiver = giftbox.getReceiver();
 
             // 조회된 수혜자에게 FCM 전송
             fcmUtils.sendMessage(receiver.getId(), "giftbox: D-7", "Your gift box is expiring soon! You can use it at" + giftbox.getStore() + ".");
+            fcmList.add("fcmReceiver: " + giftbox.getReceiver().getName() + "(ROLE_RECEIVER), fcm title: giftbox: D-7, fcm body: Your gift box is expiring soon! You can use it at" + giftbox.getStore() + ".");
         }
+
+        return fcmList;
     }
 }
