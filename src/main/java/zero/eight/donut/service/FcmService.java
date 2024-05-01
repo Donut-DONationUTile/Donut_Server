@@ -85,19 +85,19 @@ public class FcmService {
 
     public String mock37(String email, String product) throws FirebaseMessagingException {
         Giver giver = giverRepository.findByEmail(email).orElseThrow();
-        fcmUtils.sendMessage(giver.getId(), "wallet: D-37", "Your item" + product + "is expiring soon! It will be automatically donated.");
+        fcmUtils.sendMessage(giver.getId(), "[DONUT] D-37", "Your item" + product + "is expiring soon! It will be automatically donated.");
         return "fcmReceiver: " + email + "(ROLE_GIVER), fcm title: wallet: D-37, fcm body: Your item" + product + "is expiring soon! It will be automatically donated.";
     }
 
     public String mock30(String email, String product) throws FirebaseMessagingException {
         Giver giver = giverRepository.findByEmail(email).orElseThrow();
-        fcmUtils.sendMessage(giver.getId(), "wallet: D-30", "Your item" + product + "is donated now!");
+        fcmUtils.sendMessage(giver.getId(), "[DONUT] D-30", "Your item" + product + "is donated now!");
         return "fcmReceiver: " + giver.getName() + "(ROLE_GIVER), fcm title: wallet: D-30, fcm body: Your item" + product + "is donated now!";
     }
 
     public String mock7(String name, String store) throws FirebaseMessagingException {
         Receiver receiver = receiverRepository.findByName(name).orElseThrow();
-        fcmUtils.sendMessage(receiver.getId(), "giftbox: D-7", "Your gift box is expiring soon! You can use it at" + store + ".");
+        fcmUtils.sendMessage(receiver.getId(), "[DONUT] D-7", "Your gift box is expiring soon! You can use it at" + store + ".");
         return "fcmReceiver: " + receiver.getName() + "(ROLE_RECEIVER), fcm title: giftbox: D-7, fcm body: Your gift box is expiring soon! You can use it at" + store + ".";
     }
 }
