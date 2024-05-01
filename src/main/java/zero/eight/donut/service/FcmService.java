@@ -8,16 +8,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import zero.eight.donut.common.response.ApiResponse;
 import zero.eight.donut.config.firebase.FcmUtils;
-import zero.eight.donut.domain.FcmToken;
-import zero.eight.donut.domain.Gift;
-import zero.eight.donut.domain.Giftbox;
-import zero.eight.donut.domain.Receiver;
+import zero.eight.donut.domain.*;
 import zero.eight.donut.dto.fcm.FcmMemberDto;
 import zero.eight.donut.dto.fcm.FcmTokenRequestDto;
 import zero.eight.donut.exception.Success;
 import zero.eight.donut.repository.FcmTokenRepository;
 import zero.eight.donut.repository.GiftRepository;
 import zero.eight.donut.repository.GiftboxRepository;
+import zero.eight.donut.repository.GiverRepository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -30,6 +28,7 @@ public class FcmService {
     private final FcmTokenRepository fcmTokenRepository;
     private final GiftRepository giftRepository;
     private final GiftboxRepository giftboxRepository;
+    private final GiverRepository giverRepository;
 
     public ApiResponse<?> registerFcmToken(FcmTokenRequestDto requestDto) throws Exception {
         final String token = requestDto.getToken();
@@ -83,5 +82,11 @@ public class FcmService {
         }
 
         return fcmList;
+    }
+
+    public String mock37(String email, String product) throws FirebaseMessagingException {
+        Giver giver = giverRepository.findByEmail(email).orElseThrow();
+        fcmUtils.sendMessage(giver.getId(), "wallet: D-37", "Your item" + product + "is expiring soon! It will be automatically donated.");
+        return ("fcmReceiver: " + email + "(ROLE_GIVER), fcm title: wallet: D-37, fcm body: Your item" + product + "is expiring soon! It will be automatically donated.");
     }
 }

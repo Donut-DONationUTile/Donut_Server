@@ -2,10 +2,7 @@ package zero.eight.donut.controller;
 
 import com.google.firebase.messaging.FirebaseMessagingException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import zero.eight.donut.common.response.ApiResponse;
 import zero.eight.donut.dto.fcm.FcmTokenRequestDto;
 import zero.eight.donut.exception.Success;
@@ -38,5 +35,10 @@ public class FcmController {
     @PostMapping("/test/30")
     public ApiResponse<?> test30() throws FirebaseMessagingException {
         return ApiResponse.success(Success.FCM_TEST_SUCCESS, donationService.autoDonate());
+    }
+
+    @GetMapping("/mock/37/{email}")
+    public ApiResponse<?> mock37(@PathVariable("email") String email, @RequestParam("product") String product) throws FirebaseMessagingException {
+        return ApiResponse.success(Success.FCM_TEST_SUCCESS, fcmService.mock37(email, product));
     }
 }
