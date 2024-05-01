@@ -67,13 +67,9 @@ public class SerialDonationService {
 
         // 할당 가능 금액 여부 검증
         Receiver receiver = authUtils.getReceiver();
-        Optional<Benefit> benefitOptional = benefitRepository.findByReceiver(receiver);
-        if (benefitOptional.isEmpty()) {
-            // 수혜 내역 부재 시(서버 오류)
-            log.info("수혜 내역 부재(INTERNAL_SERVER_ERROR)");
-            throw new InternalServerErrorException(Error.INTERNAL_SERVER_ERROR);
-        }
-        else if(!benefitOptional.get().getAvailability()) {
+        Benefit benefit = benefitRepository.findByReceiverIdAndThisMonth(receiver.getId(), LocalDateTime.now().getYear(), LocalDateTime.now().getMonthValue())
+                .orElseGet(() -> createNewBenefit(receiver));
+        if(benefit.getAvailability()) {
             // 가용 잔액 부족 시(잔액 부족 오류)
             log.info("가용 잔액 부족(INSUFFICIENT_BALANCE_EXCEPTION)");
             return ApiResponse.failure(Error.INSUFFICIENT_BALANCE_EXCEPTION);
@@ -115,7 +111,7 @@ public class SerialDonationService {
 
         // 구성된 꾸러미가 할당 가능한 금액인지 검증
         // 이번 달의 남은 수혜 가능 금액 계산
-        Integer possibleAmount = montlyLimit - benefitOptional.get().getSum();
+        Integer possibleAmount = montlyLimit -  benefit.getSum();
 
         // 구성된 꾸러미를 포함한 총 수혜 금액이 이달의 수혜 가능 금액을 조금이라도 초과하면 할당 불가
         if (assignDto.getAssignedValue() > possibleAmount) {
@@ -137,7 +133,7 @@ public class SerialDonationService {
         log.info("꾸러미에 기프티콘 할당 완료");
 
         // 수혜 내역 업데이트
-        benefitOptional.get().updateSum(assignDto.getAssignedValue());
+        benefit.updateSum(assignDto.getAssignedValue());
 
         return ApiResponse.success(Success.ASSIGN_BENEFIT_SUCCESS, Map.of("giftboxId", giftbox.getId()));
     }
@@ -291,7 +287,17 @@ public class SerialDonationService {
                 })
                 .subscribe();
     }
-
+    private Benefit createNewBenefit(Receiver receiver){
+        Benefit newBenefit = Benefit.builder()
+                .receiver(receiver)
+                .sum(0)
+                .month(LocalDateTime.now().getMonthValue())
+                .year(LocalDateTime.now().getMonthValue())
+                .availability(true)
+                .build();
+        benefitRepository.save(newBenefit);
+        return newBenefit;
+    }
     @Transactional
     public ApiResponse<?> donateWalletGift(Long giftId) {
         // 기프티콘 찾기
