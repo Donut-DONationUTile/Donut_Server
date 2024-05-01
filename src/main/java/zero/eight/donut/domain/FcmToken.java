@@ -31,8 +31,8 @@ public class FcmToken {
         this.role = role;
     }
 
-    public void updateToken(String token, Role role) {
+    public FcmToken updateToken(String token) {
         this.token = token;
-        this.role = role;
+        return this;
     }
 }
