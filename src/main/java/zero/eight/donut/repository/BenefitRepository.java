@@ -13,7 +13,7 @@ public interface BenefitRepository extends JpaRepository<Benefit, Long> {
     Optional<Benefit> findByReceiver(Receiver receiver);
 
     @Query("SELECT b FROM Benefit b  WHERE b.receiver.id =?1 AND b.year = ?2 AND b.month= ?3")
-    Benefit findByReceiverIdAndThisMonth(Long receiverId, Integer year, Integer month);
+    Optional<Benefit> findByReceiverIdAndThisMonth(Long receiverId, Integer year, Integer month);
 
     @Query(value = "SELECT SUM(b.sum) FROM benefit b WHERE b.receiver_id = :receiverId", nativeQuery = true)
     Integer sumBenefitByReceiverId(@Param("receiverId") Long receiverId);
