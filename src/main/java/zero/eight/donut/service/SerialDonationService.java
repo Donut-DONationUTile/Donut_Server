@@ -69,7 +69,7 @@ public class SerialDonationService {
         Receiver receiver = authUtils.getReceiver();
         Benefit benefit = benefitRepository.findByReceiverIdAndThisMonth(receiver.getId(), LocalDateTime.now().getYear(), LocalDateTime.now().getMonthValue())
                 .orElseGet(() -> createNewBenefit(receiver));
-        if(benefit.getAvailability()) {
+        if(!benefit.getAvailability()) {
             // 가용 잔액 부족 시(잔액 부족 오류)
             log.info("가용 잔액 부족(INSUFFICIENT_BALANCE_EXCEPTION)");
             return ApiResponse.failure(Error.INSUFFICIENT_BALANCE_EXCEPTION);
