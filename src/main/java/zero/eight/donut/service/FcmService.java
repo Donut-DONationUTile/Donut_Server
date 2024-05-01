@@ -12,10 +12,7 @@ import zero.eight.donut.domain.*;
 import zero.eight.donut.dto.fcm.FcmMemberDto;
 import zero.eight.donut.dto.fcm.FcmTokenRequestDto;
 import zero.eight.donut.exception.Success;
-import zero.eight.donut.repository.FcmTokenRepository;
-import zero.eight.donut.repository.GiftRepository;
-import zero.eight.donut.repository.GiftboxRepository;
-import zero.eight.donut.repository.GiverRepository;
+import zero.eight.donut.repository.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -29,6 +26,7 @@ public class FcmService {
     private final GiftRepository giftRepository;
     private final GiftboxRepository giftboxRepository;
     private final GiverRepository giverRepository;
+    private final ReceiverRepository receiverRepository;
 
     public ApiResponse<?> registerFcmToken(FcmTokenRequestDto requestDto) throws Exception {
         final String token = requestDto.getToken();
@@ -94,5 +92,11 @@ public class FcmService {
         Giver giver = giverRepository.findByEmail(email).orElseThrow();
         fcmUtils.sendMessage(giver.getId(), "wallet: D-30", "Your item" + product + "is donated now!");
         return "fcmReceiver: " + giver.getName() + "(ROLE_GIVER), fcm title: wallet: D-30, fcm body: Your item" + product + "is donated now!";
+    }
+
+    public String mock7(String name, String store) throws FirebaseMessagingException {
+        Receiver receiver = receiverRepository.findByName(name).orElseThrow();
+        fcmUtils.sendMessage(receiver.getId(), "giftbox: D-7", "Your gift box is expiring soon! You can use it at" + store + ".");
+        return "fcmReceiver: " + receiver.getName() + "(ROLE_RECEIVER), fcm title: giftbox: D-7, fcm body: Your gift box is expiring soon! You can use it at" + store + ".";
     }
 }
