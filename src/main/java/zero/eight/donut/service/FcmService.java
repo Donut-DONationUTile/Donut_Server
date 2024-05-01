@@ -34,7 +34,7 @@ public class FcmService {
 
         fcmTokenRepository.findByMemberId(member.getId())
                 .ifPresentOrElse(
-                        it -> it.updateToken(token, member.getRole()),
+                        it -> fcmTokenRepository.save(it.updateToken(token)),
                         () -> fcmTokenRepository.save(FcmToken.builder()
                                 .token(token)
                                 .memberId(member.getId())
