@@ -16,13 +16,13 @@ import zero.eight.donut.repository.GiftRepository;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
 @Service
 public class DonationService {
-
     private final FcmUtils fcmUtils;
     private final SerialDonationService donationService;
     private  final GiftRepository giftRepository;
@@ -30,13 +30,18 @@ public class DonationService {
     @Async
     @Transactional
     @Scheduled(cron = "0 0 0 * * *")
-    public void autoDonate() throws FirebaseMessagingException {
+    public List<String> autoDonate() throws FirebaseMessagingException {
         List<Gift> giftList = giftRepository.findAllByNotAssignedAndStatusAndDueDateBetween( "STORED", LocalDateTime.now(), LocalDateTime.now().minusDays(30));
+        List<String> fcmList = new ArrayList<>();
+
         for (Gift gift : giftList) {
             gift.updateStatus("UNUSED");
             giftRepository.save(gift);
             fcmUtils.sendMessage(gift.getGiver().getId(), "wallet: D-30", "Your item" + gift.getProduct() + "is donated now!");
+            fcmList.add("fcmReceiver: " + gift.getGiver().getName() + "(ROLE_GIVER), fcm title: wallet: D-30, fcm body: Your item" + gift.getProduct() + "is donated now!");
         }
+
+        return fcmList;
     }
 
     public synchronized ApiResponse<?> assignGiftbox(GiftboxRequestDto giftboxRequestDto) {

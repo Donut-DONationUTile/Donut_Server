@@ -21,6 +21,7 @@ import zero.eight.donut.repository.GiftboxRepository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -44,7 +45,9 @@ public class HistoryReceiverService {
         Integer thisYear = LocalDateTime.now().getYear();
         Integer thisMonth = LocalDateTime.now().getMonthValue();
 
-        Benefit benefit = benefitRepository.findByReceiverIdAndThisMonth(receiver.getId(), thisYear, thisMonth);
+        Benefit benefit = benefitRepository.findByReceiverIdAndThisMonth(receiver.getId(), thisYear, thisMonth)
+                .orElseGet(() -> createNewBenefit(receiver));
+
         //수혜 기프티콘 목록
         List<Giftbox> giftboxList = giftboxRepository.findAllByReceiverId(receiver.getId());
         List<ReceivedGift> giftList = new ArrayList<>();
@@ -68,5 +71,16 @@ public class HistoryReceiverService {
                 .build();
 
         return ApiResponse.success(Success.GET_HISTORY_RECEIVER_BENEFIT_SUCCESS, responseDto);
+    }
+    private Benefit createNewBenefit(Receiver receiver){
+        Benefit newBenefit = Benefit.builder()
+                .receiver(receiver)
+                .sum(0)
+                .month(LocalDateTime.now().getMonthValue())
+                .year(LocalDateTime.now().getMonthValue())
+                .availability(true)
+                .build();
+        benefitRepository.save(newBenefit);
+        return newBenefit;
     }
 }

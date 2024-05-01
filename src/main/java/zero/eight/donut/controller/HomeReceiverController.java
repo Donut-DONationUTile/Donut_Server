@@ -20,12 +20,12 @@ public class HomeReceiverController {
     }
 
     @GetMapping("/box/{boxId}")
-    public ApiResponse<?> receiverGetOneBox(@PathVariable("boxId") Long boxId){
+    public ApiResponse<?> receiverGetOneBox(@PathVariable(name = "boxId") Long boxId){
         return homeReceiverService.receiverGetOneBox(boxId);
     }
 
     @GetMapping("/gift/{giftId}")
-    public ApiResponse<?> receiverGetOneGuft(@PathVariable("giftId") Long giftId){
+    public ApiResponse<?> receiverGetOneGuft(@PathVariable(name = "giftId") Long giftId){
         return homeReceiverService.receiverGetOneGift(giftId);
     }
 }

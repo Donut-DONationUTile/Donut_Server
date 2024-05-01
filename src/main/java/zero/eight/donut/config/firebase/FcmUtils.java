@@ -29,7 +29,6 @@ public class FcmUtils {
     private final GiverRepository giverRepository;
     private final ReceiverRepository receiverRepository;
     private final FcmTokenRepository fcmTokenRepository;
-    private final FirebaseMessaging firebaseMessaging;
 
 
 
@@ -60,10 +59,20 @@ public class FcmUtils {
     public String sendMessage(Long memberId, String title, String body) throws FirebaseMessagingException {
         // 알림 수신자의 FCM 토큰 조회
         String fcmToken = getFcmToken(memberId);
+        log.info("fcmToken -> {}", fcmToken);
+
         // FCM 메세지 생성
         Message message = makeMessage(fcmToken, title, body);
+        log.info("message -> {}", message);
+
         // FCM 발신
-        return firebaseMessaging.send(message);
+        //return firebaseMessaging.send(message);
+        try {
+            return FirebaseMessaging.getInstance().send(message);
+        } catch (Exception e) {
+            log.info(e.getMessage());
+            return "Falied to send notification";
+        }
     }
 
     public String getFcmToken(Long memberId) {

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import zero.eight.donut.common.response.ApiResponse;
 import zero.eight.donut.config.jwt.AuthUtils;
+import zero.eight.donut.domain.Benefit;
 import zero.eight.donut.domain.Gift;
 import zero.eight.donut.domain.Giftbox;
 import zero.eight.donut.domain.Receiver;
@@ -19,6 +20,7 @@ import zero.eight.donut.repository.GiftRepository;
 import zero.eight.donut.repository.GiftboxRepository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -40,19 +42,12 @@ public class HomeReceiverService {
         Long receiver_id = receiver.getId();
 
         //사용 가능한 꾸러미만 조회
-        List<Giftbox> giftboxList = Optional.ofNullable(giftboxRepository.findAllByReceiverIdAndIsAvailable(receiver.getId()))
+        List<Giftbox> giftboxList = Optional.ofNullable(giftboxRepository.findAllByReceiverIdAndIsAvailable(receiver_id))
                 .orElse(Collections.emptyList());
 
-        //사용처별 꾸러미 잔액
-//        Optional<Integer> cuGiftBox = Optional.ofNullable(giftboxRepository.getSumByStore(Store.CU));
-//        Optional<Integer> gs25GiftBox = Optional.ofNullable(giftboxRepository.getSumByStore(Store.GS25));
-//        Optional<Integer> sevenelevenGiftBox = Optional.ofNullable(giftboxRepository.getSumByStore(Store.SEVENELEVEN));
-//        Integer cu = cuGiftBox.orElse(0);
-//        Integer gs25 = gs25GiftBox.orElse(0);
-//        Integer seveneleven = sevenelevenGiftBox.orElse(0);
       
         //사용처별 꾸러미 잔액 -> 쿼리 한번만 호출하도록 변경
-        Map<Store, Integer> storeGiftBoxMap = giftboxRepository.getGiftboxSumsByStore(receiver.getId());
+        Map<Store, Integer> storeGiftBoxMap = giftboxRepository.getGiftboxSumsByStore(receiver_id);
         Integer cu = storeGiftBoxMap.getOrDefault(Store.CU, 0);
         Integer gs25 = storeGiftBoxMap.getOrDefault(Store.GS25, 0);
         Integer seveneleven = storeGiftBoxMap.getOrDefault(Store.SEVENELEVEN, 0);
@@ -72,16 +67,24 @@ public class HomeReceiverService {
         }
 
         /***
-         * 꾸러미 신청 가능 여부
-         * 1. 현재 갖고 있는 꾸러미들의 총합이 1000원 이하일 것
-         * 2. 이번 달 수혜 금액을 넘지 않을 것
-         * 3. 기부됐지만 할당되지 않은 기프티콘들의 합이 1000원 이상일 것
+         * Get Giftbox Eligibility
+         * 1. The total of the current packages held must be under 1000 KRW.
+         * 2. It will not exceed this month's benefit amount.
+         * 3. The sum of donated but unassigned Gifticons must be over 1000 KRW.
          */
         Boolean availability  = true;
         LocalDate now = LocalDate.now();
-        if(amount > 1000
-                || !benefitRepository.findByReceiverIdAndThisMonth(receiver.getId(), now.getYear(), now.getMonthValue()).getAvailability()
-                || giftRepository.sumByNotAssigned() <1001)
+        //2. check this month benefit amount
+        Optional<Benefit> optionalBenefit = benefitRepository.findByReceiverIdAndThisMonth(receiver_id, now.getYear(), now.getMonthValue());
+        Boolean checkbenefit = optionalBenefit.map(Benefit::getAvailability)
+                .orElseGet(() -> {
+                    createNewBenefit(receiver);
+                    return Boolean.TRUE;
+                });
+
+        if(amount > 1000 //1.
+                || !checkbenefit //2.
+                || giftRepository.sumByNotAssigned() <1001) //3.
             availability = false;
 
 
@@ -160,6 +163,16 @@ public class HomeReceiverService {
         return ApiResponse.success(Success.HOME_RECEIVER_GIFT_SUCCESS, getGiftInfo(giftId, gift));
     }
 
+    public void createNewBenefit(Receiver receiver){
+        Benefit newBenefit = Benefit.builder()
+                .receiver(receiver)
+                .sum(0)
+                .month(LocalDateTime.now().getMonthValue())
+                .year(LocalDateTime.now().getMonthValue())
+                .availability(true)
+                .build();
+        benefitRepository.save(newBenefit);
+    }
     public GetGiftResponseDto getGiftInfo(Long giftId, Gift gift){
 
         return GetGiftResponseDto.builder()
