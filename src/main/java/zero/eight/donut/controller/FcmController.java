@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import zero.eight.donut.common.response.ApiResponse;
 import zero.eight.donut.dto.fcm.FcmTokenRequestDto;
 import zero.eight.donut.exception.Success;
+import zero.eight.donut.service.DonationService;
 import zero.eight.donut.service.FcmService;
 
 @RequiredArgsConstructor
@@ -17,6 +18,7 @@ import zero.eight.donut.service.FcmService;
 public class FcmController {
 
     private final FcmService fcmService;
+    private final DonationService donationService;
 
     @PostMapping("/token")
     public ApiResponse<?> createFcmToken(@RequestBody FcmTokenRequestDto requestDto) throws Exception {
@@ -31,5 +33,10 @@ public class FcmController {
     @PostMapping("/test/7")
     public ApiResponse<?> test7() throws FirebaseMessagingException {
         return ApiResponse.success(Success.FCM_TEST_SUCCESS, fcmService.immminentGift());
+    }
+
+    @PostMapping("/test/30")
+    public ApiResponse<?> test30() throws FirebaseMessagingException {
+        return ApiResponse.success(Success.FCM_TEST_SUCCESS, donationService.autoDonate());
     }
 }
