@@ -20,12 +20,12 @@ public class HistoryGiverController {
     private final AuthService authService;
 
     @GetMapping("/info/{donateDate}")
-    public ApiResponse<?> getDonationList(@PathVariable("donateDate")LocalDateTime donateDate){
+    public ApiResponse<?> getDonationList(@PathVariable(name = "donateDate")LocalDateTime donateDate){
         return  historyGiverService.getDonationList(donateDate);
     }
 
     @GetMapping("/info/detail/{giftId}")
-    public ApiResponse<?> getDonationDetail(@PathVariable("giftId")Long giftId){
+    public ApiResponse<?> getDonationDetail(@PathVariable(name = "giftId")Long giftId){
         return  historyGiverService.getDonationDetail(giftId);
     }
 

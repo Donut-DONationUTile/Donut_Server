@@ -38,17 +38,17 @@ public class FcmController {
     }
 
     @GetMapping("/mock/37/{email}")
-    public ApiResponse<?> mock37(@PathVariable("email") String email, @RequestParam("product") String product) throws FirebaseMessagingException {
+    public ApiResponse<?> mock37(@PathVariable(name = "email") String email, @RequestParam(name = "product") String product) throws FirebaseMessagingException {
         return ApiResponse.success(Success.FCM_TEST_SUCCESS, fcmService.mock37(email, product));
     }
 
     @GetMapping("/mock/30/{email}")
-    public ApiResponse<?> mock30(@PathVariable("email") String email, @RequestParam("product") String product) throws FirebaseMessagingException {
+    public ApiResponse<?> mock30(@PathVariable(name = "email") String email, @RequestParam(name = "product") String product) throws FirebaseMessagingException {
         return ApiResponse.success(Success.FCM_TEST_SUCCESS, fcmService.mock30(email, product));
     }
 
-    @GetMapping("/mock/7/{email}")
-    public ApiResponse<?> mock7(@PathVariable("email") String email, @RequestParam("product") String product) throws FirebaseMessagingException {
-        return ApiResponse.success(Success.FCM_TEST_SUCCESS, fcmService.mock30(email, product));
+    @GetMapping("/mock/7/{name}")
+    public ApiResponse<?> mock7(@PathVariable(name = "name") String name, @RequestParam(name = "store") String store) throws FirebaseMessagingException {
+        return ApiResponse.success(Success.FCM_TEST_SUCCESS, fcmService.mock7(name, store));
     }
 }

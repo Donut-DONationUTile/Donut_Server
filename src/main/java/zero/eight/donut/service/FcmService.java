@@ -38,6 +38,7 @@ public class FcmService {
                         () -> fcmTokenRepository.save(FcmToken.builder()
                                 .token(token)
                                 .memberId(member.getId())
+                                .role(member.getRole())
                                 .build())
                 );
 
