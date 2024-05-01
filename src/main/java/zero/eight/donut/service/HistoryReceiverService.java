@@ -77,7 +77,7 @@ public class HistoryReceiverService {
                 .receiver(receiver)
                 .sum(0)
                 .month(LocalDateTime.now().getMonthValue())
-                .year(LocalDateTime.now().getMonthValue())
+                .year(LocalDateTime.now().getYear())
                 .availability(true)
                 .build();
         benefitRepository.save(newBenefit);
