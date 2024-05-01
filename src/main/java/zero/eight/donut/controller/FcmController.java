@@ -48,7 +48,7 @@ public class FcmController {
     }
 
     @GetMapping("/mock/7/{email}")
-    public ApiResponse<?> mock7(@PathVariable("email") String email, @RequestParam("product") String product) throws FirebaseMessagingException {
-        return ApiResponse.success(Success.FCM_TEST_SUCCESS, fcmService.mock30(email, product));
+    public ApiResponse<?> mock7(@PathVariable("email") String email, @RequestParam("store") String store) throws FirebaseMessagingException {
+        return ApiResponse.success(Success.FCM_TEST_SUCCESS, fcmService.mock7(email, store));
     }
 }
