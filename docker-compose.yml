@@ -1,0 +1,21 @@
+services:
+  redis:
+    image: redis
+    ports:
+      - 6379:6379
+
+  donut:
+    image: donut
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/secrets/virtual-transit-421013-57598287b81f.json
+      - FIREBASE_CONFIG_FILE=/secrets/serviceAccountKey.json
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - 8080:8080
+    depends_on:
+      - redis
+    volumes:
+      - /virtual-transit-421013-57598287b81f.json:/secrets/virtual-transit-421013-57598287b81f.json
+      - /serviceAccountKey.json:/secrets/serviceAccountKey.json
