@@ -31,6 +31,11 @@
 
 </br></br>
 
+## ✨ How to Use DONUT
+<image src='https://github.com/akimcse/akimcse/assets/63237214/845d8d38-2b73-4897-ba63-c45ba32e28d0'/>
+
+</br></br>
+
 ## Member
 
 | <img src="https://avatars.githubusercontent.com/Ganghee-Lee-0522" width="80"> | <img src="https://avatars.githubusercontent.com/Kang1221" width="80"> |
