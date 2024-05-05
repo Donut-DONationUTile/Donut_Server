@@ -31,6 +31,27 @@
 
 </br></br>
 
+## How to Run - Server
+
+### Requirement
+
+- Account of Docker Hub
+
+### Local
+1. gradle build
+2. docker build -t `yourAccount`/`yourRepository` ./
+3. docker push `yourAccount`/`yourRepository`
+
+### Deploy  
+1. create docker-compose.yml
+2. sudo docker pull `yourAccount`/`yourRepository`
+3. sudo docker tag `yourAccount`/`yourRepository` `dockerImageName`
+4. sudo docker-compose up
+
+( [docker-compose.yml that we created is on Server repository](https://github.com/Donut-DONationUTile/Donut_Server/blob/main/docker-compose.yml))
+
+</br></br>
+
 ## ✨ How to Use DONUT
 <image src='https://github.com/akimcse/akimcse/assets/63237214/845d8d38-2b73-4897-ba63-c45ba32e28d0'/>
 
