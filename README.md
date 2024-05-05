@@ -9,14 +9,13 @@
 
 ## Commit convention
 
-
-| 커밋 타입 | 설명                               |
-|-----------|----------------------------------|
-| `feat`    | 새로운 기능을 추가할 경우                   |
-| `fix`     | 버그를 고친 경우                        |
-| `style`   | 코드 포맷 변경, 세미 콜론 누락, 코드 수정이 없는 경우 |
-| `refactor`| 리팩토링 하는 경우                       |
-| `chore`   | 자잘한 수정 사항 반영                     |
-| `docs`    | 문서를 수정한 경우                       |
-| `test`    | 테스트 추가                           |
-
+| Tag name | Description                                                 |
+| -------- | ----------------------------------------------------------- |
+| feat     | Commits that add a new feature                              |
+| fix      | Commits that fix a bug                                      |
+| build    | Commits that affect build components                        |
+| chore    | Miscellaneous commits                                       |
+| style    | Commits for code styling or format                          |
+| docs     | Commits that affect documentation only                      |
+| test     | Commits that add missing tests or correcting existing tests |
+| refactor | Commits for code refactoring                                |
