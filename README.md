@@ -2,7 +2,7 @@
 [![Demo Video](https://github.com/akimcse/akimcse/assets/63237214/3aac2345-cb7c-4037-8ed8-a5fa99ef7fc3)](https://youtu.be/qjlmdKrCPaI)
 
   `DONUT` is a sustainable donation platform tailored to the developmental characteristics of adolescents, providing a stigma-free process for beneficiaries. </br></br>
-  By utilizing unused resources such as gift vouchers, amounting to 900 million KRW annually in South Korea, it facilitates low-income youth to purchase groceries and essential items.
+  By utilizing unused resources such as gift vouchers, amounting to 9 billion KRW annually in South Korea, it facilitates low-income youth to purchase groceries and essential items.
 
 
 
