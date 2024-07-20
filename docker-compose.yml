@@ -1,6 +1,6 @@
 services:
   redis:
-    image: redis
+    image: default_redis_1
     ports:
       - 6379:6379
 
