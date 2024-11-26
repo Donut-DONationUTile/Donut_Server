@@ -17,7 +17,7 @@ public class FirebaseConfig {
     public void init() {
         try {
             FileInputStream serviceAccount =
-                    new FileInputStream(filepath != null ? filepath : "src/main/resources/serviceAccountKey.json");
+                    new FileInputStream(filepath != null ? filepath : "src/main/resources/donut-efc32-firebase-adminsdk-et3f5-19da7f3f00.json");
             FirebaseOptions options = new FirebaseOptions.Builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
                     .build();
@@ -32,7 +32,7 @@ public class FirebaseConfig {
     public FirebaseMessaging firebaseMessaging() {
         try {
             FileInputStream serviceAccount =
-                    new FileInputStream(filepath != null ? filepath : "src/main/resources/serviceAccountKey.json");
+                    new FileInputStream(filepath != null ? filepath : "src/main/resources/donut-efc32-firebase-adminsdk-et3f5-19da7f3f00.json");
 
             FirebaseOptions options = new FirebaseOptions.Builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
