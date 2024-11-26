@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 @Service
 public class SerialDonationService {
 
-    @Value("${spring.cloud.gcp.storage.bucket}")
+    @Value("${spring.cloud.gcp.bucket}")
     private String BUCKET_NAME;
     private final Integer montlyLimit = 50000;
     private final Storage storage;

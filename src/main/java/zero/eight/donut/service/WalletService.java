@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 public class WalletService {
 
     // gcp 변수
-    @Value("${spring.cloud.gcp.storage.bucket}")
+    @Value("${spring.cloud.gcp.bucket}")
     private String BUCKET_NAME;
     private final Storage storage;
 
