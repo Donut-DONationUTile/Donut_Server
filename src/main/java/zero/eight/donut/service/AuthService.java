@@ -164,19 +164,20 @@ public class AuthService {
         }
         */
 
-        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new JacksonFactory())
-                // Specify the CLIENT_ID of the app that accesses the backend:
-                .setAudience(Collections.singletonList(CLIENT_ID))
-                // Or, if multiple clients access the backend:
-                //.setAudience(Arrays.asList(CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3))
-                .build();
-        log.info("verifier 생성 -> {}", String.valueOf(verifier));
-
-        try {
-            idToken = verifier.verify(googleToken);
-        } catch (GeneralSecurityException | IOException e) {
-            throw new RuntimeException(e);
-        }
+//        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new JacksonFactory())
+//                // Specify the CLIENT_ID of the app that accesses the backend:
+//                .setAudience(Collections.singletonList(CLIENT_ID))
+//                // Or, if multiple clients access the backend:
+//                //.setAudience(Arrays.asList(CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3))
+//                .build();
+//        log.info("verifier 생성 -> {}", String.valueOf(verifier));
+//
+//        try {
+//
+//            idToken = verifier.verify(googleToken);
+//        } catch (GeneralSecurityException | IOException e) {
+//            throw new RuntimeException(e);
+//        }
 
 
         if (idToken != null) {
@@ -184,10 +185,10 @@ public class AuthService {
             log.info("idToken is not null");
             GoogleIdToken.Payload payload = idToken.getPayload();
 
-//            if (!tokenVerifier(payload)) {
-//                log.info("token 검증 결과 유효하지 않음");
-//                return null;
-//            }
+            if (!tokenVerifier(payload)) {
+                log.info("token 검증 결과 유효하지 않음");
+                return null;
+            }
 
             // Print user identifier
             String googleId = payload.getSubject();
