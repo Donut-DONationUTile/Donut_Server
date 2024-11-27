@@ -12,12 +12,13 @@ jobs:
       contents: read
 
     steps:
-    # Checkout repository
+    # Checkout repository with fetch-depth: 0
     - name: Checkout repository
       uses: actions/checkout@v3
       with:
         token: ${{ secrets.TOKEN }}
         submodules: true
+        fetch-depth: 0 # Fetch the full Git history
 
     # Set up JDK 17
     - name: Set up JDK 17
@@ -37,7 +38,6 @@ jobs:
         key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
         restore-keys: |
           ${{ runner.os }}-gradle-
-
     # Build project with Gradle (excluding tests)
     - name: Build with Gradle
       run: ./gradlew clean build -x test
@@ -49,15 +49,18 @@ jobs:
         docker build -t ${{ secrets.DOCKERHUB_REPOSITORY }} .
         docker tag ${{ secrets.DOCKERHUB_REPOSITORY }} ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPOSITORY }}:${GITHUB_SHA::7}
         docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPOSITORY }}:${GITHUB_SHA::7}
-
+        
   # Deploy
   deploy:
     runs-on: ubuntu-latest
     needs: build
+
     steps:
-    # Checkout repository
+    # Checkout repository with fetch-depth: 0
     - name: Checkout repository
       uses: actions/checkout@v3
+      with:
+        fetch-depth: 0 # Ensure SHA consistency
 
     # Deploy using SSH
     - name: Deploy application
@@ -72,3 +75,4 @@ jobs:
           sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPOSITORY }}:${GITHUB_SHA::7}
           sudo docker tag ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPOSITORY }}:${GITHUB_SHA::7} donut
           sudo docker-compose up -d --remove-orphans
+
