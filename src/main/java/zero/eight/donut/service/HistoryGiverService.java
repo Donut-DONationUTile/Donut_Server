@@ -57,7 +57,7 @@ public class HistoryGiverService {
 
         //한달 간 기부한 gift 목록 조회
         YearMonth yearMonth = YearMonth.from(donateDate);
-        List<Gift> giftList = giftRepository.findAllByGiverIdAndCreatedAtBetween(giver.getId(), donateDate, yearMonth.atEndOfMonth().atStartOfDay());
+        List<Gift> giftList = giftRepository.findAllByGiverIdAndCreatedAtBetween(giver.getId(), donateDate, yearMonth.atEndOfMonth().atTime(23, 59, 59, 999999999));
 
         Long unreceived = 0L, received = 0L, msg = 0L;
         List<Donation> donationList = new ArrayList<>();
